@@ -3,6 +3,9 @@ import { Dashboard } from "./Dashboard"
 import Sidebar from "../components/navigation"
 import { Sales } from "./sales"
 import { Products } from "./products"
+import { Reports } from "./Reports"
+import { Inventory } from "./Inventory"
+import { Customer } from "./customer"
 // import { TasksManger } from "./taskmanger"
 // import { UserProfile } from "./userProfilePage"
 // import { UsersPage } from "./Users"
@@ -26,6 +29,18 @@ export const LandingPage = () => {
                 <Route
                     path="/products"
                     element={<Products/>}
+                />
+                 <Route
+                    path="/reports"
+                    element={<Reports/>}
+                />
+                 <Route
+                    path="/inventory"
+                    element={<Inventory/>}
+                />
+                 <Route
+                    path="/customer"
+                    element={<Customer/>}
                 />
                {/* <Route
                     path="/users"
