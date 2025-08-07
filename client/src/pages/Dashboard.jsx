@@ -1,9 +1,126 @@
-import Topbar from "../components/topbar"
+import { Divide } from "lucide-react";
+import React from "react";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import Topbar from "../components/topbar";
+
+const urgentRepairs = [
+  {
+    ticket_no: "R-20250807-001",
+    device: "Laptop",
+    customer: "John Doe",
+    priority: "urgent",
+  },
+  {
+    ticket_no: "R-20250807-004",
+    device: "Printer",
+    customer: "Jane Smith",
+    priority: "urgent",
+  },
+];
+
+const salesData = [
+  { month: "Jan", sales: 34000 },
+  { month: "Feb", sales: 28000 },
+  { month: "Mar", sales: 32000 },
+  { month: "Apr", sales: 30000 },
+  { month: "May", sales: 41000 },
+  { month: "Jun", sales: 39000 },
+  { month: "Jul", sales: 45000 },
+];
 
 export const Dashboard = () => {
-    return(
-        <div className="bg-white w-full h-screen">
-            <Topbar title={"Dashboard"}/>
+  return (
+    <div className="w-full ">
+    <Topbar title={"    Dashboard"}/>
+      
+
+    <div className="p-6">
+          {/* Summary cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white shadow-md rounded-2xl p-6">
+          <h2 className="text-lg font-medium text-gray-600 mb-2">
+            Today’s Sales
+          </h2>
+          <p className="text-3xl font-bold text-indigo-600">Rs. 28,500</p>
+          <span className="text-sm text-gray-400">+15% from yesterday</span>
         </div>
-    )
-}
+
+        <div className="bg-white shadow-md rounded-2xl p-6">
+          <h2 className="text-lg font-medium text-gray-600 mb-2">
+            Active Repairs
+          </h2>
+          <p className="text-3xl font-bold text-orange-500">8</p>
+          <span className="text-sm text-gray-400">3 urgent, 5 not urgent</span>
+        </div>
+
+        <div className="bg-white shadow-md rounded-2xl p-6">
+          <h2 className="text-lg font-medium text-gray-600 mb-2">
+            Total Customers
+          </h2>
+          <p className="text-3xl font-bold text-green-600">124</p>
+          <span className="text-sm text-gray-400">5 new this week</span>
+        </div>
+      </div>
+
+      {/* Urgent Repairs */}
+      <div className=" w-full flex p-6 gap-2">
+
+        <div className="bg-white shadow-md flex-1 rounded-2xl p-6">
+          <h2 className="text-xl font-semibold text-red-500 mb-4">
+            Urgent Repairs
+          </h2>
+          <div className="overflow-x-auto ">
+            <table className="min-w-full text-sm text-gray-700">
+              <thead className="text-xs uppercase bg-gray-100 text-gray-600">
+                <tr>
+                  <th className="px-4 py-3 text-left">Ticket No</th>
+                  <th className="px-4 py-3 text-left">Device</th>
+                  <th className="px-4 py-3 text-left">Customer</th>
+                </tr>
+              </thead>
+              <tbody>
+                {urgentRepairs.map((repair) => (
+                  <tr key={repair.ticket_no} className="border-t">
+                    <td className="px-4 py-2">{repair.ticket_no}</td>
+                    <td className="px-4 py-2">{repair.device}</td>
+                    <td className="px-4 py-2">{repair.customer}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div className="bg-white shadow-md rounded-2xl p-6 flex-2">
+          <h2 className="text-xl font-semibold text-indigo-600 mb-4">
+            Monthly Sales (Rs.)
+          </h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart
+              data={salesData}
+              margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="sales" fill="#6366f1" barSize={30} radius={[4, 4, 4, 4]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+    
+
+    </div>
+        {/* Monthly Sales Chart */}
+      </div>
+
+  );
+};

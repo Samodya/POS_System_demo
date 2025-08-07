@@ -12,7 +12,8 @@ export const LandingPage = () => {
         <div className="flex">
                     <Sidebar/>
             
-            <Routes>
+           <div className="h-screen overflow-auto w-full">
+           <Routes>
                 
                 <Route
                     path="/"
@@ -32,6 +33,7 @@ export const LandingPage = () => {
                 /> */}
                 
             </Routes>
+           </div>
         </div>
     )
 }

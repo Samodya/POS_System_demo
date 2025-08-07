@@ -1,4 +1,4 @@
-import { Home, User, Settings, LogOut, BadgeDollarSign,Wrench  } from "lucide-react";
+import { Home, User, Settings, LogOut, BadgeDollarSign,Wrench, Package, Users,FileSpreadsheet  } from "lucide-react";
 import { Link } from "react-router-dom";
 
 export default function Sidebar() {
@@ -18,6 +18,9 @@ export default function Sidebar() {
         <NavItem icon={<Home size={20}/> } link={"/"}  label="Dashboard" />
         <NavItem icon={<BadgeDollarSign size={20} />} link={"../pos_sys/sales"} label={"Sales"}/>
         <NavItem icon={<Wrench  size={20} />} link={"../pos_sys/products"} label={"Repairs"}/>
+        <NavItem icon={<Package  size={20} />} link={"../pos_sys/products"} label={"Inventory"}/>
+        <NavItem icon={<Users size={20} />} link={"../pos_sys/products"} label={"Customers"}/>
+        <NavItem icon={<FileSpreadsheet size={20}/>} link={"../pos_sys/reports"} label={"Reports"} />
         <NavItem icon={<User size={20} />} label="Users" link={"../pos_sys/sales"}/>
         <NavItem icon={<Settings size={20} />} label="Settings" link={"../pos_sys/sales"}/>
       </nav>
