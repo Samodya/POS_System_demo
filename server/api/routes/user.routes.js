@@ -10,6 +10,6 @@ router.post("/login", userController.login);
 router.put("/change-password", authenticate, userController.changePassword);
 router.put("/:id", authenticate, roleCheck("admin"), userController.updateUser);
 router.delete("/:id", authenticate, roleCheck("admin"), userController.deleteUser);
-router.get("/", authenticate, roleCheck("admin"), userController.getAllUsers);
+router.get("/", userController.getAllUsers);
 
 module.exports = router;
