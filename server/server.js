@@ -6,6 +6,7 @@ const initModels = require("./api/models/initModels");
 
 const productRoutes = require("./api/routes/product.routes");
 const userRoutes = require("./api/routes/user.routes");
+const customerRoutes = require("./api/routes/customers.routes");
 
 const app = express();
 app.use(cors());
@@ -19,15 +20,9 @@ app.use(express.json());
     await initModels(db);
 
     // Routes
-    app.use("/api/products", (req, res, next) => {
-      req.db = db; // attach db to req
-      next();
-    }, productRoutes);
-
-    app.use("/api/users", (req, res, next) => {
-      req.db = db;
-      next();
-    }, userRoutes);
+    app.use("/api/products", productRoutes);
+    app.use("/api/users", userRoutes);
+    app.use("/api/customers", customerRoutes);
 
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
