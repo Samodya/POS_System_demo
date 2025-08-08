@@ -6,84 +6,51 @@ let db;
   db = await connectMySQLDB(); // ✅ get the singleton connection once
 })();
 
-const createRepair = async (data) => {
-  const {
-    customer_id,
-    device,
-    issue,
-    status,
-    cost,
-    received_date,
-    completed_date,
-    assigned_to,
-  } = data;
+const createSale = async (data) => {
+  const { customer_id, total_amount, payment_method } = data;
 
   const [result] = await db.query(
-    `INSERT INTO repairs (customer_id, device, issue, status, cost, received_date, completed_date, assigned_to)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-    [
-      customer_id,
-      device,
-      issue,
-      status,
-      cost,
-      received_date,
-      completed_date,
-      assigned_to,
-    ]
+    `INSERT INTO sales (customer_id, total_amount, payment_method)
+         VALUES (?, ?, ?)`,
+    [customer_id, total_amount, payment_method]
   );
 
   return { id: result.insertId, ...data };
 };
 
-const getAllRepairs = async () => {
-    const [rows] = await db.query("SELECT * FROM repairs ORDER BY created_at DESC");
-    return rows;
-  };
-  
-  const getRepairById = async (id) => {
-    const [rows] = await db.query("SELECT * FROM repairs WHERE id = ?", [id]);
-    return rows[0];
-  };
-  
-  const updateRepair = async (id, data) => {
-    const {
-        customer_id,
-        device,
-        issue,
-        status,
-        cost,
-        received_date,
-        completed_date,
-        assigned_to,
-    } = data;
-  
-    await db.query(
-      `UPDATE repairs
-       SET customer_id = ?, device = ?, issue = ?, status = ?, cost = ?, received_date = ?, completed_date = ?, assigned_to = ?
-       WHERE id = ?`,
-      [ customer_id,
-        device,
-        issue,
-        status,
-        cost,
-        received_date,
-        completed_date,
-        assigned_to,]
-    );
-  
-    return { id, ...data };
-  };
-  
-  const deleteRepair = async (id) => {
-    await db.query("DELETE FROM repairs WHERE id = ?", [id]);
-  };
+const getAllSales = async () => {
+  const [rows] = await db.query(
+    "SELECT * FROM sales ORDER BY created_at DESC"
+  );
+  return rows;
+};
 
+const getSaleById = async (id) => {
+  const [rows] = await db.query("SELECT * FROM sales WHERE id = ?", [id]);
+  return rows[0];
+};
+
+const updateSale = async (id, data) => {
+  const { customer_id, total_amount, payment_method } = data;
+
+  await db.query(
+    `UPDATE sales
+       SET customer_id = ?, total_amount = ?, payment_method = ?
+       WHERE id = ?`,
+    [customer_id, total_amount, payment_method]
+  );
+
+  return { id, ...data };
+};
+
+const deleteSale = async (id) => {
+  await db.query("DELETE FROM sales WHERE id = ?", [id]);
+};
 
 module.exports = {
-  createRepair,
-  getAllRepairs,
-  getRepairById,
-  updateRepair,
-  deleteRepair
+  createSale,
+  getAllSales,
+  getSaleById,
+  updateSale,
+  deleteSale,
 };
