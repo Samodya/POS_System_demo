@@ -2,6 +2,7 @@ import { BoxIcon, BoxSelect, Clock5, Package, PackagePlus } from "lucide-react";
 import Topbar from "../components/topbar";
 import StatCard from "../components/statcard";
 import Loader from "../components/loader";
+import { AddProduct } from "../components/Inventory_components/invetory_add_modal";
 
 export const Inventory = () => {
   const statItems = [
@@ -23,8 +24,8 @@ export const Inventory = () => {
           />
         ))}
       </div>
-      <div>
-        <Loader/>
+      <div className="px-20 py-5 flex flex-row-reverse">
+        <AddProduct/>
       </div>
     </div>
   );

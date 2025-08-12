@@ -1,10 +1,10 @@
 import React from "react";
-import { useError } from "../context/ErrorContext";
+import { useError } from "../context/errorProvider";
 
 export default function GlobalErrorModal() {
   const { error, clearError, pauseErrorAutoHide, resumeErrorAutoHide } = useError();
 
-  if (!error) return null;
+//   if (!error) return null;
 
   return (
     // backdrop

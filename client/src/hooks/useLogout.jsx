@@ -7,7 +7,7 @@ export const useLogout = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { dispatch } = useAuthContext();
 
-  const logout = async () => {
+  const logout = () => {
     setIsLoading(true);
     setError(null);
 
@@ -16,11 +16,8 @@ export const useLogout = () => {
 
       // Remove authentication data
       Cookies.remove("user"); 
-      Cookies.remove("userId");
       Cookies.remove("username");
-      Cookies.remove("role");
       Cookies.remove("token");
-      Cookies.remove("email");
       
     } catch (err) {
       setError("Logout failed. Please try again.");

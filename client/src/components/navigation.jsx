@@ -1,9 +1,17 @@
-import { Home, User, Settings, LogOut, BadgeDollarSign,Wrench, Package, Users,FileSpreadsheet  } from "lucide-react";
+import { Home, User, Settings, LogOut, BadgeDollarSign,Wrench, Package, Users,FileSpreadsheet, Loader  } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useLogout } from "../hooks/useLogout";
 
 export default function Sidebar() {
+  const { logout, isLoading } = useLogout()
+
+  const handleLogout = () => {
+    logout();
+  };
+
   return (
     <div className="h-screen w-80 bg-gradient-to-b from-black via-[#0a0f2c] to-[#071833] text-white flex flex-col shadow-2xl">
+      { isLoading ? <Loader/>:""}
       {/* Brand */}
       <div className="text-2xl font-bold px-6 py-6 border-b border-white/10 flex flex-col items-center justify-center">
         <div>
@@ -19,15 +27,18 @@ export default function Sidebar() {
         <NavItem icon={<BadgeDollarSign size={20} />} link={"../pos_sys/sales"} label={"Sales"}/>
         <NavItem icon={<Wrench  size={20} />} link={"../pos_sys/repairs"} label={"Repairs"}/>
         <NavItem icon={<Package  size={20} />} link={"../pos_sys/inventory"} label={"Inventory"}/>
-        <NavItem icon={<Users size={20} />} link={"../pos_sys/customer"} label={"Customers"}/>
+        {/* <NavItem icon={<Users size={20} />} link={"../pos_sys/customer"} label={"Customers"}/> */}
         <NavItem icon={<FileSpreadsheet size={20}/>} link={"../pos_sys/reports"} label={"Reports"} />
         <NavItem icon={<User size={20} />} label="Users" link={"../pos_sys/sales"}/>
         <NavItem icon={<Settings size={20} />} label="Settings" link={"../pos_sys/sales"}/>
       </nav>
 
       {/* Footer / Logout */}
-      <div className="px-4 py-6 border-t border-white/10">
-        <NavItem icon={<LogOut size={20} />} label="Logout" />
+      <div className="px-4 py-6 border-t border-white/10" >
+        <button className="flex w-full items-center gap-3 px-3 py-2 rounded-lg hover:bg-white/10 cursor-pointer transition-colors"
+          onClick={handleLogout}
+          disabled={isLoading}
+        > <LogOut size={20}  /> LogOut</button>
       </div>
     </div>
   );
