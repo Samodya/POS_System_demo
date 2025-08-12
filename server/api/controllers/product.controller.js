@@ -2,19 +2,12 @@
 const productService = require("../services/product.service");
 
 const create = async (req, res) => {
-  try {
-    const image = req.file;
-    const data = {
-      ...req.body,
-      image_path: image?.path,
-      image_name: image?.originalname,
-      image_size: image?.size,
-    };
-    const product = await productService.createProduct(data);
-    res.status(201).json(product);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
+    try {
+      const product = await productService.createProduct(req.body, req.file); // pass req.file directly
+      res.status(201).json(product);
+    } catch (err) {
+      res.status(500).json({ error: err.message });
+    }
 };
 
 const getAll = async (_req, res) => {

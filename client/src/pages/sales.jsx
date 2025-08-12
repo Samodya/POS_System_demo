@@ -1,4 +1,4 @@
-import StatCard from "../components/sales/statcard";
+import StatCard from "../components/statcard";
 import Topbar from "../components/topbar";
 import { Bell, ChevronDown, Clock, DollarSign, Search, ShoppingBag, Wrench } from "lucide-react";
 

@@ -6,6 +6,7 @@ import { Products } from "./products"
 import { Reports } from "./Reports"
 import { Inventory } from "./Inventory"
 import { Customer } from "./customer"
+import { Repairs } from "./repairs"
 // import { TasksManger } from "./taskmanger"
 // import { UserProfile } from "./userProfilePage"
 // import { UsersPage } from "./Users"
@@ -29,6 +30,10 @@ export const LandingPage = () => {
                 <Route
                     path="/products"
                     element={<Products/>}
+                />
+                <Route
+                    path="/repairs"
+                    element={<Repairs/>}
                 />
                  <Route
                     path="/reports"

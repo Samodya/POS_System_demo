@@ -17,7 +17,7 @@ export default function Sidebar() {
       <nav className="flex-1 px-4 py-6 space-y-3">
         <NavItem icon={<Home size={20}/> } link={"/"}  label="Dashboard" />
         <NavItem icon={<BadgeDollarSign size={20} />} link={"../pos_sys/sales"} label={"Sales"}/>
-        <NavItem icon={<Wrench  size={20} />} link={"../pos_sys/products"} label={"Repairs"}/>
+        <NavItem icon={<Wrench  size={20} />} link={"../pos_sys/repairs"} label={"Repairs"}/>
         <NavItem icon={<Package  size={20} />} link={"../pos_sys/inventory"} label={"Inventory"}/>
         <NavItem icon={<Users size={20} />} link={"../pos_sys/products"} label={"Customers"}/>
         <NavItem icon={<FileSpreadsheet size={20}/>} link={"../pos_sys/reports"} label={"Reports"} />
