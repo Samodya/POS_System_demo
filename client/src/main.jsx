@@ -4,11 +4,14 @@ import "./index.css";
 import App from "./App.jsx";
 import { AuthContextProvider } from "./context/AuthContext";
 import { AllRoutes } from "./Routes/Routes";
+import { ErrorProvider } from "./context/errorProvider";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthContextProvider>
-      <AllRoutes />
+      <ErrorProvider>
+        <AllRoutes />
+      </ErrorProvider>
     </AuthContextProvider>
   </StrictMode>
 );
