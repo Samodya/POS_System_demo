@@ -1,6 +1,7 @@
 import { BoxIcon, BoxSelect, Clock5, Package, PackagePlus } from "lucide-react";
 import Topbar from "../components/topbar";
 import StatCard from "../components/statcard";
+import Loader from "../components/loader";
 
 export const Inventory = () => {
   const statItems = [
@@ -23,7 +24,7 @@ export const Inventory = () => {
         ))}
       </div>
       <div>
-        
+        <Loader/>
       </div>
     </div>
   );
