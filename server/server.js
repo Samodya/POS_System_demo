@@ -12,12 +12,16 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+
+
 (async () => {
   try {
     const db = await connectMySQLDB();
 
     // Initialize tables
     await initModels(db);
+
+    app.use('/uploads', express.static('uploads'));
 
     // Routes
     app.use("/api/products", productRoutes);

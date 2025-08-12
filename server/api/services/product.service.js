@@ -10,6 +10,7 @@ const createProduct = async (productData, file) => {
   const {
     name,
     category,
+    buying_price,
     price,
     dealers_price,
     quantity,
@@ -22,13 +23,14 @@ const createProduct = async (productData, file) => {
 
   const query = `
     INSERT INTO products 
-    (name, category, price, dealers_price, quantity, description, image_path, image_name, image_size) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    (name, category,buying_price, price, dealers_price, quantity, description, image_path, image_name, image_size) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)
   `;
 
   const values = [
     name,
     category,
+    buying_price,
     price,
     dealers_price,
     quantity,
@@ -55,6 +57,7 @@ const updateProduct = async (id, productData, file) => {
   const {
     name,
     category,
+    buying_price,
     price,
     dealers_price,
     quantity,
@@ -75,7 +78,7 @@ const updateProduct = async (id, productData, file) => {
       quantity = ?, 
       description = ?
   `;
-  let values = [name, category, price, dealers_price, quantity, description];
+  let values = [name, category, buying_price, price, dealers_price, quantity, description];
 
   if (file) {
     query += `, image_path = ?, image_name = ?, image_size = ?`;

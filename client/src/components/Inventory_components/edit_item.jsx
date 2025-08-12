@@ -1,15 +1,18 @@
-import { BoxIcon, Files, User, X } from "lucide-react";
-import { useState } from "react";
 import Cookies from "js-cookie";
-import axios from "axios";
+import { BoxIcon, Boxes, X } from "lucide-react";
+import { useState, useEffect } from "react";
 import { UseProductContext } from "../../context/productContext";
+import apiService from "../../utilities/httpservices";
 
-export const AddProduct = () => {
+export const EditItem = ({
+    id
+}) => {
   const [showMenu, setShowMenu] = useState(false);
   const [preview, setPreview] = useState(null);
   const [files, setFiles] = useState(null);
   const token = Cookies.get("token");
   const { refreshProducts } = UseProductContext();
+
   const [formData, setFormData] = useState({
     productName: "",
     category: "",
@@ -20,11 +23,17 @@ export const AddProduct = () => {
     description: "",
   });
 
+  // Cleanup object URL when file changes
+  useEffect(() => {
+    return () => {
+      if (preview) URL.revokeObjectURL(preview);
+    };
+  }, [preview]);
+
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      const objectUrl = URL.createObjectURL(file);
-      setPreview(objectUrl);
+      setPreview(URL.createObjectURL(file));
       setFiles(file);
     }
   };
@@ -48,40 +57,31 @@ export const AddProduct = () => {
     form.append("quantity", formData.quantity);
     form.append("description", formData.description);
   
-  
+    if (files) {
       form.append("image", files);
-    
+    }
 
     try {
-      const res = await axios.post(`http://localhost:4000/api/products`, form, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      console.log("Saved:", res.data);
+      const result = await apiService.updateData('/products',)
     } catch (err) {
       console.error("Upload failed", err);
     }
-
-    refreshProducts();
   };
 
   return (
-    <div>
+    <div className="flex items-center justify-center gap-1">
       <button
-        className="bg-gradient-to-r from-black via-[#0a0f2c] to-[#013ea0] text-white flex p-2 
-        rounded cursor-pointer items-center justify-center gap-2 hover:brightness-110 transition"
+        className="flex items-center justify-center gap-1 text-white bg-gradient-to-r from-black via-[#0a0f2c] to-[#013ea0] px-2 py-1 rounded"
         onClick={() => setShowMenu(true)}
       >
-        <BoxIcon size={20} /> Add Product
+        <Boxes size={20} /> <p>Edit</p>
       </button>
 
       {showMenu && (
         <>
           {/* Background overlay */}
           <div
-            className="fixed inset-0 bg-black-800 bg-opacity-10 backdrop-blur-sm"
+            className="fixed inset-0 bg-black-900 bg-opacity-30 backdrop-blur-sm"
             style={{ zIndex: 1000 }}
             onClick={() => setShowMenu(false)}
           ></div>
@@ -118,7 +118,6 @@ export const AddProduct = () => {
                         src={preview}
                         alt="Preview"
                         className="object-cover w-full h-full"
-                        onLoad={() => URL.revokeObjectURL(preview)}
                       />
                     ) : (
                       <BoxIcon size={60} />
@@ -129,13 +128,11 @@ export const AddProduct = () => {
                     accept="image/*"
                     onChange={handleFileChange}
                     className="block w-full text-sm text-gray-600
-                    file:mr-4 file:py-2 file:px-4
-                    file:rounded-md file:border-0
-                    file:text-sm file:font-semibold
-                    file:bg-gradient-to-r file:from-black file:via-[#0a0f2c] file:to-[#013ea0]
-                    file:text-white
-                    hover:file:brightness-110
-                    cursor-pointer"
+                      file:mr-4 file:py-2 file:px-4
+                      file:rounded-md file:border-0
+                      file:text-sm file:font-semibold
+                      file:bg-gradient-to-r file:from-black file:via-[#0a0f2c] file:to-[#013ea0]
+                      file:text-white hover:file:brightness-110 cursor-pointer"
                   />
                 </div>
 
@@ -215,15 +212,7 @@ export const AddProduct = () => {
   );
 };
 
-function InputGroup({
-  name,
-  label,
-  type,
-  value,
-  onChange,
-  placeholder,
-  options = [],
-}) {
+function InputGroup({ name, label, type, value, onChange, placeholder, options = [] }) {
   return (
     <div className="flex flex-col">
       <label className="mb-1 font-medium text-gray-700">{label}</label>
@@ -242,10 +231,7 @@ function InputGroup({
         </select>
       ) : (
         <input
-          name={
-            label.replace(/\s+/g, "").charAt(0).toLowerCase() +
-            label.replace(/\s+/g, "").slice(1)
-          }
+          name={name}
           type={type}
           value={value}
           onChange={onChange}

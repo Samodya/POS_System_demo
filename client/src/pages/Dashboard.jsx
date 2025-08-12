@@ -10,6 +10,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import Topbar from "../components/topbar";
+import { UseProductContext } from "../context/productContext";
 
 const urgentRepairs = [
   {
@@ -37,9 +38,12 @@ const salesData = [
 ];
 
 export const Dashboard = () => {
+
+  const { products } = UseProductContext();
+
   return (
     <div className="w-full ">
-    <Topbar title={"    Dashboard"}/>
+    <Topbar title={"Dashboard"}/>
       
 
     <div className="p-6">
@@ -63,10 +67,10 @@ export const Dashboard = () => {
 
         <div className="bg-white shadow-md rounded-2xl p-6">
           <h2 className="text-lg font-medium text-gray-600 mb-2">
-            Total Customers
+            Available Products
           </h2>
-          <p className="text-3xl font-bold text-green-600">124</p>
-          <span className="text-sm text-gray-400">5 new this week</span>
+          <p className="text-3xl font-bold text-green-600">{products.length < 10 ? "0"+ products.length: products.length}</p>
+          <span className="text-sm text-gray-400">{products.length} new this week</span>
         </div>
       </div>
 

@@ -6,11 +6,15 @@ const apiService = {
   
  // Create (POST)
  createData: async (collection, data, token, role) => {
+  const isFormData = data instanceof FormData;
+
     try {
       const response = await axios.post(`${baseURL}/${collection}`, data, {
         headers: {
           Authorization: `Bearer ${token}`,
           'X-User-Role': role,
+          ...(isFormData ? {} : { "Content-Type": "application/json" })
+
         },
         
       });
