@@ -9,6 +9,7 @@ export const EditItem = ({
 }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [preview, setPreview] = useState(null);
+  const [itemimage, setItemimage] = useState("");
   const [files, setFiles] = useState(null);
   const token = Cookies.get("token");
   const { refreshProducts } = UseProductContext();
@@ -22,6 +23,26 @@ export const EditItem = ({
     quantity: "",
     description: "",
   });
+
+
+  async function fetchItem() {
+    try {
+        const result = await apiService.getDataById('products',id, token);
+        setFormData({
+          productName: result.name || "",
+          category: result.category || "",
+          buyingPrice: result.buying_price || "",
+          sellingPrice: result.price || "",
+          dealerPrice: result.dealers_price || "",
+          quantity: result.quantity || "",
+          description: result.description || "",
+        });
+        setItemimage(result.image_path)
+      console.log(result);
+    } catch (error) {
+        
+    }
+  }
 
   // Cleanup object URL when file changes
   useEffect(() => {
@@ -62,17 +83,22 @@ export const EditItem = ({
     }
 
     try {
-      const result = await apiService.updateData('/products',)
+      const result = await apiService.updateData('products',id,form, token);
+      refreshProducts();
+      console.log(result);
     } catch (err) {
       console.error("Upload failed", err);
     }
   };
 
   return (
+    
     <div className="flex items-center justify-center gap-1">
       <button
         className="flex items-center justify-center gap-1 text-white bg-gradient-to-r from-black via-[#0a0f2c] to-[#013ea0] px-2 py-1 rounded"
-        onClick={() => setShowMenu(true)}
+        onClick={() => {
+          fetchItem();
+          setShowMenu(true)}}
       >
         <Boxes size={20} /> <p>Edit</p>
       </button>
@@ -94,7 +120,7 @@ export const EditItem = ({
             <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 relative">
               {/* Header */}
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Add Item</h2>
+                <h2 className="text-2xl font-bold text-gray-900">Edit Item Details</h2>
                 <button
                   onClick={() => setShowMenu(false)}
                   className="p-2 rounded-full hover:bg-gray-200 transition"
@@ -119,9 +145,11 @@ export const EditItem = ({
                         alt="Preview"
                         className="object-cover w-full h-full"
                       />
-                    ) : (
-                      <BoxIcon size={60} />
-                    )}
+                    ) : itemimage ? <img
+                        src={`http://localhost:4000/${itemimage.replace(/^\/+/, "")}`}
+                        alt="Preview"
+                        className="object-cover w-full h-full"
+                      />:  <BoxIcon size={60} />}
                   </div>
                   <input
                     type="file"
@@ -199,7 +227,7 @@ export const EditItem = ({
                 {/* Submit */}
                 <button
                   type="submit"
-                  className="w-full py-3 bg-gradient-to-r from-[#0a0f2c] via-[#013ea0] to-black text-white rounded-xl text-lg font-semibold hover:brightness-110 transition"
+                  className="w-full py-3 bg-gradient-to-r from-[#0a0f2c] via-[#013ea0] to-black text-white rounded-xl text-xm font-semibold hover:brightness-110 transition"
                 >
                   Save Product
                 </button>
@@ -219,7 +247,7 @@ function InputGroup({ name, label, type, value, onChange, placeholder, options =
       {type === "select" ? (
         <select
           name={name}
-          className="border border-gray-300 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
+          className="border border-gray-300 rounded-md p-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
           value={value}
           onChange={onChange}
         >
@@ -236,7 +264,7 @@ function InputGroup({ name, label, type, value, onChange, placeholder, options =
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className="border border-gray-300 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
+          className="border border-gray-300 rounded-md p-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
         />
       )}
     </div>
@@ -253,7 +281,7 @@ function TextareaGroup({ name, label, placeholder, value, onChange }) {
         onChange={onChange}
         placeholder={placeholder}
         rows={4}
-        className="border border-gray-300 rounded-md p-3 resize-none focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
+        className="border border-gray-300 rounded-md text-sm p-3 resize-none focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
       />
     </div>
   );

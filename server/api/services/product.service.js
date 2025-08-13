@@ -64,32 +64,32 @@ const updateProduct = async (id, productData, file) => {
     description
   } = productData;
 
-  const image_path = file ? file.path : null;
-  const image_name = file ? file.filename : null;
-  const image_size = file ? file.size : null;
-
-  // Build dynamic update query
+  // Start building update query
   let query = `
     UPDATE products SET 
       name = ?, 
       category = ?, 
+      buying_price = ?, 
       price = ?, 
       dealers_price = ?, 
       quantity = ?, 
       description = ?
   `;
+  
   let values = [name, category, buying_price, price, dealers_price, quantity, description];
 
+  // Add image columns if a file is uploaded
   if (file) {
     query += `, image_path = ?, image_name = ?, image_size = ?`;
-    values.push(image_path, image_name, image_size);
+    values.push(file.path, file.filename, file.size);
   }
 
   query += ` WHERE id = ?`;
   values.push(id);
 
   await db.query(query, values);
-  return { id, ...productData, ...(file && { image_path, image_name, image_size }) };
+
+  return { id, ...productData, ...(file && { image_path: file.path, image_name: file.filename, image_size: file.size }) };
 };
 
 const deleteProduct = async (id) => {

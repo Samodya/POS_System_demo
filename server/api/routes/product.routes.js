@@ -9,6 +9,6 @@ router.post("/", upload.single("image"), productController.create);
 router.put("/:id", upload.single("image"), productController.update);
 router.get("/", productController.getAll);
 router.get("/:id", authenticate, productController.getById);
-router.delete("/:id", authenticate, roleCheck("admin"), productController.remove);
+router.delete("/:id", authenticate, productController.remove);
 
 module.exports = router;

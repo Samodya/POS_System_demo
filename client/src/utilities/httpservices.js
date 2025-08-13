@@ -56,11 +56,14 @@ const apiService = {
 
  // Update (PUT)
  updateData: async (collection,id, data, token, role) => {
+  const isFormData = data instanceof FormData;
+
     try {
       const response = await axios.put(`${baseURL}/${collection}/${id}`, data, {
         headers: {
           Authorization: `Bearer ${token}`,
           'X-User-Role': role,
+          ...(isFormData ? {} : { "Content-Type": "application/json" })
         },
       });
       return response.data;

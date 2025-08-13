@@ -31,19 +31,17 @@ const getById = async (req, res) => {
 
 const update = async (req, res) => {
   try {
-    const image = req.file;
-    const data = {
-      ...req.body,
-      image_path: image?.path,
-      image_name: image?.originalname,
-      image_size: image?.size,
-    };
-    const updated = await productService.updateProduct(req.params.id, data);
+    const image = req.file || null;
+    const data = { ...req.body };
+
+    const updated = await productService.updateProduct(req.params.id, data, image);
     res.json(updated);
-  } catch {
+  } catch (error) {
+    console.error("Update error:", error);
     res.status(500).json({ error: "Failed to update product" });
   }
 };
+
 
 const remove = async (req, res) => {
   try {
