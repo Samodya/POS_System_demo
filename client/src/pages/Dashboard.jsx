@@ -11,6 +11,8 @@ import {
 } from "recharts";
 import Topbar from "../components/topbar";
 import { UseProductContext } from "../context/productContext";
+import { Link } from "react-router-dom";
+
 
 const urgentRepairs = [
   {
@@ -72,6 +74,13 @@ export const Dashboard = () => {
           <p className="text-3xl font-bold text-green-600">{products.length < 10 ? "0"+ products.length: products.length}</p>
           <span className="text-sm text-gray-400">{products.length} new this week</span>
         </div>
+      </div>
+
+      <div className="flex flex-row-reverse pt-4 px-4">
+        <Link to={'invoice'} className="flex items-center justify-center gap-1 text-white bg-gradient-to-r from-black via-[#0a0f2c] to-[#013ea0] px-2 py-1 rounded"
+       >
+          New Invoice
+        </Link>
       </div>
 
       {/* Urgent Repairs */}

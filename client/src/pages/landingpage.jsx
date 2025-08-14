@@ -8,6 +8,7 @@ import { Inventory } from "./Inventory";
 import { Customer } from "./customer";
 import { Repairs } from "./repairs";
 import { NewSale } from "../components/sales/newsale";
+import { Invoice } from "../components/dashboard_components/invoiceModal";
 // import { TasksManger } from "./taskmanger"
 // import { UserProfile } from "./userProfilePage"
 // import { UsersPage } from "./Users"
@@ -17,10 +18,11 @@ export const LandingPage = () => {
     <div className="flex">
       <Sidebar />
 
-      <div className="max-h-screen overflow-auto w-full">
+      <div className="max-h-screen overflow-auto w-full bg-gray-200">
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/sales" element={<Sales />} />
+          <Route path="/invoice" element={<Invoice />} />
           <Route path="/products" element={<Products />} />
           <Route path="/repairs" element={<Repairs />} />
           <Route path="/reports" element={<Reports />} />
