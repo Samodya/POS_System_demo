@@ -1,6 +1,6 @@
-import { BoxIcon, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { EditItem } from "./edit_item";
+import { Trash2 } from "lucide-react";
+import {EditItem} from "./edit_item"; // adjust path
 
 export const InventoryListItem = ({
   id,
@@ -11,51 +11,71 @@ export const InventoryListItem = ({
   price,
   dealers_price,
   quantity,
+  description,
+  onDelete,
 }) => {
-  const [formattedFilepath, setFormattedfilePath] = useState("");
+  const [imageSrc, setImageSrc] = useState("");
 
   useEffect(() => {
     if (filePath) {
-      const forfilePath = filePath.replace(/^\/+/, "");
-      setFormattedfilePath(forfilePath);
+      const formattedPath = filePath.replace(/^\/+|\\/g, "/");
+      setImageSrc(`http://localhost:4000/${formattedPath}`);
     }
   }, [filePath]);
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-4 flex flex-col items-center text-center max-w-xs mx-auto hover:shadow-lg transition-shadow duration-300 h-[60vh] overflow-auto ">
-      <div className="mb-3 w-40 h-40 sm:w-20 sm:h-20 md:w-50 md:h-50 lg:w-60 lg:h-60 rounded-lg overflow-hidden border border-indigo-500 shadow-sm">
-        {filePath ? (
+    <div className="flex flex-col bg-white shadow-md rounded-lg overflow-hidden border border-gray-200 hover:shadow-lg transition w-full max-w-sm">
+      {/* Image */}
+      <div className="w-full h-40 bg-gray-100 flex items-center justify-center">
+      {imageSrc ? (
           <img
-            src={`http://localhost:4000/${formattedFilepath}`}
+            src={imageSrc}
             alt={name}
-            className="object-cover w-full h-full"
+            className="w-full h-full object-cover"
           />
         ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center bg-gray-200 text-indigo-500">
-            <BoxIcon size={48} />
-            <p className="mt-2 text-sm font-semibold">No Image</p>
+          <div className="w-full h-full bg-gray-100 flex items-center justify-center text-gray-400 text-sm">
+            No Image
           </div>
         )}
       </div>
-      <h3 className="font-semibold text-sm truncate mb-1">{name}</h3>
-      <p className="text-gray-600 text-sm mb-1">
-        {category || "Uncategorized"}
-      </p>
-      <div className="space-y-1 text-gray-700 text-sm mb-3">
-        <p>Buying Price: Rs.{buyingPrice ?? "-"}</p>
-        <p>Dealer's Price: Rs.{dealers_price ?? "-"}</p>
-        <p>Selling Price: Rs.{price ?? "-"}</p>
-        <p>Quantity: {quantity ?? "-"}</p>
-      </div>
-      <div className="flex w-full justify-between gap-2">
-        <button
-          className="flex items-center justify-center gap-1 text-white bg-red-600 hover:bg-red-700 rounded-md px-3 py-1 text-sm font-semibold transition"
-          aria-label="Delete item"
-        >
-          <Trash2 size={16} />
-          Delete
-        </button>
-        <EditItem id={id} />
+
+      {/* Content */}
+      <div className="flex flex-col flex-grow p-3">
+        {/* Product Name */}
+        <h2 className="text-lg font-semibold text-gray-800 leading-snug break-words">
+          {name}
+        </h2>
+
+        {/* Category */}
+        <p className="text-sm text-gray-500 mb-1">{category}</p>
+
+        {/* Prices */}
+        <div className="flex flex-wrap gap-x-4 gap-y-1 mb-2 text-sm text-gray-700">
+        <div><span className="font-semibold">Buying Price:</span> {buyingPrice}  </div>
+          <div><span className="font-semibold">Selling Price:</span> {price}  </div>
+          <div><span className="font-semibold">Dealer's Rrice:</span> {dealers_price}</div>
+        </div>
+
+        {/* Quantity */}
+        <p className= {quantity<3 ? "font-semibold text-red-500 text-sm mb-2":"font-semibold text-sm mb-2"} >
+          <span className= {quantity<3 ? "font-semibold text-red-500":"font-semibold"}>Qty:</span> {quantity}
+        </p>
+
+        {/* Description */}
+        <p className="text-sm text-gray-600 mb-4 break-words">{description}</p>
+
+        {/* Action Buttons */}
+        <div className="mt-auto flex w-full justify-between gap-2">
+          <button
+            className="flex-1 flex items-center justify-center gap-1 text-white bg-red-600 hover:bg-red-700 rounded-md px-3 py-1 text-sm font-semibold transition"
+            aria-label="Delete item"
+          >
+            <Trash2 size={16} />
+            Delete
+          </button>
+          <EditItem id={id} />
+        </div>
       </div>
     </div>
   );

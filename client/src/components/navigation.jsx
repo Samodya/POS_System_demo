@@ -1,6 +1,7 @@
 import { Home, User, Settings, LogOut, BadgeDollarSign,Wrench, Package, Users,FileSpreadsheet, Loader  } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLogout } from "../hooks/useLogout";
+import logo from "../assets/logo.png"
 
 export default function Sidebar() {
   const { logout, isLoading } = useLogout()
@@ -10,10 +11,11 @@ export default function Sidebar() {
   };
 
   return (
-    <div className="h-screen w-80 bg-gradient-to-b from-black via-[#0a0f2c] to-[#071833] text-white flex flex-col shadow-2xl">
+    <div className="h-screen overflow-auto w-80 bg-gradient-to-b from-black via-[#0a0f2c] to-[#071833] text-white flex flex-col shadow-2xl">
       { isLoading ? <Loader/>:""}
       {/* Brand */}
       <div className="text-2xl font-bold px-6 py-6 border-b border-white/10 flex flex-col items-center justify-center">
+      <div className="flex items-center justify-center"><img src={logo} className="h-20 w-20"/></div>
         <div>
           <span className="text-white">Master</span>
           <span className="text-blue-400">Tech</span>

@@ -28,7 +28,6 @@ export const ProductContextProvider = ({ children }) => {
         setProducts(result);
         setProductError(null);
         setShowError(false);
-        console.log(result);
       } catch (error) {
         console.error(error);
         handleError(error);
@@ -43,6 +42,25 @@ export const ProductContextProvider = ({ children }) => {
   // You might want to provide a way to refresh data from children components:
   const refreshProducts = () => setRefresh((prev) => !prev);
 
+  const getLowStockProducts = () => {
+    return products.filter((product) => product.quantity < 3);
+  };
+
+  // Get products created this week
+  const getThisWeekProducts = () => {
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay()); 
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    return products.filter((product) => {
+      if (!product.created_at) return false;
+      const createdDate = new Date(product.created_at);
+      return createdDate >= startOfWeek && createdDate <= now;
+    });
+  };
+
+
   return (
     <ProductContext.Provider
       value={{
@@ -52,6 +70,8 @@ export const ProductContextProvider = ({ children }) => {
         showError,
         refreshProducts,
         setShowError,
+        getLowStockProducts,
+        getThisWeekProducts
       }}
     >
       {children}

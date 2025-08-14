@@ -86,6 +86,7 @@ export const EditItem = ({
       const result = await apiService.updateData('products',id,form, token);
       refreshProducts();
       console.log(result);
+      setShowMenu(false)
     } catch (err) {
       console.error("Upload failed", err);
     }

@@ -1,19 +1,18 @@
 import { motion } from "framer-motion";
 import { useLogin } from "../hooks/useLogin";
 import { useState } from "react";
-import Cookies from "js-cookie";
-import apiService from "../utilities/httpservices";
+import logo from "../assets/Logo.png";
 
 export default function Login() {
-    const { login, error, isLoading } = useLogin();
+  const { login, error, isLoading } = useLogin();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const onClick = async (e) => {
-    e.preventDefault(); 
-  
+    e.preventDefault();
+
     try {
-      await login(username,password);
+      await login(username, password);
     } catch (error) {
       console.log(error);
     }
@@ -22,6 +21,9 @@ export default function Login() {
     <div className="fixed inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-black to-blue-900 overflow-hidden px-4">
       {/* Brand */}
       <div className="absolute top-10 text-3xl font-bold text-white select-none tracking-wider">
+        <div className="flex items-center justify-center">
+          <img src={logo} className="h-20 w-20" />
+        </div>
         <span className="text-white">Master</span>
         <span className="text-blue-400">Tech</span>
         <div className="text-sm">computer solutions</div>
@@ -35,9 +37,9 @@ export default function Login() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-2xl font-semibold text-gray-400 mb-6">
-          Sign in to your account
-        </h1>
+        <div className="flex items-center justify-center">
+          <img src={logo} className="h-20 w-20" />
+        </div>
 
         <form className="space-y-5" onSubmit={onClick}>
           {/* Email */}
@@ -71,10 +73,10 @@ export default function Login() {
                 type="text"
                 id="username"
                 value={username}
-                onChange={(e)=>{
-                    setUsername(e.target.value)
+                onChange={(e) => {
+                  setUsername(e.target.value);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full pl-10 pr-4 py-2 border text-white border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 placeholder="Enter your username"
               />
             </div>
@@ -111,17 +113,17 @@ export default function Login() {
                 type="password"
                 id="password"
                 value={password}
-                onChange={(e)=>{
-                    setPassword(e.target.value)
+                onChange={(e) => {
+                  setPassword(e.target.value);
                 }}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="w-full pl-10 pr-4 py-2 border text-white border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 placeholder="••••••••"
               />
             </div>
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-between text-sm">
+          {/* <div className="flex items-center justify-between text-sm">
             <label className="flex items-center gap-2 text-gray-300">
               <input type="checkbox" className="h-4 w-4" />
               Remember me
@@ -129,7 +131,7 @@ export default function Login() {
             <a href="#" className="text-blue-600 hover:underline">
               Forgot password?
             </a>
-          </div>
+          </div> */}
 
           {/* Submit */}
           <button

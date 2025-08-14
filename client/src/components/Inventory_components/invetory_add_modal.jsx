@@ -60,6 +60,7 @@ export const AddProduct = () => {
         },
       });
       console.log("Saved:", res.data);
+      setShowMenu(false);
     } catch (err) {
       console.error("Upload failed", err);
     }

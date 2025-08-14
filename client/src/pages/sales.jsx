@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import StatCard from "../components/statcard";
 import Topbar from "../components/topbar";
 import { Bell, ChevronDown, Clock, DollarSign, Search, ShoppingBag, Wrench } from "lucide-react";
@@ -28,6 +29,13 @@ export const Sales = () => {
             icon={<DollarSign size={20} />}
           />
           
+        </div>
+
+        <div className="flex flex-row-reverse py-2 px-6">
+          <Link className="bg-gradient-to-r from-black via-[#0a0f2c] 
+          to-[#013ea0] text-white flex text-sm py-1 px-2 rounded items-center justify-center font-semibold">
+            <DollarSign size={16}/> New Sale
+          </Link>
         </div>
 
         {/* Sales Table */}
