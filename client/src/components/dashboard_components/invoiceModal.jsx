@@ -10,6 +10,11 @@ export const Invoice = () => {
   const [addItem, setAddItem] = useState(0);
   const [itemArray, setItemArray] = useState([]);
 
+  const [customerName, setCustomerName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [email, setEmail] = useState("");
+
   const handleAdd = (product) => {
     const useDealerPrice = dealerPriceStates[product.id] || false;
     const unitPrice = useDealerPrice ? product.dealers_price : product.price;
@@ -85,7 +90,19 @@ export const Invoice = () => {
   const displayBill = () => {
     return (
       <div className="w-full">
-        <div>Invoice : 001</div>
+        <div>
+          Invoice : 001
+          <div className="flex justify-between my-2">
+            <div className="text-xs">
+              <span className="font-medium">Customer Name: </span>
+              {customerName}
+            </div>
+            <div className="text-xs">
+              <span className="font-medium">phone: </span>
+              {phone}
+            </div>
+          </div>
+        </div>
 
         {itemArray.map((item) => (
           <div
@@ -127,7 +144,71 @@ export const Invoice = () => {
       <Topbar title={"Invoice"} />
       <div className="flex flex-col lg:flex-row p-4 gap-4 max-w-7xl mx-auto">
         {/* Left Section */}
-        <div className="flex-2 bg-white  rounded-2xl shadow-lg overflow-hidden h-180 ">
+        <div className="flex-2 bg-white  rounded-2xl shadow-lg overflow-auto h-180 ">
+          <div className="bg-white rounded-xl shadow-md p-4 mb-4">
+            <h2 className="text-sm font-semibold mb-3 text-gray-700">
+              Customer Details
+            </h2>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Name */}
+              <div className="flex flex-col">
+                <label className="text-xs font-medium text-gray-600 mb-1">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  placeholder="Enter customer name"
+                  className="border text-xs border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+
+              {/* Phone */}
+              <div className="flex flex-col">
+                <label className="text-xs font-medium text-gray-600 mb-1">
+                  Phone
+                </label>
+                <input
+                  type="text"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="Enter phone number"
+                  className="border text-xs border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+
+              {/* Email */}
+              <div className="flex flex-col">
+                <label className="text-xs font-medium text-gray-600 mb-1">
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter email"
+                  className="border text-xs border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+
+              {/* Address */}
+              <div className="flex flex-col">
+                <label className="text-xs font-medium text-gray-600 mb-1">
+                  Address
+                </label>
+                <input
+                  type="text"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="Enter address"
+                  className="border text-xs border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                />
+              </div>
+            </div>
+          </div>
+
           {/* Tabs */}
           <div className="flex gap-2 items-center justify-center border-b bg-gray-100">
             <div

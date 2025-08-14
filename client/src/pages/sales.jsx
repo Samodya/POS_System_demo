@@ -32,7 +32,7 @@ export const Sales = () => {
         </div>
 
         <div className="flex flex-row-reverse py-2 px-6">
-          <Link className="bg-gradient-to-r from-black via-[#0a0f2c] 
+          <Link to={'../invoice'} className="bg-gradient-to-r from-black via-[#0a0f2c] 
           to-[#013ea0] text-white flex text-sm py-1 px-2 rounded items-center justify-center font-semibold">
             <DollarSign size={16}/> New Sale
           </Link>
