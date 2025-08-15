@@ -7,7 +7,6 @@ import { useReactToPrint } from "react-to-print";
 export const Invoice = () => {
   const [invoiceItems, setInvoiceItem] = useState("products");
   const { products } = UseProductContext();
-  const [addItem, setAddItem] = useState(0);
   const [itemArray, setItemArray] = useState([]);
 
   const [customerName, setCustomerName] = useState("");
@@ -212,7 +211,7 @@ export const Invoice = () => {
           {/* Tabs */}
           <div className="flex gap-2 items-center justify-center border-b bg-gray-100">
             <div
-              className={`flex-1 py-3 text-center text-sm font-medium cursor-pointer transition ${
+              className={`flex-1 py-1 text-center text-sm font-medium cursor-pointer transition ${
                 invoiceItems === "products"
                   ? "text-blue-600 border-b-2 border-blue-600 bg-white"
                   : "text-gray-500 hover:text-gray-700"
@@ -222,7 +221,7 @@ export const Invoice = () => {
               Accessories
             </div>
             <div
-              className={`flex-1 py-3 text-center text-sm font-medium cursor-pointer transition ${
+              className={`flex-1 py-1 text-center text-sm font-medium cursor-pointer transition ${
                 invoiceItems === "Repairs"
                   ? "text-blue-600 border-b-2 border-blue-600 bg-white"
                   : "text-gray-500 hover:text-gray-700"
@@ -242,7 +241,7 @@ export const Invoice = () => {
                 return (
                   <div
                     key={product.id}
-                    className="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 border border-2xl rounded"
+                    className="px-4 py-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 border border-2xl rounded"
                   >
                     {/* Product Info */}
                     <div className="text-sm font-medium max-w-[200px] break-words">

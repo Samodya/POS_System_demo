@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 
 const UserContext = createContext();
 
-export const UseUserContext = () => useContext();
+export const UseUserContext = () => useContext(UserContext);
 
 export const UserContextProvider = ({ children }) => {
   const [users, setUsers] = useState([]);

@@ -4,9 +4,9 @@ const userService = require("../services/user.service");
 
 const signup = async (req, res) => {
   try {
-    const { username, password, role } = req.body;
+    const { fullname, username, phone, email, password, role } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await userService.createUser({ username, password: hashedPassword, role });
+    const user = await userService.createUser({ fullname, username, phone, email, password: hashedPassword, role });
     res.status(201).json(user);
   } catch (err) {
     res.status(500).json({ error: err.message });

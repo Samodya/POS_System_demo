@@ -31,7 +31,7 @@ export default function Sidebar() {
         <NavItem icon={<Package  size={20} />} link={"../pos_sys/inventory"} label={"Inventory"}/>
         {/* <NavItem icon={<Users size={20} />} link={"../pos_sys/customer"} label={"Customers"}/> */}
         <NavItem icon={<FileSpreadsheet size={20}/>} link={"../pos_sys/reports"} label={"Reports"} />
-        <NavItem icon={<User size={20} />} label="Users" link={"../pos_sys/sales"}/>
+        <NavItem icon={<User size={20} />} label="Users" link={"../pos_sys/users"}/>
         <NavItem icon={<Settings size={20} />} label="Settings" link={"../pos_sys/sales"}/>
       </nav>
 
