@@ -34,6 +34,16 @@ const login = async (req, res) => {
   }
 };
 
+const getUserById = async (req, res) => {
+  try {
+    const id = req.params.id;
+    const user = await userService.findUserById(id);
+    res.status(200).json(user)
+  } catch (error) {
+    res.status(500).json({ error: err.message });
+  }
+}
+
 const changePassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;
@@ -85,4 +95,5 @@ module.exports = {
   updateUser,
   deleteUser,
   getAllUsers,
+  getUserById
 };

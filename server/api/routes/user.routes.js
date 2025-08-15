@@ -8,8 +8,9 @@ router.post("/signup", userController.signup);
 router.post("/login", userController.login);
 
 router.put("/change-password", authenticate, userController.changePassword);
-router.put("/:id", authenticate, roleCheck("admin"), userController.updateUser);
-router.delete("/:id", authenticate, roleCheck("admin"), userController.deleteUser);
+router.put("/:id", authenticate, userController.updateUser);
+router.delete("/:id", authenticate, userController.deleteUser);
+router.get("/:id", authenticate, userController.getUserById);
 router.get("/", userController.getAllUsers);
 
 module.exports = router;

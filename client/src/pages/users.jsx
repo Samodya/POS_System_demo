@@ -21,8 +21,6 @@ export const Users = () => {
     user.username.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  console.log(users);
-
   return (
     <div>
       <Topbar title="Users" />
@@ -85,7 +83,9 @@ export const Users = () => {
                       <td className="py-3 px-4 text-center">{user.email}</td>
                       <td className="py-3 px-4 text-center">{user.role}</td>
                       <td className="py-3 px-4 text-center flex items-center justify-center gap-2">
-                        <EditUsers/>
+                        <EditUsers
+                            id={user.id}
+                        />
                         <button className="py-1 px-2 sm:px-3 bg-red-600 hover:bg-red-700 flex gap-1 items-center justify-center rounded text-white text-xs transition">
                           <Trash2 size={14} />
                           <span className="hidden sm:inline">Delete</span>

@@ -16,6 +16,11 @@ export const AddUsers = () => {
   const token = Cookies.get('token');
 
   const handleSave = async () => {
+    if (!fullname.trim() || !username.trim()) {
+        alert("Fullname and Username are required!");
+        return;
+      }
+  
     const data = {
         fullname:fullname,
         username:username,
@@ -25,11 +30,12 @@ export const AddUsers = () => {
         role:role
     }
     try {
-        const result = await apiService.createData('users',data,token);
+        const result = await apiService.createData('users/signup',data,token);
         console.log(result);
     } catch (error) {
         console.log(error);
     }
+    refreshUsers();
   }
 
   return (

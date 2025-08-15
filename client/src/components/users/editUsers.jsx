@@ -1,21 +1,64 @@
 import { Edit, X } from "lucide-react";
 import { useState } from "react";
+import { UseUserContext } from "../../context/usersContext";
+import apiService from "../../utilities/httpservices";
+import Cookies from "js-cookie";
 
-export const EditUsers = () => {
+export const EditUsers = ({id}) => {
   const [showmenu, setShowmenu] = useState(false);
   const [fullname, setFullname] = useState("");
   const [username, setUsername] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [role, setRole] = useState("Admin");
+  const { refreshUsers } = UseUserContext();
+  const token = Cookies.get('token')
+
+  const getUser = async () => {
+    try {
+        const result = await apiService.getDataById('users',id, token);
+        setFullname(result.fullname);
+        setUsername(result.username);
+        setPhone(result.phone);
+        setEmail(result.email);
+        setRole(result.role);
+    } catch (error) {
+        console.log(error);
+    }
+  }
+
+  
+  const handleSave = async () => {
+    if (!fullname.trim() || !username.trim()) {
+        alert("Fullname and Username are required!");
+        return;
+      }
+  
+    const data = {
+        fullname:fullname,
+        username:username,
+        phone:phone,
+        email:email,
+        role:role
+    }
+    try {
+        const result = await apiService.updateData('users/signup',data,token);
+        console.log(result);
+    } catch (error) {
+        console.log(error);
+    }
+    refreshUsers();
+  }
 
   return (
     <div>
       {/* Open Button */}
       <button
         className="py-1 px-2 sm:px-3 bg-blue-600 hover:bg-blue-700 flex gap-1 items-center justify-center rounded text-white text-xs transition"
-        onClick={() => setShowmenu(true)}
+        onClick={() => {
+            getUser();
+            setShowmenu(true)
+        }}
       >
         <Edit size={16} />
         <span>Edit</span>
@@ -40,11 +83,14 @@ export const EditUsers = () => {
               <div className="flex justify-between items-center border-b pb-3 mb-4">
                 <div className="text-lg font-semibold flex gap-2 items-center">
                   <Edit size={20} />
-                  Add User
+                  Edit User Information
                 </div>
                 <button
                   className="bg-red-500 hover:bg-red-600 text-white rounded-full p-1"
-                  onClick={() => setShowmenu(false)}
+                  onClick={() => {
+                    
+                    setShowmenu(false)
+                }}
                 >
                   <X size={18} />
                 </button>
@@ -91,17 +137,6 @@ export const EditUsers = () => {
                     className="w-full border rounded px-3 py-1.5 text-sm focus:ring focus:ring-blue-200"
                   />
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-1">Password</label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full border rounded px-3 py-1.5 text-sm focus:ring focus:ring-blue-200"
-                  />
-                </div>
-
                 <div>
                   <label className="block text-sm font-medium mb-1">Role</label>
                   <select
