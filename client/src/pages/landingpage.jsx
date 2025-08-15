@@ -9,6 +9,7 @@ import { Customer } from "./customer";
 import { Repairs } from "./repairs";
 import { NewSale } from "../components/sales/newsale";
 import { Invoice } from "../components/dashboard_components/invoiceModal";
+import { Users } from "./users";
 // import { TasksManger } from "./taskmanger"
 // import { UserProfile } from "./userProfilePage"
 // import { UsersPage } from "./Users"
@@ -29,6 +30,7 @@ export const LandingPage = () => {
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/customer" element={<Customer />} />
           <Route path="/New Sale" element={<NewSale />} />
+          <Route path="/users" element={<Users/>} />
           {/* <Route
                     path="/users"
                     element={<UsersPage/>}

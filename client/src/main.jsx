@@ -6,14 +6,17 @@ import { AuthContextProvider } from "./context/AuthContext";
 import { AllRoutes } from "./Routes/Routes";
 import { ErrorProvider } from "./context/errorProvider";
 import { ProductContextProvider } from "./context/productContext";
+import { UserContextProvider } from "./context/usersContext";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthContextProvider>
       <ErrorProvider>
-        <ProductContextProvider>
-          <AllRoutes />
-        </ProductContextProvider>
+        <UserContextProvider>
+          <ProductContextProvider>
+            <AllRoutes />
+          </ProductContextProvider>
+        </UserContextProvider>
       </ErrorProvider>
     </AuthContextProvider>
   </StrictMode>

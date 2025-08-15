@@ -2,6 +2,10 @@ import { AlertTriangle, CheckCircle, Clock, Wrench } from "lucide-react";
 import StatCard from "../components/statcard";
 import Topbar from "../components/topbar";
 
+const items = [
+  {id:1, icon:<Wrench/>, }
+]
+
 export const Repairs = () => {
   return (
     <div>
@@ -9,8 +13,7 @@ export const Repairs = () => {
 
       <div className="flex flex-col flex-1 p-6">
         {/* Page Title */}
-        <h1 className="text-2xl font-bold mb-6">Repair Center Overview</h1>
-
+        
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
           {/* Your items here */}

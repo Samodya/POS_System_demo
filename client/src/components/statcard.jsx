@@ -1,6 +1,6 @@
 export default function StatCard({ title, value, icon }) {
   return (
-    <div className="flex items-center gap-4 border border-gray-300 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow w-56 md:w-60">
+    <div className="flex items-center gap-4 border bg-white border-gray-300 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow w-56 md:w-60">
       <div className="p-3 bg-indigo-100 rounded-lg text-indigo-700">
         {icon}
       </div>
