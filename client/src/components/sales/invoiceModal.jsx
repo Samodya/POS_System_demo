@@ -76,15 +76,12 @@ export const Invoice = () => {
     });
   };
 
-  useEffect(() => {
-    console.log(itemArray);
-    console.log(totalSum);
-  }, [itemArray]);
-
   const totalSum = itemArray.reduce(
     (acc, item) => acc + Number(item.totalPrice),
     0
   );
+
+  
 
   const displayBill = () => {
     return (

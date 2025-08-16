@@ -21,8 +21,8 @@ export const useLogin = () => {
         if(result){
             dispatch({ type: 'LOGIN', payload: result })
             Cookies.set('user', JSON.stringify(result), { expires: 1 })
-            Cookies.set('token', result.token);
-            Cookies.set('username',result.user.username)
+            Cookies.set('token', result.token, { expires: 1 });
+            Cookies.set('username',result.user.username, { expires: 1 })
         }
     }
 

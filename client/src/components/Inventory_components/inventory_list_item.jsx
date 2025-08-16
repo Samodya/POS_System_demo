@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Trash2 } from "lucide-react";
 import {EditItem} from "./edit_item"; // adjust path
+import { DeleteItem } from "./delete_items";
 
 export const InventoryListItem = ({
   id,
@@ -67,13 +68,7 @@ export const InventoryListItem = ({
 
         {/* Action Buttons */}
         <div className="mt-auto flex w-full justify-between gap-2">
-          <button
-            className="flex-1 flex items-center justify-center gap-1 text-white bg-red-600 hover:bg-red-700 rounded-md px-3 py-1 text-sm font-semibold transition"
-            aria-label="Delete item"
-          >
-            <Trash2 size={16} />
-            Delete
-          </button>
+          <DeleteItem id={id} productName={name}/>
           <EditItem id={id} />
         </div>
       </div>

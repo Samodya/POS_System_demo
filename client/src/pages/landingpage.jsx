@@ -8,7 +8,7 @@ import { Inventory } from "./Inventory";
 import { Customer } from "./customer";
 import { Repairs } from "./repairs";
 import { NewSale } from "../components/sales/newsale";
-import { Invoice } from "../components/dashboard_components/invoiceModal";
+import { Invoice } from "../components/sales/invoiceModal";
 import { Users } from "./users";
 // import { TasksManger } from "./taskmanger"
 // import { UserProfile } from "./userProfilePage"

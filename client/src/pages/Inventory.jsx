@@ -4,7 +4,7 @@ import StatCard from "../components/statcard";
 import { AddProduct } from "../components/Inventory_components/invetory_add_modal";
 import { InventoryListItem } from "../components/Inventory_components/inventory_list_item";
 import { UseProductContext } from "../context/productContext";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export const Inventory = () => {
   const { products, getLowStockProducts, getThisWeekProducts } = UseProductContext();
@@ -31,10 +31,6 @@ export const Inventory = () => {
   const filteredProducts = getFilteredByTab().filter((product) =>
     product.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  useEffect(() => {
-    console.log(products);
-  }, [products]);
 
   return (
     <div className="w-full min-h-screen bg-gray-50">

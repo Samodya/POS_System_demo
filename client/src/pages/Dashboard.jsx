@@ -12,6 +12,7 @@ import {
 import Topbar from "../components/topbar";
 import { UseProductContext } from "../context/productContext";
 import { Link } from "react-router-dom";
+import { NewCustomer } from "../components/Customer/newCustome";
 
 
 const urgentRepairs = [
@@ -76,11 +77,13 @@ export const Dashboard = () => {
         </div>
       </div>
 
-      <div className="flex flex-row-reverse pt-4 px-4">
-        <Link to={'invoice'} className="flex items-center justify-center gap-1 text-white bg-gradient-to-r from-black via-[#0a0f2c] to-[#013ea0] px-2 py-1 rounded"
+      <div className="flex flex-row-reverse gap-1 items-center pt-4 px-4">
+        <Link to={'invoice'} 
+        className="flex items-center justify-center gap-2 text-sm font-medium text-white bg-gradient-to-r from-black via-[#0a0f2c] to-[#013ea0] px-4 py-2 rounded-lg shadow hover:opacity-90 transition"
        >
           New Invoice
         </Link>
+        <NewCustomer/>
       </div>
 
       {/* Urgent Repairs */}
