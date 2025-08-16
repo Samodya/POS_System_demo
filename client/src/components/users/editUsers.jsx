@@ -4,7 +4,7 @@ import { UseUserContext } from "../../context/usersContext";
 import apiService from "../../utilities/httpservices";
 import Cookies from "js-cookie";
 
-export const EditUsers = ({id}) => {
+export const EditUsers = ({ id }) => {
   const [showmenu, setShowmenu] = useState(false);
   const [fullname, setFullname] = useState("");
   const [username, setUsername] = useState("");
@@ -12,43 +12,43 @@ export const EditUsers = ({id}) => {
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("Admin");
   const { refreshUsers } = UseUserContext();
-  const token = Cookies.get('token')
+  const token = Cookies.get("token");
 
   const getUser = async () => {
     try {
-        const result = await apiService.getDataById('users',id, token);
-        setFullname(result.fullname);
-        setUsername(result.username);
-        setPhone(result.phone);
-        setEmail(result.email);
-        setRole(result.role);
+      const result = await apiService.getDataById("users", id, token);
+      setFullname(result.fullname);
+      setUsername(result.username);
+      setPhone(result.phone);
+      setEmail(result.email);
+      setRole(result.role);
     } catch (error) {
-        console.log(error);
+      console.log(error);
     }
-  }
+  };
 
-  
   const handleSave = async () => {
     if (!fullname.trim() || !username.trim()) {
-        alert("Fullname and Username are required!");
-        return;
-      }
-  
-    const data = {
-        fullname:fullname,
-        username:username,
-        phone:phone,
-        email:email,
-        role:role
+      alert("Fullname and Username are required!");
+      return;
     }
+
+    const data = {
+      fullname: fullname,
+      username: username,
+      phone: phone,
+      email: email,
+      role: role,
+    };
     try {
-        const result = await apiService.updateData('users/signup',data,token);
-        console.log(result);
+      const result = await apiService.updateData("users",id, data, token);
+      console.log(result);
+      setShowmenu(false);
     } catch (error) {
-        console.log(error);
+      console.log(error);
     }
     refreshUsers();
-  }
+  };
 
   return (
     <div>
@@ -56,8 +56,8 @@ export const EditUsers = ({id}) => {
       <button
         className="py-1 px-2 sm:px-3 bg-blue-600 hover:bg-blue-700 flex gap-1 items-center justify-center rounded text-white text-xs transition"
         onClick={() => {
-            getUser();
-            setShowmenu(true)
+          getUser();
+          setShowmenu(true);
         }}
       >
         <Edit size={16} />
@@ -88,9 +88,8 @@ export const EditUsers = ({id}) => {
                 <button
                   className="bg-red-500 hover:bg-red-600 text-white rounded-full p-1"
                   onClick={() => {
-                    
-                    setShowmenu(false)
-                }}
+                    setShowmenu(false);
+                  }}
                 >
                   <X size={18} />
                 </button>
@@ -99,7 +98,9 @@ export const EditUsers = ({id}) => {
               {/* Form */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Fullname</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Fullname
+                  </label>
                   <input
                     type="text"
                     value={fullname}
@@ -109,7 +110,9 @@ export const EditUsers = ({id}) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Username</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Username
+                  </label>
                   <input
                     type="text"
                     value={username}
@@ -119,7 +122,9 @@ export const EditUsers = ({id}) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Contact No</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Contact No
+                  </label>
                   <input
                     type="text"
                     value={phone}
@@ -129,7 +134,9 @@ export const EditUsers = ({id}) => {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-1">Email</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Email
+                  </label>
                   <input
                     type="email"
                     value={email}
@@ -151,7 +158,10 @@ export const EditUsers = ({id}) => {
 
               {/* Actions */}
               <div className="flex justify-end mt-5">
-                <button className="bg-blue-800 hover:bg-blue-700 text-sm py-1.5 px-4 text-white rounded transition">
+                <button
+                  onClick={handleSave}
+                  className="bg-blue-800 hover:bg-blue-700 text-sm py-1.5 px-4 text-white rounded transition"
+                >
                   Save
                 </button>
               </div>

@@ -32,6 +32,7 @@ export const AddUsers = () => {
     try {
         const result = await apiService.createData('users/signup',data,token);
         console.log(result);
+        setShowmenu(false);
     } catch (error) {
         console.log(error);
     }

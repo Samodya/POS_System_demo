@@ -5,6 +5,7 @@ import { UseUserContext } from "../context/usersContext";
 import { AddUsers } from "../components/users/addusers";
 import { useState } from "react";
 import { EditUsers } from "../components/users/editUsers";
+import { DeleteUser } from "../components/users/deleteUser";
 
 export const Users = () => {
   const { users } = UseUserContext();
@@ -86,10 +87,10 @@ export const Users = () => {
                         <EditUsers
                             id={user.id}
                         />
-                        <button className="py-1 px-2 sm:px-3 bg-red-600 hover:bg-red-700 flex gap-1 items-center justify-center rounded text-white text-xs transition">
-                          <Trash2 size={14} />
-                          <span className="hidden sm:inline">Delete</span>
-                        </button>
+                        <DeleteUser
+                            id={user.id}
+                            fullname={user.fullname}
+                        />
                       </td>
                     </tr>
                   ))

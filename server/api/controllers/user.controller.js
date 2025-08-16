@@ -62,11 +62,12 @@ const changePassword = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    const { username, role } = req.body;
-    await userService.updateUser(req.params.id, { username, role });
+    const { fullname, username, phone, email, role } = req.body;
+    await userService.updateUser(req.params.id, { fullname, username, phone, email, role });
     res.json({ message: "User updated successfully" });
   } catch (err) {
     res.status(500).json({ error: err.message });
+    console.log(err);
   }
 };
 
@@ -75,7 +76,8 @@ const deleteUser = async (req, res) => {
     await userService.deleteUser(req.params.id);
     res.json({ message: "User deleted successfully" });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+     res.status(500).json({ error: err.message });
+    
   }
 };
 

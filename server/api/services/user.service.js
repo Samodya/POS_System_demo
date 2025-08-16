@@ -33,9 +33,9 @@ const findUserById = async (id) => {
   return rows[0];
 };
 
-const updateUser = async (id, { username, role }) => {
+const updateUser = async (id, { fullname,username, phone, email, role }) => {
   await db.query(
-    "UPDATE users SET fullname = ? username = ?, phone = ?, email = ?, role = ? WHERE id = ?",
+    "UPDATE users SET fullname = ?, username = ?, phone = ?, email = ?, role = ? WHERE id = ?",
     [fullname, username, phone, email, role, id]
   );
 };
