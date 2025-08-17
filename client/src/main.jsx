@@ -7,6 +7,9 @@ import { ErrorProvider } from "./context/errorProvider";
 import { ProductContextProvider } from "./context/productContext";
 import { UserContextProvider } from "./context/usersContext";
 import { CustomerContextProvider } from "./context/customerContext";
+import { RepairContextProvider } from "./context/repairContext";
+import { SaleContextProvider } from "./context/salesContext";
+import { SaleItemsContextProvider } from "./context/saleItemsContext";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -15,7 +18,13 @@ createRoot(document.getElementById("root")).render(
         <CustomerContextProvider>
           <UserContextProvider>
             <ProductContextProvider>
-              <AllRoutes />
+              <RepairContextProvider>
+                <SaleContextProvider>
+                  <SaleItemsContextProvider>
+                    <AllRoutes />
+                  </SaleItemsContextProvider>
+                </SaleContextProvider>
+              </RepairContextProvider>
             </ProductContextProvider>
           </UserContextProvider>
         </CustomerContextProvider>

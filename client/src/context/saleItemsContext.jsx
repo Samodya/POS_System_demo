@@ -2,13 +2,13 @@ import { createContext, useContext, useEffect, useState } from "react";
 import apiService from "../utilities/httpservices";
 import Cookies from "js-cookie";
 
-const RepairContext = createContext();
+const SaleItemsContext = createContext();
 
-export const UseRepairContext = () => useContext(RepairContext);
+export const UseSaleItemsContext = () => useContext(SaleItemsContext);
 
-export const RepairContextProvider = ({ children }) => {
-  const [repairs, setRepairs] = useState([]);
-  const [RepairsError, setRepairsError] = useState(null);
+export const SaleItemsContextProvider = ({ children }) => {
+  const [saleItems, setSaleItem] = useState([]);
+  const [saleItemsError, setSaleItemError] = useState(null);
   const [showError, setShowError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [refresh, setRefresh] = useState(false);
@@ -16,18 +16,18 @@ export const RepairContextProvider = ({ children }) => {
 
   const handleError = (error) => {
     const message = error?.message || "Something went wrong";
-    setRepairsError(message);
+    setSaleItemError(message);
     setShowError(true);
   };
 
   useEffect(() => {
-    const fetchRepairs = async () => {
+    const fetchSaleItems = async () => {
       setLoading(true);
 
       try {
-        const result = await apiService.getData("repairs", token);
-        setRepairs(result);
-        setRepairsError(null);
+        const result = await apiService.getData("saleitems", token);
+        setSaleItem(result);
+        setSaleItemError(null);
         setShowError(false);
       } catch (error) {
         console.error(error);
@@ -37,23 +37,23 @@ export const RepairContextProvider = ({ children }) => {
       }
     };
 
-    fetchRepairs();
+    fetchSaleItems();
   }, [refresh, token]);
 
-  const refreshRepairs = () => setRefresh((prev) => !prev);
+  const refreshSaleItems = () => setRefresh((prev) => !prev);
 
   return (
-    <RepairContext.Provider
+    <SaleItemsContext.Provider
       value={{
-        repairs,
+        saleItems,
         loading,
-        RepairsError,
+        saleItemsError,
         showError,
         setShowError,
-        refreshRepairs,
+        refreshSaleItems,
       }}
     >
       {children}
-    </RepairContext.Provider>
+    </SaleItemsContext.Provider>
   );
 };

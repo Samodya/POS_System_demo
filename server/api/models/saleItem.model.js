@@ -6,6 +6,7 @@ const createSaleItemTable = async (db) => {
         product_id INT,
         quantity INT,
         price DECIMAL(10,2),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (sale_id) REFERENCES sales(id),
         FOREIGN KEY (product_id) REFERENCES products(id)
       )

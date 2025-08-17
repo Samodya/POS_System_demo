@@ -6,7 +6,7 @@ const create = async (req,res) => {
             ...req.body,
           };
 
-        const salesItem = await salesItemServices.salesItemServices(data);
+        const salesItem = await salesItemServices.createSalesItem(data);
         res.status(200).json(salesItem)
     } catch (err) {
         res.status(500).json({error:err.message})
@@ -17,8 +17,9 @@ const getAll = async (_req, res) => {
     try {
       const saleitems = await salesItemServices.getAllSalesItem();
       res.json(saleitems);
-    } catch {
-      res.status(500).json({ error: "Failed to get repairs details" });
+    } catch(error) {
+      res.status(500).json({ error: error.message });
+      console.log(error);
     }
   };
   
@@ -28,7 +29,7 @@ const getAll = async (_req, res) => {
       if (!saleItem) return res.status(404).json({ error: "Not found" });
       res.json(saleItem);
     } catch {
-      res.status(500).json({ error: "Failed to get Repair" });
+      res.status(500).json({ error: "Failed to get sale item" });
     }
   };
 

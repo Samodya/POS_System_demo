@@ -2,6 +2,7 @@ import { User, X } from "lucide-react";
 import { useState } from "react"
 import apiService from "../../utilities/httpservices";
 import Cookies from "js-cookie";
+import { UseCustomerContext } from "../../context/customerContext";
 
 export const NewCustomer = () => {
     const [showmenu, setShowMenu] = useState(false);
@@ -9,6 +10,8 @@ export const NewCustomer = () => {
     const [phone, setPhone] = useState("");
     const [email, setEmail] = useState("");
     const [address, setAddress] = useState("");
+    const { refreshCustomers } = UseCustomerContext();
+    const [cusid, setCusid] = useState();
     const token = Cookies.get('token');
 
     const handleSave = async () => {
@@ -22,8 +25,9 @@ export const NewCustomer = () => {
 
        try {
         const result = await apiService.createData('customers', data, token);
-        console.log(result);
         setShowMenu(false);
+        setCusid(result.id);
+        refreshCustomers();
        } catch (error) {
         console.log(error);
        }
