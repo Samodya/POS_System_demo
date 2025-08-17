@@ -59,14 +59,14 @@ export const Users = () => {
         <div className="overflow-x-auto">
           <div className="min-w-[600px] sm:min-w-full bg-white shadow-lg rounded-2xl border border-gray-200">
             <table className="w-full border-collapse">
-              <thead className="bg-gray-100">
+              <thead className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-sm">
                 <tr>
-                <th className="py-3 px-4 text-gray-700 text-center text-sm font-semibold">Fullname</th>
-                  <th className="py-3 px-4 text-gray-700 text-center text-sm font-semibold">Username</th>
-                  <th className="py-3 px-4 text-gray-700 text-center text-sm font-semibold">Contact no</th>
-                  <th className="py-3 px-4 text-gray-700 text-center text-sm font-semibold">Email</th>
-                  <th className="py-3 px-4 text-gray-700 text-center text-sm font-semibold">Role</th>
-                  <th className="py-3 px-4 text-gray-700 text-center text-sm font-semibold">Action</th>
+                <th className="py-3 px-4 text-center text-sm font-semibold">Fullname</th>
+                  <th className="py-3 px-4 text-center text-sm font-semibold">Username</th>
+                  <th className="py-3 px-4 text-center text-sm font-semibold">Contact no</th>
+                  <th className="py-3 px-4 text-center text-sm font-semibold">Email</th>
+                  <th className="py-3 px-4 text-center text-sm font-semibold">Role</th>
+                  <th className="py-3 px-4 text-center text-sm font-semibold">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -78,12 +78,12 @@ export const Users = () => {
                         index % 2 === 0 ? "bg-white" : "bg-gray-50"
                       }`}
                     >
-                      <td className="py-3 px-4 text-center">{user.fullname}</td>
-                      <td className="py-3 px-4 text-center">{user.username}</td>
-                      <td className="py-3 px-4 text-center">{user.phone}</td>
-                      <td className="py-3 px-4 text-center">{user.email}</td>
-                      <td className="py-3 px-4 text-center">{user.role}</td>
-                      <td className="py-3 px-4 text-center flex items-center justify-center gap-2">
+                      <td className="text-center p-3 font-medium text-gray-700">{user.fullname}</td>
+                      <td className="text-center p-3 font-medium text-gray-700">{user.username}</td>
+                      <td className="text-center p-3 font-medium text-gray-700">{user.phone}</td>
+                      <td className="text-center p-3 font-medium text-gray-700">{user.email}</td>
+                      <td className="text-center p-3 font-medium text-gray-700">{user.role}</td>
+                      <td className="text-center p-3 font-medium text-gray-700 flex items-center justify-center gap-2">
                         <EditUsers
                             id={user.id}
                         />

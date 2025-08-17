@@ -14,7 +14,7 @@ export const EditCustomer = ({ id }) => {
                 className="py-1 px-2 sm:px-3 bg-blue-600 hover:bg-blue-700 flex gap-1 items-center justify-center rounded text-white text-xs transition"
                 onClick={() => setShowMenu(true)}
             >
-                New Customer
+                <Edit size={14}/> Edit
             </button>
 
             {showmenu && (

@@ -7,6 +7,9 @@ const initModels = require("./api/models/initModels");
 const productRoutes = require("./api/routes/product.routes");
 const userRoutes = require("./api/routes/user.routes");
 const customerRoutes = require("./api/routes/customers.routes");
+const repairRoutes = require("./api/routes/repair.routes");
+const saleRoutes = require("./api/routes/sales.routes");
+const saleItemsRoutes = require("./api/routes/saleItems.routes");
 
 const app = express();
 app.use(cors());
@@ -27,6 +30,9 @@ app.use(express.json());
     app.use("/api/products", productRoutes);
     app.use("/api/users", userRoutes);
     app.use("/api/customers", customerRoutes);
+    app.use("/api/repairs",repairRoutes);
+    app.use("/api/sales", saleRoutes);
+    app.use("/api/saleitems",saleItemsRoutes);
 
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
