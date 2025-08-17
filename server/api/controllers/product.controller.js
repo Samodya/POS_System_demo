@@ -42,6 +42,17 @@ const update = async (req, res) => {
   }
 };
 
+const getTotalBuyingPrice = async (req, res) => {
+  try {
+    const total = await productService.getTotalBuyingPrice();
+    res.json({ total_buying_price: total });
+    console.log(total);
+  } catch (error) {
+    console.error("Error fetching total buying price:", error);
+    res.status(500).json({ message: "Failed to fetch total buying price" });
+  }
+};
+
 
 const remove = async (req, res) => {
   try {
@@ -58,4 +69,5 @@ module.exports = {
   getById,
   update,
   remove,
+  getTotalBuyingPrice
 };

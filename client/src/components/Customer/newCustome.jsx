@@ -26,7 +26,7 @@ export const NewCustomer = () => {
        try {
         const result = await apiService.createData('customers', data, token);
         setShowMenu(false);
-        setCusid(result.id);
+        Cookies.set('cusid',result.id )
         refreshCustomers();
        } catch (error) {
         console.log(error);

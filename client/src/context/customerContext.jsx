@@ -23,7 +23,7 @@ export const CustomerContextProvider = ({ children }) => {
   useEffect(() => {
     const fetchCustomers = async () => {
       setLoading(true);
-
+      
       try {
         const result = await apiService.getData("customers", token);
         setCustomers(result);
@@ -44,16 +44,16 @@ export const CustomerContextProvider = ({ children }) => {
 
   return (
     <CustomerContext.Provider
-         value={{
+      value={{
         customers,
         loading,
         customerError,
         showError,
         setShowError,
         refreshCustomers,
-      }}    
+      }}
     >
-        {children}
+      {children}
     </CustomerContext.Provider>
   );
 };

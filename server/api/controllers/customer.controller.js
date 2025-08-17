@@ -40,8 +40,8 @@ const getAll = async (_req, res) => {
       };
       const updated = await customerService.updateCustomer(req.params.id, data);
       res.json(updated);
-    } catch {
-      res.status(500).json({ error: "Failed to update product" });
+    } catch(error) {
+      res.status(500).json({ error: error.message });
     }
   };
   

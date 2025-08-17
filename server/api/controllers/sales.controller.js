@@ -17,8 +17,8 @@ const getAll = async (_req, res) => {
     try {
       const sales = await salesServices.getAllSales();
       res.json(sales);
-    } catch {
-      res.status(500).json({ error: "Failed to get sales details" });
+    } catch(error) {
+      res.status(500).json({ error: error.message });
     }
   };
   

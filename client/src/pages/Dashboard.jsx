@@ -42,7 +42,9 @@ const salesData = [
 
 export const Dashboard = () => {
 
-  const { products } = UseProductContext();
+  const { products,productExpense } = UseProductContext();
+
+  console.log(productExpense);
 
   return (
     <div className="w-full ">
@@ -62,9 +64,9 @@ export const Dashboard = () => {
 
         <div className="bg-white shadow-md rounded-2xl p-6">
           <h2 className="text-lg font-medium text-gray-600 mb-2">
-            Active Repairs
+            Total Expenses
           </h2>
-          <p className="text-3xl font-bold text-orange-500">8</p>
+          <p className="text-3xl font-bold text-orange-500">Rs. {productExpense}</p>
           <span className="text-sm text-gray-400">3 urgent, 5 not urgent</span>
         </div>
 

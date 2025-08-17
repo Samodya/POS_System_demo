@@ -7,13 +7,14 @@ import { UseUserContext } from "../../context/usersContext";
 export const DeleteCustomer = ({ id, fullname }) => {
   const [showmenu, setShowmenu] = useState(false);
   const token = Cookies.get('token');
-  const { refreshUsers } = UseUserContext();
+  const { refreshCustomers } = UseUserContext();
 
   const handleDelete = async () => {
     try {
         const result = await apiService.deleteData('customers',id, token)
         refreshUsers();
         setShowmenu(false)
+        refreshUsers();
     } catch (error) {
         console.log(error);
     }

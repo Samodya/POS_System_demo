@@ -35,7 +35,7 @@ const updateCustomer = async (id, data) => {
     `UPDATE customers
        SET name = ?, phone = ?, email = ?, address = ?
        WHERE id = ?`,
-    [name, phone, email, address]
+    [name, phone, email, address, id]
   );
 
   return { id, ...data };

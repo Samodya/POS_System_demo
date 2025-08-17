@@ -20,7 +20,7 @@ const createSale = async (data) => {
 
 const getAllSales = async () => {
   const [rows] = await db.query(
-    "SELECT * FROM sales ORDER BY created_at DESC"
+    "SELECT * FROM sales ORDER BY sale_date DESC"
   );
   return rows;
 };

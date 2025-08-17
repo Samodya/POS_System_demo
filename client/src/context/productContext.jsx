@@ -8,6 +8,7 @@ export const UseProductContext = () => useContext(ProductContext);
 
 export const ProductContextProvider = ({ children }) => {
   const [products, setProducts] = useState([]);
+  const [productExpense, setProductExpense] =useState(0);
   const [productError, setProductError] = useState(null);
   const [showError, setShowError] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -36,7 +37,22 @@ export const ProductContextProvider = ({ children }) => {
       }
     };
 
+    const getTotalBuyingPrice = async () => {
+      setLoading(true);
+
+      try {
+        const result = await apiService.getData('products/product-expenses',token);
+        setProductExpense(result.total_buying_price);
+      } catch (error) {
+        console.error(error);
+        handleError(error);
+      }finally {
+        setLoading(false);
+      }
+    }
+
     fetchProducts();
+    getTotalBuyingPrice();
   }, [refresh, token]);
 
   // You might want to provide a way to refresh data from children components:
@@ -68,6 +84,7 @@ export const ProductContextProvider = ({ children }) => {
         loading,
         productError,
         showError,
+        productExpense,
         refreshProducts,
         setShowError,
         getLowStockProducts,
