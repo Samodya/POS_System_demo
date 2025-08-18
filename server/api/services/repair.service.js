@@ -6,8 +6,13 @@ let db;
   db = await connectMySQLDB(); // ✅ get the singleton connection once
 })();
 
+
 const createRepair = async (data) => {
+
+  
+
   const {
+    order_id,
     customer_id,
     device,
     issue,
@@ -19,9 +24,10 @@ const createRepair = async (data) => {
   } = data;
 
   const [result] = await db.query(
-    `INSERT INTO repairs (customer_id, device, issue, status, cost, received_date, completed_date, assigned_to)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO repairs (order_id, customer_id, device, issue, status, cost, received_date, completed_date, assigned_to)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
+      order_id,
       customer_id,
       device,
       issue,
@@ -29,7 +35,7 @@ const createRepair = async (data) => {
       cost,
       received_date,
       completed_date,
-      assigned_to,
+      assigned_to
     ]
   );
 

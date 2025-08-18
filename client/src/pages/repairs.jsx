@@ -2,9 +2,13 @@ import { AlertTriangle, CheckCircle, Clock, Wrench, Search } from "lucide-react"
 import StatCard from "../components/statcard";
 import Topbar from "../components/topbar";
 import { useState } from "react";
+import { AddRepair } from "../components/repair/addRepair";
+import { UseRepairContext } from "../context/repairContext";
+import { Link } from "react-router-dom";
 
 export const Repairs = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const { repairs } = UseRepairContext();
 
   const jobs = [
     {
@@ -47,15 +51,21 @@ export const Repairs = () => {
 
       <div className="flex flex-col flex-1 p-6">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8">
-          <StatCard title="Total Repairs" value="128" icon={<Wrench size={20} />} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 
+        md:grid-cols-3 lg:grid-cols-4 gap-6 mb-8 items-center justify-items-center">
+          <StatCard title="Total Repairs" value={repairs.length} icon={<Wrench size={20} />} />
           <StatCard title="In Progress" value="15" icon={<Clock size={20} />} />
           <StatCard title="Completed Today" value="7" icon={<CheckCircle size={20} />} />
           <StatCard title="Awaiting Parts" value="4" icon={<AlertTriangle size={20} />} />
         </div>
 
         {/* Search Bar */}
-        <div className="flex justify-end mb-5">
+        <div className="flex flex-row-reverse px-7 justify-between mb-5">
+          <Link 
+            to={"../new-repairs"}
+            className="flex items-center justify-center gap-2 text-sm font-medium text-white bg-gradient-to-r from-black via-[#0a0f2c] to-[#013ea0] px-4 py-2 
+            rounded-lg shadow hover:opacity-90 transition"
+          ><Wrench/> Add New Repair </Link>
           <div className="relative w-full sm:w-80 bg-white rounded-lg shadow-sm">
             <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
             <input

@@ -9,7 +9,8 @@ const create = async (req,res) => {
         const customer = await customerService.createCustomer(data);
         res.status(200).json(customer)
     } catch (err) {
-        res.status(500).json({error:err.message})
+         res.status(500).json({error:err})
+        console.log(err);
     }
 }
 
