@@ -43,7 +43,7 @@ const createRepair = async (data) => {
 };
 
 const getAllRepairs = async () => {
-    const [rows] = await db.query("SELECT * FROM repairs ORDER BY created_at DESC");
+    const [rows] = await db.query("SELECT r.id, r.order_id, c.name AS customer_name,r.device,r.issue, r.status,r.cost,r.received_date,r.completed_date,u.fullname AS assigned_to, r.created_at FROM repairs r LEFT JOIN customers c ON r.customer_id = c.id LEFT JOIN users u ON r.assigned_to = u.id");
     return rows;
   };
   

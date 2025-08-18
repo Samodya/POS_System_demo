@@ -10,40 +10,7 @@ export const Repairs = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { repairs } = UseRepairContext();
 
-  const jobs = [
-    {
-      id: "R001",
-      customer: "John Doe",
-      device: "Laptop",
-      issue: "No Power",
-      status: "In Progress",
-      date: "2025-08-07",
-    },
-    {
-      id: "R002",
-      customer: "Sarah Lee",
-      device: "Desktop PC",
-      issue: "Overheating",
-      status: "Awaiting Parts",
-      date: "2025-08-06",
-    },
-    {
-      id: "R003",
-      customer: "Mike Chan",
-      device: "Gaming Laptop",
-      issue: "Broken Screen",
-      status: "Completed",
-      date: "2025-08-06",
-    },
-  ];
-
-  const filteredJobs = jobs.filter(
-    (row) =>
-      row.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.device.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.issue.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      row.id.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  
 
   return (
     <div>
@@ -92,30 +59,11 @@ export const Repairs = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {filteredJobs.map((row, i) => (
-                <tr key={i} className="hover:bg-gray-50 transition">
-                  <td className="px-4 py-3 font-medium text-gray-700">{row.id}</td>
-                  <td className="px-4 py-3 text-gray-600">{row.customer}</td>
-                  <td className="px-4 py-3 text-gray-600">{row.device}</td>
-                  <td className="px-4 py-3 text-gray-600">{row.issue}</td>
-                  <td
-                    className={`px-4 py-3 font-medium ${
-                      row.status === "Completed"
-                        ? "text-green-600"
-                        : row.status === "In Progress"
-                        ? "text-blue-600"
-                        : "text-yellow-600"
-                    }`}
-                  >
-                    {row.status}
-                  </td>
-                  <td className="px-4 py-3 text-gray-600">{row.date}</td>
-                </tr>
-              ))}
+             
             </tbody>
           </table>
 
-          {filteredJobs.length === 0 && (
+          {repairs.length === 0 && (
             <div className="text-center py-10 text-gray-500 text-sm">
               No repair jobs found.
             </div>
