@@ -3,6 +3,7 @@ import { useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { UseProductContext } from "../../context/productContext";
+import { UseCustomerContext } from "../../context/customerContext";
 
 export const AddProduct = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -10,6 +11,7 @@ export const AddProduct = () => {
   const [files, setFiles] = useState(null);
   const token = Cookies.get("token");
   const { refreshProducts } = UseProductContext();
+  const { customers } = UseCustomerContext();
   const [formData, setFormData] = useState({
     productName: "",
     category: "",
@@ -47,10 +49,8 @@ export const AddProduct = () => {
     form.append("dealers_price", formData.dealerPrice);
     form.append("quantity", formData.quantity);
     form.append("description", formData.description);
-  
-  
-      form.append("image", files);
-    
+
+    form.append("image", files);
 
     try {
       const res = await axios.post(`http://localhost:4000/api/products`, form, {
@@ -59,7 +59,7 @@ export const AddProduct = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-      console.log("Saved:", res.data);
+      clearData();
       setShowMenu(false);
     } catch (err) {
       console.error("Upload failed", err);
@@ -67,6 +67,18 @@ export const AddProduct = () => {
 
     refreshProducts();
   };
+
+  function clearData() {
+    setFormData({
+      productName: "",
+      category: "",
+      buyingPrice: "",
+      sellingPrice: "",
+      dealerPrice: "",
+      quantity: "",
+      description: "",
+    });
+  }
 
   return (
     <div>

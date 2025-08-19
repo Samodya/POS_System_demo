@@ -7,8 +7,8 @@ import { UseCustomerContext } from "../../context/customerContext";
 import { UseUserContext } from "../../context/usersContext";
 
 export const AddRepair = () => {
-  const { repairs } = UseRepairContext();
-  const { customers } = UseCustomerContext();
+  const { repairs,refreshRepairs } = UseRepairContext();
+  const { customers, refreshCustomers } = UseCustomerContext();
   const { users } = UseUserContext("");
   const token = Cookies.get("token");
 
@@ -51,6 +51,8 @@ export const AddRepair = () => {
     return prefix + datePart + (maxSeq + 1);
   };
 
+  
+
   useEffect(() => {
     setOrderId(generateOrderId());
   }, [repairs]);
@@ -60,6 +62,7 @@ export const AddRepair = () => {
       const data = { name: customerName, phone, email, address };
       const results = await apiService.createData("customers", data, token);
       setCustomerid(results.id);
+      refreshCustomers()
     } catch (error) {
       console.log(error);
     }
@@ -84,10 +87,13 @@ export const AddRepair = () => {
       };
       await apiService.createData("repairs", repairData, token);
       alert("Repair created successfully!");
+      
     } catch (error) {
       console.error(error);
       alert("Failed to create repair");
     }
+    refreshRepairs();
+    
   };
 
   return (

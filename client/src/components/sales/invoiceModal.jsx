@@ -1,12 +1,15 @@
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import { UseProductContext } from "../../context/productContext";
 import Topbar from "../topbar";
 import logo from "../../assets/logo.png";
-import { useReactToPrint } from "react-to-print";
+import { UseRepairContext } from "../../context/repairContext";
+import { UseCustomerContext } from "../../context/customerContext";
 
 export const Invoice = () => {
   const [invoiceItems, setInvoiceItem] = useState("products");
   const { products } = UseProductContext();
+  const { repairs } = UseRepairContext();
+  const { customers } = UseCustomerContext();
   const [itemArray, setItemArray] = useState([]);
 
   const [customerName, setCustomerName] = useState("");
@@ -14,37 +17,41 @@ export const Invoice = () => {
   const [address, setAddress] = useState("");
   const [email, setEmail] = useState("");
 
+  // track dealer toggles
+  const [dealerPriceStates, setDealerPriceStates] = useState({});
+  const toggleDealerPrice = (id, value) => {
+    setDealerPriceStates((prev) => ({
+      ...prev,
+      [id]: value,
+    }));
+  };
+
+  // add product
   const handleAdd = (product) => {
     const useDealerPrice = dealerPriceStates[product.id] || false;
     const unitPrice = useDealerPrice ? product.dealers_price : product.price;
 
     setItemArray((prev) => {
-      // Find if product already exists
       const existingItem = prev.find((item) => item.id === product.id);
-
-      const currentCount = existingItem ? existingItem.count : 0;
-      if (product.quantity === 0 || currentCount >= product.quantity) {
-        return prev; // don't add more
-      }
-
       if (existingItem) {
-        // Only update this item
+        if (product.quantity === 0 || existingItem.count >= product.quantity)
+          return prev;
+
         return prev.map((item) =>
           item.id === product.id
             ? {
                 ...item,
-                unitPrice, // update unitPrice if user changed toggle
                 count: item.count + 1,
                 totalPrice: (item.count + 1) * unitPrice,
               }
             : item
         );
       } else {
-        // Add new product
         return [
           ...prev,
           {
             id: product.id,
+            type: "product",
             name: product.name,
             unitPrice,
             count: 1,
@@ -55,99 +62,50 @@ export const Invoice = () => {
     });
   };
 
-  const handleRemove = (product) => {
+  // add repair
+  // add repair
+  const handleRepairsAdd = (repair) => {
     setItemArray((prev) => {
-      const existingItem = prev.find((item) => item.id === product.id);
-      if (!existingItem) return prev;
+      const exists = prev.find((item) => item.id === repair.order_id);
+      if (exists) return prev; // don't add again
 
-      if (existingItem.count === 1) {
-        return prev.filter((item) => item.id !== product.id);
-      } else {
-        return prev.map((item) =>
-          item.id === product.id
-            ? {
-                ...item,
-                count: item.count - 1,
-                totalPrice: (item.count - 1) * item.unitPrice,
-              }
-            : item
-        );
-      }
+      return [
+        ...prev,
+        {
+          id: repair.order_id,
+          type: "repair",
+          name: `${repair.device} (${repair.issue})`,
+          unitPrice: repair.cost,
+          count: 1,
+          totalPrice: repair.cost,
+        },
+      ];
     });
   };
 
+  // remove product/repair from bill
+  const handleRemove = (id) => {
+    setItemArray((prev) => prev.filter((item) => item.id !== id));
+  };
+
+  // total
   const totalSum = itemArray.reduce(
     (acc, item) => acc + Number(item.totalPrice),
     0
   );
-
-  
-
-  const displayBill = () => {
-    return (
-      <div className="w-full">
-        <div>
-          Invoice : 001
-          <div className="flex justify-between my-2">
-            <div className="text-xs">
-              <span className="font-medium">Customer Name: </span>
-              {customerName}
-            </div>
-            <div className="text-xs">
-              <span className="font-medium">phone: </span>
-              {phone}
-            </div>
-          </div>
-        </div>
-
-        {itemArray.map((item) => (
-          <div
-            key={item.id}
-            className="flex flex-col font-thin text-xs justify-between w-full mb-1"
-          >
-            <div className="flex font-bold text-xs justify-between mb-0.5">
-              {item.name}
-            </div>
-            <div className="flex items center justify-between w-full text-sm">
-              <div>
-                <span className="font-bold">Price :</span>
-                {item.unitPrice}
-              </div>
-              <div>
-                <span>Units:</span>
-                {item.count}
-              </div>
-              <div>{item.totalPrice}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
-  // Keep track of dealer price toggles for each product
-  const [dealerPriceStates, setDealerPriceStates] = useState({});
-
-  const toggleDealerPrice = (id, value) => {
-    setDealerPriceStates((prev) => ({
-      ...prev,
-      [id]: value,
-    }));
-  };
 
   return (
     <div className="bg-gray-50 min-h-screen">
       <Topbar title={"Invoice"} />
       <div className="flex flex-col lg:flex-row p-4 gap-4 max-w-7xl mx-auto">
         {/* Left Section */}
-        <div className="flex-2 bg-white  rounded-2xl shadow-lg overflow-auto h-180 ">
+        <div className="flex-2 bg-white rounded-2xl shadow-lg overflow-auto">
+          {/* Customer details */}
           <div className="bg-white rounded-xl shadow-md p-4 mb-4">
             <h2 className="text-sm font-semibold mb-3 text-gray-700">
               Customer Details
             </h2>
-
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Name */}
               <div className="flex flex-col">
                 <label className="text-xs font-medium text-gray-600 mb-1">
                   Name
@@ -160,8 +118,6 @@ export const Invoice = () => {
                   className="border text-xs border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
               </div>
-
-              {/* Phone */}
               <div className="flex flex-col">
                 <label className="text-xs font-medium text-gray-600 mb-1">
                   Phone
@@ -174,8 +130,6 @@ export const Invoice = () => {
                   className="border text-xs border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
               </div>
-
-              {/* Email */}
               <div className="flex flex-col">
                 <label className="text-xs font-medium text-gray-600 mb-1">
                   Email
@@ -188,8 +142,6 @@ export const Invoice = () => {
                   className="border text-xs border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
                 />
               </div>
-
-              {/* Address */}
               <div className="flex flex-col">
                 <label className="text-xs font-medium text-gray-600 mb-1">
                   Address
@@ -208,7 +160,7 @@ export const Invoice = () => {
           {/* Tabs */}
           <div className="flex gap-2 items-center justify-center border-b bg-gray-100">
             <div
-              className={`flex-1 py-1 text-center text-sm font-medium cursor-pointer transition ${
+              className={`flex-1 py-2 text-center text-sm font-medium cursor-pointer transition ${
                 invoiceItems === "products"
                   ? "text-blue-600 border-b-2 border-blue-600 bg-white"
                   : "text-gray-500 hover:text-gray-700"
@@ -218,7 +170,7 @@ export const Invoice = () => {
               Accessories
             </div>
             <div
-              className={`flex-1 py-1 text-center text-sm font-medium cursor-pointer transition ${
+              className={`flex-1 py-2 text-center text-sm font-medium cursor-pointer transition ${
                 invoiceItems === "Repairs"
                   ? "text-blue-600 border-b-2 border-blue-600 bg-white"
                   : "text-gray-500 hover:text-gray-700"
@@ -230,7 +182,7 @@ export const Invoice = () => {
           </div>
 
           {/* Product List */}
-          {invoiceItems == "products" ? (
+          {invoiceItems === "products" ? (
             <div className="p-4 space-y-2">
               {products.map((product) => {
                 const useDealerPrice = dealerPriceStates[product.id] || false;
@@ -238,10 +190,10 @@ export const Invoice = () => {
                 return (
                   <div
                     key={product.id}
-                    className="px-4 py-2 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 border border-2xl rounded"
+                    className="px-4 py-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 border rounded-lg bg-gray-50"
                   >
                     {/* Product Info */}
-                    <div className="text-sm font-medium max-w-[200px] break-words">
+                    <div className="text-sm font-medium text-gray-700">
                       {product.name}
                     </div>
 
@@ -270,9 +222,9 @@ export const Invoice = () => {
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center grid-cols-2 gap-2 mt-2 sm:mt-0 justify-center">
+                    <div className="flex items-center gap-2 justify-center">
                       <button
-                        className={`text-xs h-5 w-20 rounded-lg text-white ${
+                        className={`text-xs px-3 py-1 rounded-lg text-white ${
                           product.quantity === 0 ||
                           (itemArray.find((i) => i.id === product.id)?.count ||
                             0) >= product.quantity
@@ -289,36 +241,69 @@ export const Invoice = () => {
                         Add
                       </button>
                       <button
-                        className="text-xs h-5 w-20 rounded-lg bg-red-500 text-white hover:bg-red-600 "
-                        onClick={() => handleRemove(product)}
+                        className="text-xs px-3 py-1 rounded-lg bg-red-500 text-white hover:bg-red-600"
+                        onClick={() => handleRemove(product.id)}
                       >
                         Remove
                       </button>
                     </div>
-                    {(product.quantity === 0 ||
-                      (itemArray.find((i) => i.id === product.id)?.count ||
-                        0) >= product.quantity) && (
-                      <div className="flex justify-center bg-red-500 text-xs font-semibold p-0.5 text-white mt-0.5">
-                        out of stock
-                      </div>
-                    )}
                   </div>
                 );
               })}
             </div>
           ) : (
-            ""
+            <div className="p-4 space-y-2">
+              <div className="grid grid-cols-6 text-xs font-semibold text-gray-600 border-b pb-2">
+                <div>Order No</div>
+                <div>Customer</div>
+                <div>Device</div>
+                <div>Issue</div>
+                <div>Cost</div>
+                <div>Action</div>
+              </div>
+              {repairs.map((repair) => {
+                const alreadyInList = itemArray.some(
+                  (item) => item.id === repair.order_id
+                );
+
+                return (
+                  <div
+                    key={repair.order_id}
+                    className="grid grid-cols-6 items-center text-sm border-b py-2"
+                  >
+                    <div>{repair.order_id}</div>
+                    <div>{repair.customer_name}</div>
+                    <div>{repair.device}</div>
+                    <div>{repair.issue}</div>
+                    <div>Rs. {repair.cost}</div>
+                    <div>
+                      <button
+                        onClick={() => handleRepairsAdd(repair)}
+                        disabled={alreadyInList}
+                        className={`px-2 py-1 rounded text-xs ${
+                          alreadyInList
+                            ? "bg-gray-400 text-white cursor-not-allowed"
+                            : "bg-blue-500 text-white hover:bg-blue-600"
+                        }`}
+                      >
+                        {alreadyInList ? "Added" : "Add"}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           )}
         </div>
 
         {/* Right Section */}
-        <div className="flex-1 rounded-2xl bg-white shadow-lg p-4 flex flex-col items-center">
+        <div className="flex-1 rounded-2xl bg-white shadow-lg p-4 flex flex-col">
           {/* Logo */}
           <div className="flex items-center gap-3 mb-4">
             <img
               src={logo}
               alt="Logo"
-              className="h-16 w-16 rounded-full shadow"
+              className="h-14 w-14 rounded-full shadow"
             />
             <div>
               <div className="text-xl font-bold">
@@ -332,21 +317,58 @@ export const Invoice = () => {
           </div>
 
           {/* Bill Summary */}
-          <div className="w-full border-t pt-4 space-y-2">
-            {/* Item List */}
-            {displayBill()}
+          <div className="flex-1 overflow-auto">
+            <h2 className="text-sm font-semibold mb-3">Invoice : 001</h2>
+            <div className="text-xs text-gray-600 mb-3">
+              <span className="font-medium">Customer:</span> {customerName}{" "}
+              <br />
+              <span className="font-medium">Phone:</span> {phone}
+            </div>
 
-            {/* Total */}
-            <div className="flex justify-between text-sm font-medium mt-2">
+            {itemArray.length === 0 ? (
+              <div className="text-center text-sm text-gray-500">
+                No items added yet.
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {itemArray.map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between border rounded-lg p-2 bg-gray-50"
+                  >
+                    <div className="flex flex-col">
+                      <span className="text-xs font-semibold">{item.name}</span>
+                      <span className="text-xs text-gray-500">
+                        {item.count} × Rs. {item.unitPrice}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-semibold">
+                        Rs. {item.totalPrice}
+                      </span>
+                      <button
+                        onClick={() => handleRemove(item.id)}
+                        className="text-red-500 hover:text-red-700 text-xs"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Total + Checkout */}
+          <div className="mt-4 border-t pt-3">
+            <div className="flex justify-between text-sm font-medium">
               <span>Total:</span>
               <span>Rs. {totalSum}.00</span>
             </div>
+            <button className="mt-3 w-full py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition">
+              Checkout
+            </button>
           </div>
-
-          {/* Checkout Button */}
-          <button className="mt-auto w-full py-3 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition">
-            Checkout
-          </button>
         </div>
       </div>
     </div>

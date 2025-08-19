@@ -40,8 +40,9 @@ const getAll = async (_req, res) => {
       };
       const updated = await repairServices.updateRepair(req.params.id, data);
       res.json(updated);
-    } catch {
-      res.status(500).json({ error: "Failed to update product" });
+    } catch (error){
+      res.status(500).json({ error: error });
+      console.log(error);
     }
   };
   
@@ -49,11 +50,33 @@ const getAll = async (_req, res) => {
     try {
       await repairServices.deleteRepair(req.params.id);
       res.status(204).end();
-    } catch {
-      res.status(500).json({ error: "Failed to delete product" });
+    } catch (error){
+      res.status(500).json({ error: error });
+      console.log(error);
+    }
+  };
+
+  const updateStatus = async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+  
+      const [result] = await db.query(
+        `UPDATE repairs SET status = ? WHERE id = ?`,
+        [status, id]
+      );
+  
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ message: "Repair not found" });
+      }
+  
+      return res.json({ id, status, message: "Status updated successfully" });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Internal server error" });
     }
   };
 
   module.exports = {
-    create, getAll, getById, update, remove
+    create, getAll, getById, update, remove, updateStatus
   }

@@ -11,6 +11,7 @@ import { NewSale } from "../components/sales/newsale";
 import { Invoice } from "../components/sales/invoiceModal";
 import { Users } from "./users";
 import { AddRepair } from "../components/repair/addRepair";
+import { EditRepair } from "../components/repair/editRepair";
 
 export const LandingPage = () => {
   return (
@@ -25,6 +26,7 @@ export const LandingPage = () => {
           <Route path="/products" element={<Products />} />
           <Route path="/repairs" element={<Repairs />} />
           <Route path="/new-repairs" element={<AddRepair />} />
+          <Route path="/edit-repairs/:id" element={<EditRepair />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/customer" element={<Customer />} />

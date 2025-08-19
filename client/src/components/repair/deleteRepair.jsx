@@ -2,23 +2,25 @@ import { Trash2, X } from "lucide-react";
 import { useState } from "react";
 import apiService from "../../utilities/httpservices";
 import Cookies from "js-cookie";
-import { UseUserContext } from "../../context/usersContext";
+import { UseRepairContext } from "../../context/repairContext";
 
-export const DeleteUser = ({ id, fullname }) => {
+export const DeleteRepair = ({ id, fullname }) => {
   const [showmenu, setShowmenu] = useState(false);
   const token = Cookies.get('token');
-  const { refreshUsers } = UseUserContext();
+  const { refreshRepairs } = UseRepairContext();
 
   const handleDelete = async () => {
     try {
-        const result = await apiService.deleteData('users',id, token)
-        console.log('Button pressed');
-        refreshUsers();
-        setShowmenu(false)
+      const result = await apiService.deleteData("repairs", id, token);
+      console.log("Deleted record:", result);
+      console.log("Deleting id:", id);
+      refreshRepairs();
+      setShowmenu(false);
     } catch (error) {
-        console.log(error);
+      console.log("Delete error:", error);
     }
-  }
+  };
+
   return (
     <div>
       <button
@@ -60,7 +62,7 @@ export const DeleteUser = ({ id, fullname }) => {
                 </button>
               </div>
               <div className="flex items-center justify-center h-20">
-                Are you sure you want to delete {fullname}'s Account from the
+                Are you sure you want to delete the Repair details from the
                 system ?
               </div>
 

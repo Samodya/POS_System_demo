@@ -27,7 +27,6 @@ export const RepairContextProvider = ({ children }) => {
       try {
         const result = await apiService.getData("repairs", token);
         setRepairs(result);
-        console.log(result);
         setRepairsError(null);
         setShowError(false);
       } catch (error) {

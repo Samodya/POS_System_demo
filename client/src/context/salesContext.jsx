@@ -4,7 +4,7 @@ import Cookies from "js-cookie";
 
 const SaleContext = createContext();
 
-export const UseSaleContext = () => useContext(Sale);
+export const UseSaleContext = () => useContext(SaleContext);
 
 export const SaleContextProvider = ({ children }) => {
   const [sales, setSales] = useState([]);

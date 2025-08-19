@@ -8,8 +8,8 @@ import { ProductContextProvider } from "./context/productContext";
 import { UserContextProvider } from "./context/usersContext";
 import { CustomerContextProvider } from "./context/customerContext";
 import { RepairContextProvider } from "./context/repairContext";
-import { SaleContextProvider } from "./context/salesContext";
 import { SaleItemsContextProvider } from "./context/saleItemsContext";
+import { SaleContextProvider } from "./context/salesContext";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -23,7 +23,7 @@ createRoot(document.getElementById("root")).render(
                   <SaleItemsContextProvider>
                     <AllRoutes />
                   </SaleItemsContextProvider>
-                </SaleContextProvider>
+                  </SaleContextProvider>
               </RepairContextProvider>
             </ProductContextProvider>
           </UserContextProvider>
