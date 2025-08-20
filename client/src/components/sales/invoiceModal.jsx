@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UseProductContext } from "../../context/productContext";
 import Topbar from "../topbar";
 import logo from "../../assets/logo.png";
 import { UseRepairContext } from "../../context/repairContext";
 import { UseCustomerContext } from "../../context/customerContext";
+import { UseSaleContext } from "../../context/salesContext";
 
 export const Invoice = () => {
   const [invoiceItems, setInvoiceItem] = useState("products");
@@ -11,11 +12,13 @@ export const Invoice = () => {
   const { repairs } = UseRepairContext();
   const { customers } = UseCustomerContext();
   const [itemArray, setItemArray] = useState([]);
-
+  const { sales, refreshSales } = UseSaleContext();
   const [customerName, setCustomerName] = useState("");
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [email, setEmail] = useState("");
+  const [invoiceid, setInvoiceid] = useState("");
+  const [ customerid, setCustomerid] = useState("");
 
   // track dealer toggles
   const [dealerPriceStates, setDealerPriceStates] = useState({});
@@ -62,12 +65,10 @@ export const Invoice = () => {
     });
   };
 
-  // add repair
-  // add repair
   const handleRepairsAdd = (repair) => {
     setItemArray((prev) => {
       const exists = prev.find((item) => item.id === repair.order_id);
-      if (exists) return prev; // don't add again
+      if (exists) return prev;
 
       return [
         ...prev,
@@ -83,16 +84,45 @@ export const Invoice = () => {
     });
   };
 
-  // remove product/repair from bill
   const handleRemove = (id) => {
     setItemArray((prev) => prev.filter((item) => item.id !== id));
   };
 
-  // total
   const totalSum = itemArray.reduce(
     (acc, item) => acc + Number(item.totalPrice),
     0
   );
+
+  const generateInvoiceId = () => {
+    const today = new Date();
+    const year = String(today.getFullYear()).slice(-2);
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    const datePart = `${year}${month}${day}`;
+    const prefix = "Inv";
+    const todaySales = sales.filter((r) =>
+      r.order_id?.startsWith(prefix + datePart)
+    );
+    let maxSeq = 0;
+    todaySales.forEach((r) => {
+      const seq = parseInt(
+        r.order_id.slice(prefix.length + datePart.length),
+        10
+      );
+      if (!isNaN(seq) && seq > maxSeq) maxSeq = seq;
+    });
+    return prefix + datePart + (maxSeq + 1);
+  };
+
+  useEffect(() => {
+    setInvoiceid(generateInvoiceId());
+  }, [sales]);
+
+  const handleaddsale = () => {
+    const data = {
+      invoiceid: invoiceid,
+    };
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen">
@@ -101,62 +131,58 @@ export const Invoice = () => {
         {/* Left Section */}
         <div className="flex-2 bg-white rounded-2xl shadow-lg overflow-auto">
           {/* Customer details */}
+          {/* Customer details with search */}
           <div className="bg-white rounded-xl shadow-md p-4 mb-4">
             <h2 className="text-sm font-semibold mb-3 text-gray-700">
-              Customer Details
+              Customer
             </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="flex flex-col">
-                <label className="text-xs font-medium text-gray-600 mb-1">
-                  Name
-                </label>
-                <input
-                  type="text"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  placeholder="Enter customer name"
-                  className="border text-xs border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
-              </div>
-              <div className="flex flex-col">
-                <label className="text-xs font-medium text-gray-600 mb-1">
-                  Phone
-                </label>
-                <input
-                  type="text"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  placeholder="Enter phone number"
-                  className="border text-xs border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
-              </div>
-              <div className="flex flex-col">
-                <label className="text-xs font-medium text-gray-600 mb-1">
-                  Email
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter email"
-                  className="border text-xs border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
-              </div>
-              <div className="flex flex-col">
-                <label className="text-xs font-medium text-gray-600 mb-1">
-                  Address
-                </label>
-                <input
-                  type="text"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder="Enter address"
-                  className="border text-xs border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-400"
-                />
-              </div>
+
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search by name, phone or address"
+                value={customerName}
+                onChange={(e) => setCustomerName(e.target.value)}
+                className="w-full border text-xs border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              />
+
+              {/* Dropdown results */}
+              {customerName && (
+                <div className="absolute z-10 bg-white border border-gray-300 rounded-lg mt-1 w-full max-h-40 overflow-auto shadow-lg">
+                  {customers
+                    .filter(
+                      (c) =>
+                        c.name
+                          .toLowerCase()
+                          .includes(customerName.toLowerCase()) ||
+                        c.phone
+                          .toLowerCase()
+                          .includes(customerName.toLowerCase()) ||
+                        c.address
+                          .toLowerCase()
+                          .includes(customerName.toLowerCase())
+                    )
+                    .map((c) => (
+                      <div
+                        key={c.id}
+                        onClick={() => {
+                          setCustomerName(c.name);
+                          setPhone(c.phone);
+                          setAddress(c.address);
+                          setEmail(c.email);
+                        }}
+                        className="px-3 py-2 text-sm cursor-pointer hover:bg-blue-100"
+                      >
+                        <div className="font-medium">{c.name}</div>
+                        <div className="text-xs text-gray-500">
+                          {c.phone} • {c.address}
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              )}
             </div>
           </div>
-
           {/* Tabs */}
           <div className="flex gap-2 items-center justify-center border-b bg-gray-100">
             <div
