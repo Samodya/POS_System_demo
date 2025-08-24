@@ -22,33 +22,33 @@ const getAllModelCodes = async () => {
     return rows
 }
 
-const getCustomersById = async (id) => {
-    const [rows] = await db.query("SELECT * FROM customers WHERE id = ?", [id]);
+const getModelById = async (id) => {
+    const [rows] = await db.query("SELECT * FROM itemmodel WHERE id = ?", [id]);
     return rows[0];
   };
   
-  const updateCustomer = async (id, data) => {
-    const { name, phone, email, address } = data;
+  const updateModel = async (id, data) => {
+    const { modelCode, buyning_Price, dealers_price, selling_price } = data;
   
     await db.query(
-      `UPDATE customers
-         SET name = ?, phone = ?, email = ?, address = ?
+      `UPDATE itemmodel
+         SET modelCode = ?, buyning_Price = ?, dealers_price = ?, selling_price = ?
          WHERE id = ?`,
-      [name, phone, email, address, id]
+      [ modelCode, buyning_Price, dealers_price, selling_price]
     );
   
     return { id, ...data };
   };
   
-  const deleteCustomer = async (id) => {
-    await db.query("DELETE FROM customers WHERE id = ?", [id]);
+  const deleteModel = async (id) => {
+    await db.query("DELETE FROM itemmodel WHERE id = ?", [id]);
   };
   
   module.exports = {
     createItemModel,
     getAllModelCodes,
-    getCustomersById,
-    updateCustomer,
-    deleteCustomer,
+    getModelById,
+    updateModel,
+    deleteModel,
   };
   
