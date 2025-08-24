@@ -16,6 +16,22 @@ const createRepairTable = async (db) => {
       )
     `);
   };
+
+  const alteRepairTable = async (db) => {
+    // Check if column exists
+    const [columns] = await db.query(`
+      SHOW COLUMNS FROM repairs LIKE 'repair_fix_note';
+    `);
   
-  module.exports = { createRepairTable };
+    if (columns.length === 0) {
+      await db.query(`
+        ALTER TABLE repairs 
+        ADD COLUMN repair_fix_note INT;
+      `);
+    }
+  
+    // Check if constraint exists
+  };
+  
+  module.exports = { createRepairTable, alteRepairTable };
   
