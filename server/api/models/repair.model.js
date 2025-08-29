@@ -6,7 +6,7 @@ const createRepairTable = async (db) => {
         customer_id INT,
         device VARCHAR(100),
         issue TEXT,
-        status ENUM('pending', 'in_progress', 'Awaiting_parts', 'completed') DEFAULT 'pending',
+        status ENUM('pending', 'in_progress', 'Awaiting_parts', 'completed', 'Delivered') DEFAULT 'pending',
         cost DECIMAL(10,2),
         received_date DATE,
         completed_date DATE,
@@ -16,22 +16,33 @@ const createRepairTable = async (db) => {
       )
     `);
   };
-
   const alteRepairTable = async (db) => {
-    // Check if column exists
+    // Remove `cost` column if it exists
     const [columns] = await db.query(`
+      SHOW COLUMNS FROM repairs LIKE 'cost';
+    `);
+  
+    if (columns.length > 0) {
+      await db.query(`
+        ALTER TABLE repairs 
+        DROP COLUMN cost;
+      `);
+    }
+  
+    // Check if `repair_fix_note` column exists
+    const [fixNoteColumn] = await db.query(`
       SHOW COLUMNS FROM repairs LIKE 'repair_fix_note';
     `);
   
-    if (columns.length === 0) {
+    if (fixNoteColumn.length === 0) {
       await db.query(`
         ALTER TABLE repairs 
         ADD COLUMN repair_fix_note INT;
       `);
     }
-  
-    // Check if constraint exists
   };
   
-  module.exports = { createRepairTable, alteRepairTable };
+   
+  
+  module.exports = { createRepairTable, alteRepairTable, };
   
