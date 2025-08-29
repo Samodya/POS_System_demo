@@ -44,9 +44,15 @@ const createProduct = async (productData, file) => {
   return { id: result.insertId, ...productData, image_path, image_name, image_size };
 };
 const getAllProducts = async () => {
-  const [rows] = await db.query("SELECT * FROM products ORDER BY created_at DESC");
+  const [rows] = await db.query(`
+    SELECT p.*, im.modelCode
+    FROM products p
+    LEFT JOIN itemmodel im ON p.itemmodel_id = im.modelCode
+    ORDER BY p.created_at DESC
+  `);
   return rows;
 };
+
 
 const getProductById = async (id) => {
   const [rows] = await db.query("SELECT * FROM products WHERE id = ?", [id]);
