@@ -2,18 +2,20 @@ import { Trash2, X } from "lucide-react";
 import { useState } from "react";
 import apiService from "../../utilities/httpservices";
 import Cookies from "js-cookie";
+import { UseProductContext } from "../../context/productContext";
 
 
 export const DeleteItem = ({ id, productName }) => {
   const [showmenu, setShowmenu] = useState(false);
   const token = Cookies.get('token');
+  const { refreshProducts } = UseProductContext();
 
   const handleDelete = async () => {
     try {
         const result = await apiService.deleteData('products',id, token)
         console.log('Button pressed');
-        
-        setShowmenu(false)
+        refreshProducts();
+        setShowmenu(false);
     } catch (error) {
         console.log(error);
     }

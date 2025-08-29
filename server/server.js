@@ -10,6 +10,9 @@ const customerRoutes = require("./api/routes/customers.routes");
 const repairRoutes = require("./api/routes/repair.routes");
 const saleRoutes = require("./api/routes/sales.routes");
 const saleItemsRoutes = require("./api/routes/saleItems.routes");
+const itemCategoryRoutes = require("./api/routes/itemCategory.routes");
+const repairItemsRoutes = require("./api/routes/repairItems.routes");
+const repairSaleRoutes = require("./api/routes/repairSales.routes");
 
 const app = express();
 app.use(cors());
@@ -33,6 +36,10 @@ app.use(express.json());
     app.use("/api/repairs",repairRoutes);
     app.use("/api/sales", saleRoutes);
     app.use("/api/saleitems",saleItemsRoutes);
+    app.use("/api/item-category", itemCategoryRoutes);
+    app.use("/api/repair-items",repairItemsRoutes);
+    app.use("/api/repair-sales", repairSaleRoutes);
+
 
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
