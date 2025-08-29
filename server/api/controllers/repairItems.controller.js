@@ -49,7 +49,7 @@ const getAll = async (_req, res) => {
   const remove = async (req, res) => {
     try {
       await repairItemService.deleteRepairsItem(req.params.id);
-      res.status(204).json({message:"Customer details deleted"}).end();
+      res.status(204).json({message:"repair details deleted"}).end();
     } catch {
       res.status(500).json({ error: "Failed to delete product" });
     }

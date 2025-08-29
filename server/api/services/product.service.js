@@ -1,5 +1,5 @@
 // services/product.service.js
-const connectMySQLDB = require("../../config"); 
+const connectMySQLDB = require("../../config");
 
 let db;
 (async () => {
@@ -14,7 +14,8 @@ const createProduct = async (productData, file) => {
     price,
     dealers_price,
     quantity,
-    description
+    description,
+    model_Code
   } = productData;
 
   const image_path = file ? file.path : null;
@@ -23,7 +24,7 @@ const createProduct = async (productData, file) => {
 
   const query = `
     INSERT INTO products 
-    (name, category,buying_price, price, dealers_price, quantity, description, image_path, image_name, image_size) 
+    (name, category,buying_price, price, dealers_price, quantity, description, image_path, image_name, image_size, model_Code) 
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)
   `;
 
@@ -37,11 +38,18 @@ const createProduct = async (productData, file) => {
     description,
     image_path,
     image_name,
-    image_size
+    image_size,
+    model_Code
   ];
 
   const [result] = await db.query(query, values);
-  return { id: result.insertId, ...productData, image_path, image_name, image_size };
+  return {
+    id: result.insertId,
+    ...productData,
+    image_path,
+    image_name,
+    image_size,
+  };
 };
 const getAllProducts = async () => {
   const [rows] = await db.query(`
@@ -53,9 +61,13 @@ const getAllProducts = async () => {
   return rows;
 };
 
-
 const getProductById = async (id) => {
-  const [rows] = await db.query("SELECT * FROM products WHERE id = ?", [id]);
+  const [rows] = await db.query(
+    ` SELECT p.*, im.modelCode
+  FROM products p
+  LEFT JOIN itemmodel im ON p.itemmodel_id = im.modelCode WHERE id = ?`,
+    [id]
+  );
   return rows[0];
 };
 
@@ -67,7 +79,8 @@ const updateProduct = async (id, productData, file) => {
     price,
     dealers_price,
     quantity,
-    description
+    description,
+    model_Code
   } = productData;
 
   // Start building update query
@@ -80,9 +93,19 @@ const updateProduct = async (id, productData, file) => {
       dealers_price = ?, 
       quantity = ?, 
       description = ?
+      model_Code = ?
   `;
-  
-  let values = [name, category, buying_price, price, dealers_price, quantity, description];
+
+  let values = [
+    name,
+    category,
+    buying_price,
+    price,
+    dealers_price,
+    quantity,
+    description,
+    model_Code
+  ];
 
   // Add image columns if a file is uploaded
   if (file) {
@@ -95,7 +118,15 @@ const updateProduct = async (id, productData, file) => {
 
   await db.query(query, values);
 
-  return { id, ...productData, ...(file && { image_path: file.path, image_name: file.filename, image_size: file.size }) };
+  return {
+    id,
+    ...productData,
+    ...(file && {
+      image_path: file.path,
+      image_name: file.filename,
+      image_size: file.size,
+    }),
+  };
 };
 
 const getTotalBuyingPrice = async () => {
@@ -105,8 +136,6 @@ const getTotalBuyingPrice = async () => {
   `);
   return rows[0].total_buying_price || 0;
 };
-
-
 
 const deleteProduct = async (id) => {
   await db.query("DELETE FROM products WHERE id = ?", [id]);
