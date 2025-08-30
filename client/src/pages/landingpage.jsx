@@ -12,6 +12,7 @@ import { Invoice } from "../components/sales/invoiceModal";
 import { Users } from "./users";
 import { AddRepair } from "../components/repair/addRepair";
 import { EditRepair } from "../components/repair/editRepair";
+import { ManageProductCategory } from "../components/Inventory_components/manage_productcategory";
 
 export const LandingPage = () => {
   return (
@@ -32,6 +33,7 @@ export const LandingPage = () => {
           <Route path="/customer" element={<Customer />} />
           <Route path="/New Sale" element={<NewSale />} />
           <Route path="/users" element={<Users/>} />
+          <Route path="/p_category" element={<ManageProductCategory/>} />
           {/* <Route
                     path="/users"
                     element={<UsersPage/>}

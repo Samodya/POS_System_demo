@@ -26,7 +26,6 @@ export const AddRepair = () => {
   const [device, setDevice] = useState("");
   const [issue, setIssue] = useState("");
   const [status, setStatus] = useState("Pending");
-  const [cost, setCost] = useState("");
   const [receivedDate, setReceivedDate] = useState("");
   const [completedDate, setCompletedDate] = useState("");
   const [assignedUserId, setAssignedUserId] = useState("");
@@ -80,7 +79,6 @@ export const AddRepair = () => {
         device,
         issue,
         status,
-        cost,
         received_date: receivedDate,
         completed_date: completedDate,
         assigned_to: assignedUserId,
@@ -226,13 +224,7 @@ export const AddRepair = () => {
                 onChange={(e) => setDevice(e.target.value)}
                 className="border rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
               />
-              <input
-                type="number"
-                placeholder="Cost"
-                value={cost}
-                onChange={(e) => setCost(e.target.value)}
-                className="border rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
-              />
+             
               <div className="flex flex-col">
                 <label className="block text-xs font-medium text-gray-500">Status:</label>
                 <select

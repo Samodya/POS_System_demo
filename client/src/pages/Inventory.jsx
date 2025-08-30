@@ -5,6 +5,7 @@ import { AddProduct } from "../components/Inventory_components/invetory_add_moda
 import { InventoryListItem } from "../components/Inventory_components/inventory_list_item";
 import { UseProductContext } from "../context/productContext";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export const Inventory = () => {
   const { products, getLowStockProducts, getThisWeekProducts } = UseProductContext();
@@ -64,7 +65,13 @@ export const Inventory = () => {
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
+        <div className="flex flex-row-reverse gap-2">
         <AddProduct />
+        <Link to={"../p_category"} className="bg-gradient-to-r from-black via-[#0a0f2c] to-[#013ea0] text-white flex p-2 
+        rounded cursor-pointer items-center justify-center gap-2 hover:brightness-110 transition">
+          Manage Product Categoies
+        </Link>
+        </div>
       </div>
 
       {/* Product List */}

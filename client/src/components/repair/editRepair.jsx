@@ -14,6 +14,7 @@ import {
   Ticket,
   User,
   UserStarIcon,
+  FileText,
 } from "lucide-react";
 
 export const EditRepair = () => {
@@ -23,17 +24,15 @@ export const EditRepair = () => {
   const token = Cookies.get("token");
 
   const [orderId, setOrderId] = useState("");
-  const [customerid, setCustomerid] = useState("");
-
   const [customerName, setCustomerName] = useState("");
   const [phone, setPhone] = useState("");
-
   const [device, setDevice] = useState("");
   const [issue, setIssue] = useState("");
   const [status, setStatus] = useState("Pending");
   const [cost, setCost] = useState("");
   const [receivedDate, setReceivedDate] = useState("");
   const [completedDate, setCompletedDate] = useState("");
+  const [repairNote, setRepairNote] = useState("");
   const [assignedUserId, setAssignedUserId] = useState("");
   const { id } = useParams();
 
@@ -46,10 +45,10 @@ export const EditRepair = () => {
       setDevice(result.device);
       setIssue(result.issue);
       setStatus(result.status);
-      setCost(result.cost);
       setReceivedDate(result.received_date?.split("T")[0] || "");
       setCompletedDate(result.completed_date?.split("T")[0] || "");
       setAssignedUserId(result.assigned_to || "");
+      setRepairNote(result.repair_fix_note || "");
     } catch (error) {
       alert(error);
     }
@@ -60,7 +59,6 @@ export const EditRepair = () => {
   }, [id]);
 
   const handleSubmit = async () => {
-    
     try {
       const repairData = {
         device,
@@ -70,8 +68,9 @@ export const EditRepair = () => {
         received_date: receivedDate,
         completed_date: completedDate,
         assigned_to: assignedUserId,
+        repair_fix_note: repairNote,
       };
-      await apiService.updateData("repairs",id, repairData, token);
+      await apiService.updateData("repairs", id, repairData, token);
       alert("Repair updated successfully!");
     } catch (error) {
       console.error(error);
@@ -82,68 +81,61 @@ export const EditRepair = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Topbar title="Edit Repair Details" />
-
-      <div className="max-w-3xl mx-auto w-full p-6 space-y-6">
-        {/* Contact Info Card */}
-        <div className="bg-white rounded-2xl shadow p-6 space-y-3 ">
-          <h2 className="text-lg font-semibold text-gray-800 border-b pb-2">
-            Contact Details
-          </h2>
-          <div className="grid grid-cols-2">
-            <p className="flex items-center gap-2 text-sm text-gray-700 mb-2">
-              <Ticket size={16} className="text-gray-500" />
-              <span className="font-medium">Ticket No:</span> {orderId}
-            </p>
-            <p className="flex items-center gap-2 text-sm text-gray-700 mb-2">
-              <UserStarIcon size={16} className="text-gray-500" />
-              <span className="font-medium">Customer Name:</span> {customerName}
-            </p>
-            <p className="flex items-center gap-2 text-sm text-gray-700 mb-2">
-              <Phone size={16} className="text-gray-500" />
-              <span className="font-medium">Contact No:</span> {phone}
-            </p>
-          </div>
+    <Topbar title="Edit Repair Details" />
+  
+    <div className="max-w-6xl mx-auto w-full px-6 py-8 space-y-8">
+      {/* Contact Details card - unchanged */}
+      <div className="bg-white rounded-xl shadow-md p-6">
+        <h2 className="text-lg font-semibold text-gray-800 border-b pb-3 mb-4">
+          Contact Details
+        </h2>
+        <div className="grid grid-cols-2 gap-y-4 text-sm">
+          <p className="flex items-center gap-2 text-gray-700">
+            <Ticket size={16} className="text-gray-500" />
+            <span className="font-medium">Ticket No:</span> {orderId}
+          </p>
+          <p className="flex items-center gap-2 text-gray-700">
+            <UserStarIcon size={16} className="text-gray-500" />
+            <span className="font-medium">Customer Name:</span> {customerName}
+          </p>
+          <p className="flex items-center gap-2 text-gray-700">
+            <Phone size={16} className="text-gray-500" />
+            <span className="font-medium">Contact No:</span> {phone}
+          </p>
+          <p className="flex items-center gap-2 text-gray-700">
+            <DollarSign size={16} className="text-gray-500" />
+            <span className="font-medium">Total Cost:</span>{" "}
+            {cost ? `Rs.${cost}` : "Rs.0.00"}
+          </p>
         </div>
-
-        {/* Repair Details Card */}
-        <div className="bg-white rounded-2xl shadow p-6 space-y-5">
-          <h2 className="text-lg font-semibold text-gray-800 border-b pb-2">
+      </div>
+  
+      {/* Repair Details section with 2 columns */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left column: form */}
+        <div className="bg-white rounded-xl shadow-md p-6 lg:col-span-2">
+          <h2 className="text-lg font-semibold text-gray-800 border-b pb-3 mb-4">
             Repair Details
           </h2>
-
-          <div className="space-y-4 ">
+  
+          <div className="space-y-5">
             {/* Device */}
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-                  <Computer size={16} /> Device
-                </label>
-                <input
-                  type="text"
-                  value={device}
-                  onChange={(e) => setDevice(e.target.value)}
-                  className="w-full border rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-200 focus:border-blue-500"
-                />
-              </div>
-
-              {/* Cost */}
-              <div>
-                <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-                  <DollarSign size={16} /> Cost
-                </label>
-                <input
-                  type="number"
-                  value={cost}
-                  onChange={(e) => setCost(e.target.value)}
-                  className="w-full border rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-200 focus:border-blue-500"
-                />
-              </div>
+            <div>
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+                <Computer size={16} /> Device
+              </label>
+              <input
+                type="text"
+                value={device}
+                onChange={(e) => setDevice(e.target.value)}
+                className="w-full border rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-200 focus:border-blue-500"
+              />
             </div>
+  
             {/* Issue */}
             <div>
               <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-                <Computer size={16} /> Issue
+                <FileText size={16} /> Issue
               </label>
               <input
                 type="text"
@@ -152,9 +144,9 @@ export const EditRepair = () => {
                 className="w-full border rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-200 focus:border-blue-500"
               />
             </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              {/* Received Date */}
+  
+            {/* Dates */}
+            <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
                   <Calendar size={16} /> Received Date
@@ -166,11 +158,9 @@ export const EditRepair = () => {
                   className="w-full border rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-200 focus:border-blue-500"
                 />
               </div>
-
-              {/* Completed Date */}
               <div>
                 <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
-                  <Calendar size={16} /> Completing Date
+                  <Calendar size={16} /> Completed Date
                 </label>
                 <input
                   type="date"
@@ -180,7 +170,20 @@ export const EditRepair = () => {
                 />
               </div>
             </div>
-
+  
+            {/* Repair Note */}
+            <div>
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+                <FileText size={16} /> Repair Fixing Description
+              </label>
+              <textarea
+                value={repairNote}
+                onChange={(e) => setRepairNote(e.target.value)}
+                rows="3"
+                className="w-full border rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-200 focus:border-blue-500"
+              />
+            </div>
+  
             {/* Assigned User */}
             <div>
               <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
@@ -191,7 +194,7 @@ export const EditRepair = () => {
                 onChange={(e) => setAssignedUserId(e.target.value)}
                 className="w-full border rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-200 focus:border-blue-500"
               >
-                <option value={assignedUserId}>Select a user</option>
+                <option value="">Select a user</option>
                 {users.map((user) => (
                   <option key={user.id} value={user.id}>
                     {user.fullname}
@@ -200,9 +203,9 @@ export const EditRepair = () => {
               </select>
             </div>
           </div>
-
-          {/* Save Button */}
-          <div className="pt-4">
+  
+          {/* Save button */}
+          <div className="pt-6">
             <button
               onClick={handleSubmit}
               className="w-full py-2 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg shadow hover:from-blue-700 hover:to-indigo-700 transition duration-200"
@@ -211,7 +214,19 @@ export const EditRepair = () => {
             </button>
           </div>
         </div>
+  
+        {/* Right column: placeholder for future components */}
+        <div className="bg-white rounded-xl shadow-md p-6">
+          <h2 className="text-lg font-semibold text-gray-800 border-b pb-3 mb-4">
+            Required Parts or Acce
+          </h2>
+          <p className="text-sm text-gray-500">
+            Space reserved for additional components later.
+          </p>
+        </div>
       </div>
     </div>
+  </div>
+  
   );
 };
