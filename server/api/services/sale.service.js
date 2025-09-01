@@ -17,7 +17,6 @@ const createSale = async (data) => {
   return { id: result.insertId, ...data };
 };
 
-
 const getAllSales = async () => {
   const [rows] = await db.query(`
     SELECT 
@@ -31,10 +30,19 @@ const getAllSales = async () => {
   return rows;
 };
 
-
-
 const getSaleById = async (id) => {
-  const [rows] = await db.query("SELECT * FROM sales WHERE id = ?", [id]);
+  const [rows] = await db.query(
+    `
+    SELECT 
+      s.*, 
+      c.name AS customer_name, 
+      c.phone
+    FROM sales s
+    LEFT JOIN customers c ON c.id = s.customer_id
+    WHERE s.id = ?
+    `,
+    [id]
+  );
   return rows[0];
 };
 

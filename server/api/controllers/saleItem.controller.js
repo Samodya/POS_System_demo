@@ -33,6 +33,16 @@ const getAll = async (_req, res) => {
     }
   };
 
+  const getBySaleId = async (req, res) => {
+    try {
+      const saleItem = await salesItemServices.getAllSalesItemBySaleid(req.params.id);
+      if (!saleItem) return res.status(404).json({ error: "Not found" });
+      res.json(saleItem);
+    } catch {
+      res.status(500).json({ error: "Failed to get sale item" });
+    }
+  };
+
   const update = async (req, res) => {
     try {
       
@@ -56,5 +66,5 @@ const getAll = async (_req, res) => {
   };
 
   module.exports = {
-    create, getAll, getById, update, remove
+    create, getAll, getById, getBySaleId, update, remove
   }

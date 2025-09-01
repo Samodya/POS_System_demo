@@ -7,12 +7,12 @@ import { Reports } from "./Reports";
 import { Inventory } from "./Inventory";
 import { Customer } from "./customer";
 import { Repairs } from "./repairs";
-import { NewSale } from "../components/sales/newsale";
 import { Invoice } from "../components/sales/invoiceModal";
 import { Users } from "./users";
 import { AddRepair } from "../components/repair/addRepair";
 import { EditRepair } from "../components/repair/editRepair";
 import { ManageProductCategory } from "../components/Inventory_components/manage_productcategory";
+import { ViewSale } from "../components/sales/viewsale";
 
 export const LandingPage = () => {
   return (
@@ -23,6 +23,7 @@ export const LandingPage = () => {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/sales" element={<Sales />} />
+          <Route path="/sales_info/:saleid" element={<ViewSale />} />
           <Route path="/invoice" element={<Invoice />} />
           <Route path="/products" element={<Products />} />
           <Route path="/repairs" element={<Repairs />} />
@@ -31,7 +32,6 @@ export const LandingPage = () => {
           <Route path="/reports" element={<Reports />} />
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/customer" element={<Customer />} />
-          <Route path="/New Sale" element={<NewSale />} />
           <Route path="/users" element={<Users/>} />
           <Route path="/p_category" element={<ManageProductCategory/>} />
           {/* <Route
