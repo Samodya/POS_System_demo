@@ -13,7 +13,7 @@ export const InventoryListItem = ({
   quantity,
   description,
   onDelete,
-  itemModel = "Acer",
+  itemModel,
 }) => {
   const [imageSrc, setImageSrc] = useState("");
 
@@ -25,7 +25,7 @@ export const InventoryListItem = ({
   }, [filePath]);
 
   return (
-    <div className="w-[60vw] rounded-xl shadow-md bg-white hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 flex">
+    <div className="rounded-xl shadow-md bg-white hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 flex">
       {/* Image */}
       <div className="w-36 h-auto bg-gray-100 flex items-center justify-center">
         {imageSrc ? (

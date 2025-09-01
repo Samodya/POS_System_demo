@@ -12,7 +12,6 @@ const createProductTable = async (db) => {
       image_path VARCHAR(255),
       image_name VARCHAR(255),
       image_size INT,
-      model_Code INT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `);

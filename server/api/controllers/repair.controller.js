@@ -36,6 +36,7 @@ const getAll = async (_req, res) => {
     try {
       
       const data = {
+        
         ...req.body,
       };
       const updated = await repairServices.updateRepair(req.params.id, data);

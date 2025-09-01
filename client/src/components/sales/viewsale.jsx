@@ -1,4 +1,4 @@
-export const NewSale = () => {
+export const ViewSale = () => {
     return(
         <div></div>
     );

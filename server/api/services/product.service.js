@@ -15,7 +15,7 @@ const createProduct = async (productData, file) => {
     dealers_price,
     quantity,
     description,
-    model_Code
+    itemmodel_id
   } = productData;
 
   const image_path = file ? file.path : null;
@@ -24,8 +24,8 @@ const createProduct = async (productData, file) => {
 
   const query = `
     INSERT INTO products 
-    (name, category,buying_price, price, dealers_price, quantity, description, image_path, image_name, image_size, model_Code) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)
+    (name, category, buying_price, price, dealers_price, quantity, description, image_path, image_name, image_size, itemmodel_id) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
@@ -39,7 +39,7 @@ const createProduct = async (productData, file) => {
     image_path,
     image_name,
     image_size,
-    model_Code
+    itemmodel_id
   ];
 
   const [result] = await db.query(query, values);
@@ -51,11 +51,12 @@ const createProduct = async (productData, file) => {
     image_size,
   };
 };
+
 const getAllProducts = async () => {
   const [rows] = await db.query(`
-    SELECT p.*, im.modelCode
+    SELECT p.*, im.modelCode as modelcode
     FROM products p
-    LEFT JOIN itemmodel im ON p.itemmodel_id = im.modelCode
+    LEFT JOIN itemmodel im ON p.itemmodel_id = im.id
     ORDER BY p.created_at DESC
   `);
   return rows;
@@ -141,6 +142,16 @@ const deleteProduct = async (id) => {
   await db.query("DELETE FROM products WHERE id = ?", [id]);
 };
 
+const reduceProductQuantity = async (productId, qty) => {
+  const query = `
+    UPDATE products 
+    SET quantity = quantity - ? 
+    WHERE id = ? AND quantity >= ?`;
+  
+  await db.query(query, [qty, productId, qty]);
+};
+
+
 module.exports = {
   createProduct,
   getAllProducts,
@@ -148,4 +159,5 @@ module.exports = {
   updateProduct,
   getTotalBuyingPrice,
   deleteProduct,
+  reduceProductQuantity
 };

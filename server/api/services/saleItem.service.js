@@ -1,5 +1,6 @@
 // services/product.service.js
 const connectMySQLDB = require("../../config");
+const { reduceProductQuantity } = require("./product.service");
 
 let db;
 (async () => {
@@ -11,19 +12,23 @@ const createSalesItem = async (data) => {
     sale_id,
     product_id,
     quantity,
-    price
+    price,
+    totalprice
   } = data;
 
   const [result] = await db.query(
-    `INSERT INTO sale_items (sale_id, product_id, quantity, price)
-         VALUES (?, ?, ?, ?)`,
+    `INSERT INTO sale_items (sale_id, product_id, quantity, price, totalprice)
+         VALUES (?, ?, ?, ?, ?)`,
     [
         sale_id,
         product_id,
         quantity,
-        price
+        price,
+        totalprice
     ]
   );
+
+  await reduceProductQuantity(product_id,quantity)
 
   return { id: result.insertId, ...data };
 };

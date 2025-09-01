@@ -30,8 +30,11 @@ export const Inventory = () => {
   };
 
   const filteredProducts = getFilteredByTab().filter((product) =>
-    product.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    product.modelcode?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  console.log(products);
 
   return (
     <div className="w-full min-h-screen bg-gray-50">
@@ -79,7 +82,7 @@ export const Inventory = () => {
         {filteredProducts.length === 0 ? (
           <p className="text-center text-gray-500 text-lg mt-20">No products found</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-15">
+          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-15">
             {filteredProducts.map((product) => (
               <InventoryListItem
                 key={product.id}
@@ -91,6 +94,7 @@ export const Inventory = () => {
                 price={product.price}
                 quantity={product.quantity}
                 category={product.category}
+                itemModel={product.modelcode}
               />
             ))}
           </div>

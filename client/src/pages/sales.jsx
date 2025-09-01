@@ -2,8 +2,12 @@ import { Link } from "react-router-dom";
 import StatCard from "../components/statcard";
 import Topbar from "../components/topbar";
 import { Bell, ChevronDown, Clock, DollarSign, Search, ShoppingBag, Wrench } from "lucide-react";
+import { UseSaleContext } from "../context/salesContext";
 
 export const Sales = () => {
+
+  const { sales } = UseSaleContext()
+
   return (
     <div className="bg-white w-full h-screen">
       <Topbar title={"Sales"} />
@@ -39,61 +43,55 @@ export const Sales = () => {
         </div>
 
         {/* Sales Table */}
-        <div className="border border-gray-200 rounded-xl shadow-sm overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">
-                  Invoice ID
-                </th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">
-                  Customer
-                </th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">
-                  Item/Service
-                </th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">
-                  Amount
-                </th>
-                <th className="text-left px-4 py-3 font-medium text-gray-600">
-                  Date
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                {
-                  id: "INV001",
-                  customer: "John Doe",
-                  item: "Laptop Screen Replacement",
-                  amount: "$120",
-                  date: "2025-08-08",
-                },
-                {
-                  id: "INV002",
-                  customer: "Sarah Lee",
-                  item: "Gaming Mouse",
-                  amount: "$45",
-                  date: "2025-08-08",
-                },
-                {
-                  id: "INV003",
-                  customer: "Mike Chan",
-                  item: "PC Build Service",
-                  amount: "$650",
-                  date: "2025-08-07",
-                },
-              ].map((row, i) => (
-                <tr key={i} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-2">{row.id}</td>
-                  <td className="px-4 py-2">{row.customer}</td>
-                  <td className="px-4 py-2">{row.item}</td>
-                  <td className="px-4 py-2">{row.amount}</td>
-                  <td className="px-4 py-2">{row.date}</td>
+        <div className="overflow-x-auto">
+          <div className="min-w-[600px] sm:min-w-full bg-white shadow-lg rounded-2xl border border-gray-200">
+            <table className="w-full border-collapse">
+              <thead className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white text-sm">
+                <tr>
+                <th className="py-3 px-4 text-center text-sm font-semibold">Invoice Id</th>
+                  <th className="py-3 px-4 text-center text-sm font-semibold">Date</th>
+                  <th className="py-3 px-4 text-center text-sm font-semibold">Customer</th>
+                  <th className="py-3 px-4 text-center text-sm font-semibold">Contact no</th>
+                  <th className="py-3 px-4 text-center text-sm font-semibold">Amount</th>
+                  <th className="py-3 px-4 text-center text-sm font-semibold">Action</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {sales.length > 0 ? (
+                  sales.map((sale, index) => (
+                    <tr
+                      key={sale.id || index}
+                      className={`text-gray-600 text-sm hover:bg-gray-50 transition ${
+                        index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                      }`}
+                    >
+                      <td className="text-center p-3 font-medium text-gray-700">{sale.invoiceid}</td>
+                       <td className="text-center p-3 font-medium text-gray-700">
+                       {new Date(sale.sale_date).toISOString().split("T")[0]}</td>
+                      <td className="text-center p-3 font-medium text-gray-700">{sale.customer_name}</td>
+                      <td className="text-center p-3 font-medium text-gray-700">{sale.phone}</td>
+                      <td className="text-center p-3 font-medium text-gray-700">{sale.total_amount}</td> 
+                      <td className="text-center p-3 font-medium text-gray-700 flex items-center justify-center gap-2">
+                        {/* <EditUsers
+                            id={user.id}
+                        />
+                        <DeleteUser
+                            id={user.id}
+                            fullname={user.fullname}
+                        /> */}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="3" className="py-6 text-center text-gray-500">
+                      No users found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>

@@ -17,6 +17,7 @@ export const EditItem = ({
   const [formData, setFormData] = useState({
     productName: "",
     category: "",
+    itemmodel_id: "",
     buyingPrice: "",
     sellingPrice: "",
     dealerPrice: "",
@@ -31,6 +32,7 @@ export const EditItem = ({
         setFormData({
           productName: result.name || "",
           category: result.category || "",
+          itemmodel_id:result.itemmodel_id || "",
           buyingPrice: result.buying_price || "",
           sellingPrice: result.price || "",
           dealerPrice: result.dealers_price || "",
@@ -91,6 +93,19 @@ export const EditItem = ({
       console.error("Upload failed", err);
     }
   };
+
+  const handleModelSelect = (item) => {
+    setFormData((prev) => ({
+      ...prev,
+      itemmodel_id: item.id,                 // ✅ model id
+      buyingPrice: item.buying_price || "",  // ✅ autofill
+      sellingPrice: item.selling_price || "",        // ✅ autofill
+      dealerPrice: item.dealers_price || "", // ✅ autofill
+    }));
+    setModelSearch(item.modelCode); // show selected code in input
+    setShowModelList(false);
+  };
+  
 
   return (
     

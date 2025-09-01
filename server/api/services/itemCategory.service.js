@@ -44,12 +44,10 @@ const updateItemModel = async (id, itemmodelData) => {
 
   await db.query(
     `UPDATE itemmodel 
-        SET id= ? ,modelCode= ?, buying_price = ? ,dealers_price= ? ,selling_price= ? ,added_date= ? 
+        SET modelCode = ?, buying_price = ?, dealers_price = ?, selling_price = ?, added_date = ?
         WHERE id = ?`,
-    [modelCode, buying_price, dealers_price, selling_price, added_date]
+    [modelCode, buying_price, dealers_price, selling_price, added_date, id]
   );
-
-  
 
   return { id, ...itemmodelData };
 };

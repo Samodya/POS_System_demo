@@ -15,6 +15,7 @@ export const AddRepair = () => {
   const [customerType, setCustomerType] = useState("existing");
   const [orderId, setOrderId] = useState("");
   const [customerid, setCustomerid] = useState("");
+  
 
   // new customer states
   const [customerName, setCustomerName] = useState("");
@@ -55,6 +56,11 @@ export const AddRepair = () => {
   useEffect(() => {
     setOrderId(generateOrderId());
   }, [repairs]);
+
+  useEffect(() => {
+    setReceivedDate(new Date().toISOString().split('T')[0]);
+    setCompletedDate(new Date().toISOString().split('T')[0]);
+  }, []);
 
   const addnewCustome = async () => {
     try {

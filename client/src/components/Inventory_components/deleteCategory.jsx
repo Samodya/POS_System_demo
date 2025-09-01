@@ -4,32 +4,30 @@ import apiService from "../../utilities/httpservices";
 import Cookies from "js-cookie";
 import { UseitemCategoriesContext } from "../../context/itemCategory_context";
 
-
-export const DeleteItem = ({ id, productName }) => {
+export const DeleteCategory = ({ id, modelCode }) => {
   const [showmenu, setShowmenu] = useState(false);
   const token = Cookies.get('token');
-  const { refreshProducts } = UseitemCategoriesContext();
+  const { refreshItemCategories } = UseitemCategoriesContext();
 
   const handleDelete = async () => {
     try {
-        const result = await apiService.deleteData('products',id, token)
+        const result = await apiService.deleteData('item-category',id, token)
         console.log('Button pressed');
-        refreshProducts();
-        setShowmenu(false);
+        refreshItemCategories();
+        setShowmenu(false)
     } catch (error) {
         console.log(error);
     }
   }
   return (
     <div>
-       <button
-            className="flex-1 flex items-center justify-center gap-1 text-white bg-red-600 hover:bg-red-700 rounded-md px-3 py-1 text-sm font-semibold transition"
-            aria-label="Delete item"
-            onClick={()=>setShowmenu(true)}
-          >
-            <Trash2 size={16} />
-            Delete
-          </button>
+      <button
+        onClick={() => setShowmenu(true)}
+        className="py-1 px-2 sm:px-3 bg-red-600 hover:bg-red-700 flex gap-1 items-center justify-center rounded text-white text-xs transition"
+      >
+        <Trash2 size={14} />
+        <span className="hidden sm:inline">Delete</span>
+      </button>
 
       {showmenu ? (
         <>
@@ -50,7 +48,7 @@ export const DeleteItem = ({ id, productName }) => {
               <div className="flex justify-between items-center border-b pb-3 mb-4">
                 <div className="text-lg font-semibold flex gap-2 items-center">
                   <Trash2 size={20} />
-                  Delete User
+                  Delete Model
                 </div>
                 <button
                   className="bg-red-500 hover:bg-red-600 text-white rounded-full p-1"
@@ -62,7 +60,8 @@ export const DeleteItem = ({ id, productName }) => {
                 </button>
               </div>
               <div className="flex items-center justify-center h-20">
-                Are you sure you want to delete {productName} from the Inventory?
+                Are you sure you want to delete {modelCode}'s Model from the
+                system ?
               </div>
 
               <div className="flex flex-row-reverse p-2 gap-2">

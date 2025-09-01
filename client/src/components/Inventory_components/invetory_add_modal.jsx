@@ -4,6 +4,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import { UseProductContext } from "../../context/productContext";
 import { UseCustomerContext } from "../../context/customerContext";
+import { UseitemCategoriesContext } from "../../context/itemCategory_context";
 
 export const AddProduct = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -11,10 +12,15 @@ export const AddProduct = () => {
   const [files, setFiles] = useState(null);
   const token = Cookies.get("token");
   const { refreshProducts } = UseProductContext();
-  const { customers } = UseCustomerContext();
+  const { itemCategories } = UseitemCategoriesContext();
+
+  const [modelSearch, setModelSearch] = useState("");
+  const [showModelList, setShowModelList] = useState(false);
+
   const [formData, setFormData] = useState({
     productName: "",
     category: "",
+    itemmodel_id: "",
     buyingPrice: "",
     sellingPrice: "",
     dealerPrice: "",
@@ -31,6 +37,19 @@ export const AddProduct = () => {
     }
   };
 
+  const handleModelSelect = (item) => {
+    setFormData((prev) => ({
+      ...prev,
+      itemmodel_id: item.id,                 // ✅ model id
+      buyingPrice: item.buying_price || "",  // ✅ autofill
+      sellingPrice: item.selling_price || "",        // ✅ autofill
+      dealerPrice: item.dealers_price || "", // ✅ autofill
+    }));
+    setModelSearch(item.modelCode); // show selected code in input
+    setShowModelList(false);
+  };
+  
+
   const handleChange = (e) => {
     setFormData((prev) => ({
       ...prev,
@@ -44,16 +63,16 @@ export const AddProduct = () => {
     const form = new FormData();
     form.append("name", formData.productName);
     form.append("category", formData.category);
+    form.append("itemmodel_id", formData.itemmodel_id);
     form.append("buying_price", formData.buyingPrice);
     form.append("price", formData.sellingPrice);
     form.append("dealers_price", formData.dealerPrice);
     form.append("quantity", formData.quantity);
     form.append("description", formData.description);
-
     form.append("image", files);
 
     try {
-      const res = await axios.post(`http://localhost:4000/api/products`, form, {
+      await axios.post(`http://localhost:4000/api/products`, form, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
@@ -61,23 +80,26 @@ export const AddProduct = () => {
       });
       clearData();
       setShowMenu(false);
+      refreshProducts();
     } catch (err) {
       console.error("Upload failed", err);
     }
-
-    refreshProducts();
   };
 
   function clearData() {
     setFormData({
       productName: "",
       category: "",
+      itemmodel_id: "",
       buyingPrice: "",
       sellingPrice: "",
       dealerPrice: "",
       quantity: "",
       description: "",
     });
+    setPreview(null);
+    setFiles(null);
+    setModelSearch("");
   }
 
   return (
@@ -137,6 +159,7 @@ export const AddProduct = () => {
                       <BoxIcon size={60} />
                     )}
                   </div>
+
                   <input
                     type="file"
                     accept="image/*"
@@ -152,7 +175,49 @@ export const AddProduct = () => {
                   />
                 </div>
 
-                {/* Form inputs grid */}
+                {/* Model Code Search */}
+                <div className="flex flex-col relative">
+                  <label className="mb-1 font-medium text-gray-700">Model Code</label>
+                  <input
+                    type="text"
+                    value={modelSearch}
+                    onChange={(e) => {
+                      setModelSearch(e.target.value);
+                      setShowModelList(true);
+                    }}
+                    onClick={() => setShowModelList(true)}
+                    placeholder="Search model..."
+                    className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
+                  />
+
+                  {showModelList && (
+                    <ul
+                      className="absolute left-0 right-0 top-[55px] bg-white border border-gray-300 rounded-md mt-1 max-h-40 overflow-y-auto shadow-lg"
+                      style={{ zIndex: 2000 }}
+                    >
+                      {itemCategories
+                        .filter((item) =>
+                          item.modelCode.toLowerCase().includes(modelSearch.toLowerCase())
+                        )
+                        .map((item) => (
+                          <li
+                            key={item.id}
+                            onClick={() => handleModelSelect(item)}
+                            className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                          >
+                            {item.modelCode}
+                          </li>
+                        ))}
+                      {itemCategories.filter((item) =>
+                        item.modelCode.toLowerCase().includes(modelSearch.toLowerCase())
+                      ).length === 0 && (
+                        <li className="px-3 py-2 text-gray-500">No results</li>
+                      )}
+                    </ul>
+                  )}
+                </div>
+
+                {/* Inputs */}
                 <div className="grid grid-cols-2 gap-6 ">
                   <InputGroup
                     name="productName"
@@ -170,6 +235,7 @@ export const AddProduct = () => {
                     type="select"
                     options={["", "Laptop", "Accessory", "Repair Service"]}
                   />
+
                   <InputGroup
                     name="buyingPrice"
                     label="Buying Price"
@@ -228,15 +294,7 @@ export const AddProduct = () => {
   );
 };
 
-function InputGroup({
-  name,
-  label,
-  type,
-  value,
-  onChange,
-  placeholder,
-  options = [],
-}) {
+function InputGroup({ name, label, type, value, onChange, placeholder, options = [] }) {
   return (
     <div className="flex flex-col">
       <label className="mb-1 font-medium text-gray-700">{label}</label>
@@ -255,10 +313,7 @@ function InputGroup({
         </select>
       ) : (
         <input
-          name={
-            label.replace(/\s+/g, "").charAt(0).toLowerCase() +
-            label.replace(/\s+/g, "").slice(1)
-          }
+          name={name}
           type={type}
           value={value}
           onChange={onChange}

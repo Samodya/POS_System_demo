@@ -5,25 +5,33 @@ let db;
 (async () => {
   db = await connectMySQLDB(); // ✅ get the singleton connection once
 })();
-
 const createSale = async (data) => {
-  const { customer_id, total_amount, payment_method } = data;
+  const { invoiceid, customer_id, total_amount, payment_method } = data;
 
   const [result] = await db.query(
-    `INSERT INTO sales (customer_id, total_amount, payment_method)
-         VALUES (?, ?, ?)`,
-    [customer_id, total_amount, payment_method]
+    `INSERT INTO sales (invoiceid, customer_id, total_amount, payment_method)
+         VALUES (?, ?, ?, ?)`,
+    [invoiceid, customer_id, total_amount, payment_method]
   );
 
   return { id: result.insertId, ...data };
 };
 
+
 const getAllSales = async () => {
-  const [rows] = await db.query(
-    "SELECT * FROM sales ORDER BY sale_date DESC"
-  );
+  const [rows] = await db.query(`
+    SELECT 
+      s.*, 
+      c.name AS customer_name, 
+      c.phone
+    FROM sales s
+    LEFT JOIN customers c ON c.id = s.customer_id
+    ORDER BY s.sale_date DESC
+  `);
   return rows;
 };
+
+
 
 const getSaleById = async (id) => {
   const [rows] = await db.query("SELECT * FROM sales WHERE id = ?", [id]);
@@ -31,13 +39,13 @@ const getSaleById = async (id) => {
 };
 
 const updateSale = async (id, data) => {
-  const { customer_id, total_amount, payment_method } = data;
+  const { invoiceid, customer_id, total_amount, payment_method } = data;
 
   await db.query(
     `UPDATE sales
        SET customer_id = ?, total_amount = ?, payment_method = ?
        WHERE id = ?`,
-    [customer_id, total_amount, payment_method]
+    [invoiceid, customer_id, total_amount, payment_method]
   );
 
   return { id, ...data };

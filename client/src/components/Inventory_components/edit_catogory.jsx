@@ -1,10 +1,10 @@
-import { BoxIcon, Laptop, X } from "lucide-react";
-import { useState } from "react";
+import { BoxIcon, Edit, Laptop, X } from "lucide-react";
+import { useEffect, useState } from "react";
 import { UseitemCategoriesContext } from "../../context/itemCategory_context";
 import apiService from "../../utilities/httpservices";
 import Cookies from "js-cookie";
 
-export const AddCategry = () => {
+export const EditCategry = ({id}) => {
   const [showmenu, setShowmenu] = useState(false);
   const [modelcode, setModelCode] = useState("");
   const [buying_price, setBuyingPrice] = useState(0);
@@ -12,6 +12,21 @@ export const AddCategry = () => {
   const [selling_price, setSellingPrice] = useState(0);
   const { refreshItemCategories } = UseitemCategoriesContext();
   const token = Cookies.get('token')
+
+  const getCategory = async () => {
+    try {
+      const result = await apiService.getDataById('item-category',id, token)
+      console.log(result);
+      setModelCode(result.modelCode);
+      setBuyingPrice(result.buying_price);
+      setDealersPrice(result.dealers_price);
+      setSellingPrice(result.selling_price);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+
 
  async function handleSave(){
 
@@ -22,25 +37,30 @@ export const AddCategry = () => {
       selling_price:selling_price
     }
     try {
-      const result = await apiService.createData('item-category', data, token)
+      const result = await apiService.updateData('item-category',id, data, token)
 
-      refreshItemCategories();
+      
       console.log("data added:", result);
       setShowmenu(false)
     } catch (error) {
       console.log(error);
     }
+
+    refreshItemCategories();
   }
 
   return (
     <div>
       {/* Open Button */}
       <button
-        className="py-1 rounded px-2 bg-blue-800 text-white flex gap-1 text-sm hover:bg-blue-700 transition"
-        onClick={() => setShowmenu(true)}
+        className="py-1 px-2 sm:px-3 bg-blue-600 hover:bg-blue-700 flex gap-1 items-center justify-center rounded text-white text-xs transition"
+        onClick={() => {
+          setShowmenu(true)
+          getCategory()
+        }}
       >
-        <BoxIcon size={16} />
-        <span>Add</span>
+        <Edit size={16} />
+        <span>Edit</span>
       </button>
 
       {showmenu && (
