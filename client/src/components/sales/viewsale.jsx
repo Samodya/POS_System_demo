@@ -41,6 +41,31 @@ export const ViewSale = () => {
     }
   };
 
+  const getBill = async () => {
+    try {
+      const response = await fetch(`http://localhost:4000/api/reports/sales/${saleid}`, {
+        method: "GET",
+      });
+  
+      if (!response.ok) throw new Error("Failed to fetch PDF");
+  
+      // Convert response to blob
+      const blob = await response.blob();
+  
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `sale-${saleid}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+  
+    } catch (error) {
+      console.error("Error fetching PDF:", error);
+    }
+  };
+  
+
   useEffect(() => {
     getsaleDetails();
     getSalesItem();
@@ -61,6 +86,7 @@ export const ViewSale = () => {
           ← Go Back
         </Link>
         <button
+          onClick={getBill}
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium text-sm transition"
         >
           Download Bill

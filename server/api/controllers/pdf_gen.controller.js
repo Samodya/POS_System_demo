@@ -3,7 +3,8 @@ const pdfService = require("../services/pdf_gen.service");
 exports.getSalesPDF = async (req, res) => {
   try {
     const saleId = req.params.id;
-    const pdfBuffer = await pdfService.generateSalesPDF(saleId);
+    const userData = req.body;
+    const pdfBuffer = await pdfService.generateSalesPDF(saleId, userData);
 
     if (!pdfBuffer) return res.status(404).json({ message: "Sale not found" });
 
