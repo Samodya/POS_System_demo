@@ -1,5 +1,6 @@
 // services/product.service.js
 const connectMySQLDB = require("../../config");
+const { reduceProductQuantity } = require("./product.service");
 
 let db;
 (async () => {
@@ -14,6 +15,8 @@ const createRepairsItem = async (data) => {
          VALUES (?, ?, ?, ?)`,
     [repair_id, product_id, quantity, price]
   );
+
+  reduceProductQuantity(product_id, quantity);
 
   return { id: result.insertId, ...data };
 };

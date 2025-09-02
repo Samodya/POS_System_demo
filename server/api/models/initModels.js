@@ -7,6 +7,7 @@ const { createUserTable } = require("./user.model");
 const { createItemModelTable } = require('./itemcategory.model');
 const { createRepairItemTable } = require('./repairItems.model');
 const { createRepairSaleTable } = require('./repairSale.model');
+const { createInventoryLog } = require('./stockAddingLogs.mode');
 
 
 const initModels = async (db) => {
@@ -21,6 +22,7 @@ const initModels = async (db) => {
   await createRepairSaleTable(db);
   await alterProductTable(db);
   await alteRepairTable(db);
+  await createInventoryLog(db);
 };
 
 module.exports = initModels;
