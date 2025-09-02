@@ -1,13 +1,12 @@
-import puppeteer from "puppeteer";
-import fs from "fs";
-import path from "path";
+const puppeteer = require("puppeteer");
+const fs = require("fs");
+const path = require("path");
 const connectMySQLDB = require("../../config");
 
 let db;
 (async () => {
-  db = await connectMySQLDB(); // ✅ get the singleton connection once
+  db = await connectMySQLDB(); // ✅ Singleton DB connection
 })();
-
 
 /**
  * Render HTML template with data
@@ -21,11 +20,13 @@ const renderTemplate = (templatePath, data) => {
 };
 
 /**
- * Generate PDF for Sales (already exists in your case)
+ * Generate Sales PDF
  */
-export const generateSalesPDF = async (saleId, res) => {
+const generateSalesPDF = async (saleId) => {
   const [saleRows] = await db.query("SELECT * FROM sales WHERE id = ?", [saleId]);
   const [itemRows] = await db.query("SELECT * FROM sale_items WHERE sale_id = ?", [saleId]);
+
+  if (!saleRows.length) return null;
 
   const sale = saleRows[0];
   const templatePath = path.join(process.cwd(), "templates", "invoice-sale.html");
@@ -46,27 +47,21 @@ export const generateSalesPDF = async (saleId, res) => {
   const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
   await browser.close();
 
-  res.setHeader("Content-Type", "application/pdf");
-  res.setHeader("Content-Disposition", `attachment; filename=sale-${saleId}.pdf`);
-  res.send(pdfBuffer);
+  return pdfBuffer;
 };
 
 /**
- * Generate PDF for Repair Bill
+ * Generate Repair PDF
  */
-export const generateRepairPDF = async (repairId, res) => {
-  // Get main repair details
+const generateRepairPDF = async (repairId) => {
   const [repairRows] = await db.query("SELECT * FROM repairs WHERE id = ?", [repairId]);
-  const repair = repairRows[0];
+  if (!repairRows.length) return null;
 
-  // Get repair sales (invoice/payment details)
+  const repair = repairRows[0];
   const [repairSaleRows] = await db.query("SELECT * FROM repair_sales WHERE repair_id = ?", [repairId]);
   const repairSale = repairSaleRows[0] || {};
-
-  // Get items used in repair
   const [itemRows] = await db.query("SELECT * FROM repair_items WHERE repair_id = ?", [repairId]);
 
-  // Load template
   const templatePath = path.join(process.cwd(), "templates", "invoice-repair.html");
 
   const html = renderTemplate(templatePath, {
@@ -88,7 +83,10 @@ export const generateRepairPDF = async (repairId, res) => {
   const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
   await browser.close();
 
-  res.setHeader("Content-Type", "application/pdf");
-  res.setHeader("Content-Disposition", `attachment; filename=repair-${repairId}.pdf`);
-  res.send(pdfBuffer);
+  return pdfBuffer;
+};
+
+module.exports = {
+  generateSalesPDF,
+  generateRepairPDF,
 };

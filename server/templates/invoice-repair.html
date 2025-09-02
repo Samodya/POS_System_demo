@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Repair Bill</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    h1 { text-align: center; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background: #f4f4f4; }
+    .total { text-align: right; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>Repair Bill</h1>
+  <p><strong>Invoice ID:</strong> {{invoice_id}}</p>
+  <p><strong>Date:</strong> {{date}}</p>
+  <p><strong>Customer:</strong> {{customer}}</p>
+  <p><strong>Device:</strong> {{device}}</p>
+  <p><strong>Issue:</strong> {{issue}}</p>
+  <p><strong>Status:</strong> {{status}}</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Part</th>
+        <th>Qty</th>
+        <th>Price</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{items}}
+    </tbody>
+  </table>
+
+  <p class="total">Total: {{total}}</p>
+</body>
+</html>
