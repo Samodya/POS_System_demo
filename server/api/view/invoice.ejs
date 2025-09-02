@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Invoice</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 40px; }
+    .header { text-align: center; margin-bottom: 30px; }
+    .header h1 { margin: 0; color: #2c3e50; }
+    .customer { margin-bottom: 20px; }
+    table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    th { background: #f4f4f4; }
+    .total { text-align: right; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Invoice</h1>
+    <p>Invoice No: <%= sale.invoice_no %></p>
+    <p>Date: <%= new Date(sale.created_at).toLocaleDateString() %></p>
+  </div>
+
+  <div class="customer">
+    <p><strong>Customer:</strong> <%= sale.customer_name %></p>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Qty</th>
+        <th>Price</th>
+        <th>Dealer Price</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% items.forEach(item => { %>
+        <tr>
+          <td><%= item.product_name %></td>
+          <td><%= item.quantity %></td>
+          <td><%= item.price.toFixed(2) %></td>
+          <td><%= item.dealer_price ? item.dealer_price.toFixed(2) : "-" %></td>
+          <td><%= (item.price * item.quantity).toFixed(2) %></td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <p class="total">Total Amount: <%= sale.total_amount.toFixed(2) %></p>
+</body>
+</html>

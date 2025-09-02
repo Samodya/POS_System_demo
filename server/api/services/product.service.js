@@ -151,6 +151,14 @@ const reduceProductQuantity = async (productId, qty) => {
   await db.query(query, [qty, productId, qty]);
 };
 
+const increaseProductQuantity = async (productId, qty) => {
+  const query = `
+    UPDATE products 
+    SET quantity = quantity + ? 
+    WHERE id = ?`;
+  
+  await db.query(query, [qty, productId]);
+};
 
 module.exports = {
   createProduct,
@@ -159,5 +167,6 @@ module.exports = {
   updateProduct,
   getTotalBuyingPrice,
   deleteProduct,
-  reduceProductQuantity
+  reduceProductQuantity,
+  increaseProductQuantity
 };
