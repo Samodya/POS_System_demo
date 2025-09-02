@@ -23,7 +23,7 @@ const createRepairsItem = async (data) => {
 
 const getAllRepairsItem = async () => {
   const [rows] = await db.query(
-    "SELECT * FROM repair_items ORDER BY created_at DESC"
+    "SELECT * FROM repair_items rt LEFT JOIN products p ON p.id = rt.product_id ORDER BY created_at DESC"
   );
   return rows;
 };
