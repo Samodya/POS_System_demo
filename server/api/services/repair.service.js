@@ -21,7 +21,7 @@ const createRepair = async (data) => {
 
   const [result] = await db.query(
     `INSERT INTO repairs (order_id, customer_id, device, issue,cost, status, received_date, completed_date, assigned_to)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       order_id,
       customer_id,

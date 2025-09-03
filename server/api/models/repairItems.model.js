@@ -6,6 +6,7 @@ const createRepairItemTable = async (db) => {
         product_id INT,
         quantity INT,
         price DECIMAL(10,2),
+        total_amount DECIMAL(10,2),
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (repair_id) REFERENCES repairs(id),
         FOREIGN KEY (product_id) REFERENCES products(id)

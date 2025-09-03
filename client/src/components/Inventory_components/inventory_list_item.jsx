@@ -9,6 +9,8 @@ export const InventoryListItem = ({
   category,
   buyingPrice,
   price,
+  warranty,
+  conditions,
   dealers_price,
   quantity,
   description,
@@ -45,7 +47,7 @@ export const InventoryListItem = ({
       <div className="flex-1 p-4 grid grid-cols-2 gap-y-1 gap-x-6 text-sm">
         <div className="col-span-2">
           <h2 className="text-base font-semibold text-gray-800">{name}</h2>
-          <p className="text-gray-500">{category} • {itemModel}</p>
+          <p className="text-gray-500">{category} • {itemModel} • {warranty} • {conditions}</p>
         </div>
 
         <p className="font-medium text-gray-800">

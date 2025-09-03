@@ -56,7 +56,7 @@ const generateSalesPDF = async (saleId) => {
 
   const [itemRows] = await db.query(
     `
-    SELECT st.*, p.name as product_name
+    SELECT st.*, p.name as product_name, p.warranty, p.conditions
     FROM sale_items st
     LEFT JOIN products p ON p.id = st.product_id
     WHERE sale_id = ?
@@ -83,10 +83,16 @@ const generateSalesPDF = async (saleId) => {
     time,
     customer: sale.customer_name || "Guest",
     total: sale.total_amount,
+    
     items: itemRows
       .map(
         (i) =>
-          `<tr class="even:bg-gray-50"><td class="py-2 px-4 border-b">${i.product_name}</td><td class="py-2 px-4 border-b">${i.quantity}</td><td class="py-2 px-4 border-b">${i.price}</td></tr>`
+          `<tr class="even:bg-gray-50"><td colspan="2" class="py-2 px-4 border-b text-sm">${i.product_name}</td>
+            <td class="py-2 px-4 border-b text-center text-xs">${i.warranty}</td>
+            <td  class="py-2 px-4 border-b text-center text-xs">${i.quantity}</td>
+            <td class="py-2 px-4 border-b text-xs">Rs.${i.price}</td>
+            <td class="py-2 px-4 border-b text-xs">Rs.${i.totalprice}</td>    
+          </tr>`
       )
       .join(""),
   });

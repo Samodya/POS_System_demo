@@ -71,7 +71,7 @@ export const AddProduct = () => {
     form.append("quantity", formData.quantity);
     form.append("description", formData.description);
     form.append("warranty", formData.warranty);
-    form.append("condition", formData.conditions);
+    form.append("conditions", formData.conditions);
     form.append("image", files);
 
     try {
@@ -248,21 +248,21 @@ export const AddProduct = () => {
                   />
 
                   <InputGroup
-                    name="category"
-                    label="Category"
-                    value={formData.category}
+                    name="warranty"
+                    label="Warranty"
+                    value={formData.warranty}
                     onChange={handleChange}
                     type="select"
-                    options={["", "Laptop", "Accessory", "Repair Service"]}
+                    options={["", "3-months", "6-months", "1-year", "2-years"]}
                   />
 
                   <InputGroup
-                    name="category"
-                    label="Category"
-                    value={formData.category}
+                    name="conditions"
+                    label="Condition"
+                    value={formData.conditions}
                     onChange={handleChange}
                     type="select"
-                    options={["", "Laptop", "Accessory", "Repair Service"]}
+                    options={["","Brand-new","Second-hand"]}
                   />
 
                   <InputGroup

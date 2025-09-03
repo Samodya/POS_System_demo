@@ -3,6 +3,7 @@ import Topbar from "../topbar";
 import apiService from "../../utilities/httpservices";
 import { Link, useParams } from "react-router-dom";
 import Cookies from "js-cookie";
+import Loader from "../loader";
 
 export const ViewSale = () => {
   const [invoiceid, setInvoiceid] = useState("");
@@ -12,6 +13,7 @@ export const ViewSale = () => {
   const [phone, setPhone] = useState("");
   const [amount, setAmount] = useState("");
   const [saleItems, setSaleItems] = useState([]);
+  const [loading, setLoading] = useState(false);
   const { saleid } = useParams();
   const token = Cookies.get("token");
 
@@ -42,6 +44,7 @@ export const ViewSale = () => {
   };
 
   const getBill = async () => {
+    setLoading(true);
     try {
       const response = await fetch(`http://localhost:4000/api/reports/sales/${saleid}`, {
         method: "GET",
@@ -62,6 +65,8 @@ export const ViewSale = () => {
   
     } catch (error) {
       console.error("Error fetching PDF:", error);
+    }finally{
+      setLoading(false);
     }
   };
   
@@ -73,6 +78,7 @@ export const ViewSale = () => {
 
   return (
     <div className="bg-gray-50 min-h-screen">
+    {loading == true && <Loader/>}
     <Topbar title={"Sale Information"} />
   
     <div className="p-4 sm:p-6 lg:p-10 max-w-4xl mx-auto space-y-6">

@@ -84,6 +84,7 @@ export const AddRepair = () => {
         customer_id: customerid,
         device,
         issue,
+        cost:3000,
         status,
         received_date: receivedDate,
         completed_date: completedDate,
@@ -105,7 +106,7 @@ export const AddRepair = () => {
       <Topbar title="Add New Repair" />
 
       <div className="flex-1 p-4 max-w-3xl mx-auto w-full">
-        <div className="bg-white shadow-xl rounded-2xl p-6 space-y-8">
+        <div className="bg-white shadow-xl rounded-2xl p-4 space-y-6">
           {/* Order ID */}
           <div>
             <label className="text-sm font-semibold text-gray-600">Order ID</label>
@@ -118,7 +119,7 @@ export const AddRepair = () => {
           </div>
 
           {/* Customer Selection */}
-          <div className="space-y-3">
+          <div className="space-y-2">
             <label className="text-sm font-semibold text-gray-600">Customer</label>
             <div className="flex gap-3">
               <button
@@ -223,6 +224,9 @@ export const AddRepair = () => {
           <div className="space-y-4">
             <label className="text-sm font-semibold text-gray-600">Repair Details</label>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              
+              <div className="flex flex-col">
+              <label className="block text-xs font-medium text-gray-500">Device:</label>
               <input
                 type="text"
                 placeholder="Device"
@@ -230,6 +234,7 @@ export const AddRepair = () => {
                 onChange={(e) => setDevice(e.target.value)}
                 className="border rounded-lg px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300"
               />
+              </div>
              
               <div className="flex flex-col">
                 <label className="block text-xs font-medium text-gray-500">Status:</label>

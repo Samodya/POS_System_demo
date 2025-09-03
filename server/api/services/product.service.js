@@ -1,5 +1,6 @@
 // services/product.service.js
 const connectMySQLDB = require("../../config");
+const { createStockLog } = require( './stock_log.service');
 
 let db;
 (async () => {
@@ -47,6 +48,20 @@ const createProduct = async (productData, file) => {
   ];
 
   const [result] = await db.query(query, values);
+
+ const total_amount = quantity * buying_price;  
+
+  const stockData = {
+  product_id: result.insertId,
+  model_id: itemmodel_id,   // ✅ match correct key name
+  quantity:quantity,
+  unit_buying_price: buying_price,
+  total_amount: total_amount
+};
+
+
+  await createStockLog(stockData);
+
   return {
     id: result.insertId,
     ...productData,
@@ -85,12 +100,12 @@ const updateProduct = async (id, productData, file) => {
     dealers_price,
     quantity,
     description,
-    model_Code,
+    itemmodel_id,
     warranty,
     conditions
   } = productData;
 
-  // Start building update query
+  // Base query
   let query = `
     UPDATE products SET 
       name = ?, 
@@ -100,11 +115,12 @@ const updateProduct = async (id, productData, file) => {
       dealers_price = ?, 
       quantity = ?, 
       description = ?,
-      model_Code = ?,
+      itemmodel_id = ?,
       warranty = ?,
       conditions = ?
   `;
 
+  // Base values
   let values = [
     name,
     category,
@@ -113,7 +129,7 @@ const updateProduct = async (id, productData, file) => {
     dealers_price,
     quantity,
     description,
-    model_Code,
+    itemmodel_id,
     warranty,
     conditions
   ];
@@ -124,9 +140,11 @@ const updateProduct = async (id, productData, file) => {
     values.push(file.path, file.filename, file.size);
   }
 
-  query += ` WHERE id = ?`;
+  // Add WHERE clause at the end
+  query += ` WHERE products.id = ?`; // 👈 disambiguate `id`
   values.push(id);
 
+  // Execute query
   await db.query(query, values);
 
   return {
@@ -139,6 +157,7 @@ const updateProduct = async (id, productData, file) => {
     }),
   };
 };
+
 
 const getTotalBuyingPrice = async () => {
   const [rows] = await db.query(`

@@ -3,16 +3,18 @@ import { BoxIcon, Boxes, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { UseProductContext } from "../../context/productContext";
 import apiService from "../../utilities/httpservices";
+import { UseitemCategoriesContext } from "../../context/itemCategory_context";
 
-export const EditItem = ({
-    id
-}) => {
+export const EditItem = ({ id }) => {
   const [showMenu, setShowMenu] = useState(false);
   const [preview, setPreview] = useState(null);
   const [itemimage, setItemimage] = useState("");
   const [files, setFiles] = useState(null);
   const token = Cookies.get("token");
   const { refreshProducts } = UseProductContext();
+  const [modelSearch, setModelSearch] = useState("");
+  const [showModelList, setShowModelList] = useState(false);
+  const { itemCategories } = UseitemCategoriesContext();
 
   const [formData, setFormData] = useState({
     productName: "",
@@ -23,27 +25,28 @@ export const EditItem = ({
     dealerPrice: "",
     quantity: "",
     description: "",
+    warranty: "",
+    conditions: "",
   });
-
 
   async function fetchItem() {
     try {
-        const result = await apiService.getDataById('products',id, token);
-        setFormData({
-          productName: result.name || "",
-          category: result.category || "",
-          itemmodel_id:result.itemmodel_id || "",
-          buyingPrice: result.buying_price || "",
-          sellingPrice: result.price || "",
-          dealerPrice: result.dealers_price || "",
-          quantity: result.quantity || "",
-          description: result.description || "",
-        });
-        setItemimage(result.image_path)
+      const result = await apiService.getDataById("products", id, token);
+      setFormData({
+        productName: result.name || "",
+        category: result.category || "",
+        itemmodel_id: result.itemmodel_id || "",
+        buyingPrice: result.buying_price || "",
+        sellingPrice: result.price || "",
+        dealerPrice: result.dealers_price || "",
+        quantity: result.quantity || "",
+        description: result.description || "",
+        warranty: result.warranty || "",
+        conditions: result.conditions || "",
+      });
+      setItemimage(result.image_path);
       console.log(result);
-    } catch (error) {
-        
-    }
+    } catch (error) {}
   }
 
   // Cleanup object URL when file changes
@@ -74,21 +77,24 @@ export const EditItem = ({
     const form = new FormData();
     form.append("name", formData.productName);
     form.append("category", formData.category);
+    form.append("itemmodel_id", formData.itemmodel_id)
     form.append("buying_price", formData.buyingPrice);
     form.append("price", formData.sellingPrice);
     form.append("dealers_price", formData.dealerPrice);
     form.append("quantity", formData.quantity);
     form.append("description", formData.description);
-  
+    form.append("warranty", formData.warranty);
+    form.append("conditions", formData.conditions);
+
     if (files) {
       form.append("image", files);
     }
 
     try {
-      const result = await apiService.updateData('products',id,form, token);
+      const result = await apiService.updateData("products", id, form, token);
       refreshProducts();
       console.log(result);
-      setShowMenu(false)
+      setShowMenu(false);
     } catch (err) {
       console.error("Upload failed", err);
     }
@@ -97,24 +103,23 @@ export const EditItem = ({
   const handleModelSelect = (item) => {
     setFormData((prev) => ({
       ...prev,
-      itemmodel_id: item.id,                 // ✅ model id
-      buyingPrice: item.buying_price || "",  // ✅ autofill
-      sellingPrice: item.selling_price || "",        // ✅ autofill
+      itemmodel_id: item.id, // ✅ model id
+      buyingPrice: item.buying_price || "", // ✅ autofill
+      sellingPrice: item.selling_price || "", // ✅ autofill
       dealerPrice: item.dealers_price || "", // ✅ autofill
     }));
     setModelSearch(item.modelCode); // show selected code in input
     setShowModelList(false);
   };
-  
 
   return (
-    
     <div className="flex items-center justify-center gap-1">
       <button
         className="flex items-center justify-center gap-1 text-white bg-gradient-to-r from-black via-[#0a0f2c] to-[#013ea0] px-2 py-1 rounded"
         onClick={() => {
           fetchItem();
-          setShowMenu(true)}}
+          setShowMenu(true);
+        }}
       >
         <Boxes size={20} /> <p>Edit</p>
       </button>
@@ -130,13 +135,15 @@ export const EditItem = ({
 
           {/* Modal */}
           <div
-            className="fixed inset-0 flex items-center justify-center p-4"
+            className="fixed inset-0 flex items-center justify-center p-3"
             style={{ zIndex: 1001 }}
           >
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 relative">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg p-4 relative">
               {/* Header */}
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-gray-900">Edit Item Details</h2>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Edit Item Details
+                </h2>
                 <button
                   onClick={() => setShowMenu(false)}
                   className="p-2 rounded-full hover:bg-gray-200 transition"
@@ -161,11 +168,18 @@ export const EditItem = ({
                         alt="Preview"
                         className="object-cover w-full h-full"
                       />
-                    ) : itemimage ? <img
-                        src={`http://localhost:4000/${itemimage.replace(/^\/+/, "")}`}
+                    ) : itemimage ? (
+                      <img
+                        src={`http://localhost:4000/${itemimage.replace(
+                          /^\/+/,
+                          ""
+                        )}`}
                         alt="Preview"
                         className="object-cover w-full h-full"
-                      />:  <BoxIcon size={60} />}
+                      />
+                    ) : (
+                      <BoxIcon size={60} />
+                    )}
                   </div>
                   <input
                     type="file"
@@ -181,6 +195,52 @@ export const EditItem = ({
                 </div>
 
                 {/* Form inputs grid */}
+                <div className="flex flex-col relative">
+                  <label className="mb-0.5 font-medium text-gray-700">
+                    Model Code
+                  </label>
+                  <input
+                    type="text"
+                    value={modelSearch}
+                    onChange={(e) => {
+                      setModelSearch(e.target.value);
+                      setShowModelList(true);
+                    }}
+                    onClick={() => setShowModelList(true)}
+                    placeholder="Search model..."
+                    className="border border-gray-300 rounded-md p-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
+                  />
+
+                  {showModelList && (
+                    <ul
+                      className="absolute left-0 right-0 top-[55px] bg-white border border-gray-300 rounded-md mt-1 max-h-40 overflow-y-auto shadow-lg"
+                      style={{ zIndex: 2000 }}
+                    >
+                      {itemCategories
+                        .filter((item) =>
+                          item.modelCode
+                            .toLowerCase()
+                            .includes(modelSearch.toLowerCase())
+                        )
+                        .map((item) => (
+                          <li
+                            key={item.id}
+                            onClick={() => handleModelSelect(item)}
+                            className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
+                          >
+                            {item.modelCode}
+                          </li>
+                        ))}
+                      {itemCategories.filter((item) =>
+                        item.modelCode
+                          .toLowerCase()
+                          .includes(modelSearch.toLowerCase())
+                      ).length === 0 && (
+                        <li className="px-3 py-2 text-gray-500">No results</li>
+                      )}
+                    </ul>
+                  )}
+                </div>
                 <div className="grid grid-cols-2 gap-6 ">
                   <InputGroup
                     name="productName"
@@ -197,6 +257,23 @@ export const EditItem = ({
                     onChange={handleChange}
                     type="select"
                     options={["", "Laptop", "Accessory", "Repair Service"]}
+                  />
+                  <InputGroup
+                    name="warranty"
+                    label="Warranty"
+                    value={formData.warranty}
+                    onChange={handleChange}
+                    type="select"
+                    options={["", "3-months", "6-months", "1-year", "2-years"]}
+                  />
+
+                  <InputGroup
+                    name="conditions"
+                    label="Condition"
+                    value={formData.conditions}
+                    onChange={handleChange}
+                    type="select"
+                    options={["","Brand-new","Second-hand"]}
                   />
                   <InputGroup
                     name="buyingPrice"
@@ -256,14 +333,22 @@ export const EditItem = ({
   );
 };
 
-function InputGroup({ name, label, type, value, onChange, placeholder, options = [] }) {
+function InputGroup({
+  name,
+  label,
+  type,
+  value,
+  onChange,
+  placeholder,
+  options = [],
+}) {
   return (
     <div className="flex flex-col">
       <label className="mb-1 font-medium text-gray-700">{label}</label>
       {type === "select" ? (
         <select
           name={name}
-          className="border border-gray-300 rounded-md p-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
+          className="border border-gray-300 rounded-md p-0.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
           value={value}
           onChange={onChange}
         >
@@ -280,7 +365,7 @@ function InputGroup({ name, label, type, value, onChange, placeholder, options =
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className="border border-gray-300 rounded-md p-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
+          className="border border-gray-300 rounded-md p-0.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
         />
       )}
     </div>
@@ -297,7 +382,7 @@ function TextareaGroup({ name, label, placeholder, value, onChange }) {
         onChange={onChange}
         placeholder={placeholder}
         rows={4}
-        className="border border-gray-300 rounded-md text-sm p-3 resize-none focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
+        className="border border-gray-300 rounded-md text-sm p-2 resize-none focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
       />
     </div>
   );

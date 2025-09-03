@@ -90,6 +90,8 @@ export const Inventory = () => {
                 filePath={product.image_path}
                 buyingPrice={product.buying_price}
                 price={product.price}
+                warranty={product.warranty}
+                conditions={product.conditions}
                 quantity={product.quantity}
                 category={product.category}
                 itemModel={product.modelcode}

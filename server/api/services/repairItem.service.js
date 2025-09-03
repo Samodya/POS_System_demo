@@ -8,12 +8,12 @@ let db;
 })();
 
 const createRepairsItem = async (data) => {
-  const { repair_id, product_id, quantity, price } = data;
+  const { repair_id, product_id, quantity, price, total_amount } = data;
 
   const [result] = await db.query(
-    `INSERT INTO repair_items (repair_id, product_id, quantity, price)
-         VALUES (?, ?, ?, ?)`,
-    [repair_id, product_id, quantity, price]
+    `INSERT INTO repair_items (repair_id, product_id, quantity, price, total_amount)
+         VALUES (?, ?, ?, ?, ?)`,
+    [repair_id, product_id, quantity, price, total_amount]
   );
 
   reduceProductQuantity(product_id, quantity);
@@ -43,13 +43,13 @@ const getRepairItemByRepairId = async (repair_id) => {
   };
 
 const updateRepairsItem = async (id, data) => {
-  const { repair_id, product_id, quantity, price } = data;
+  const { repair_id, product_id, quantity, price, total_amount } = data;
 
   await db.query(
     `UPDATE repair_items
-       SET repair_id = ?, product_id = ?, quantity = ?, price = ?
+       SET repair_id = ?, product_id = ?, quantity = ?, price = ?, total_amount=?
        WHERE id = ?`,
-    [repair_id, product_id, quantity, price]
+    [repair_id, product_id, quantity, price, total_amount, id]
   );
 
   return { id, ...data };
