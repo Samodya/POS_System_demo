@@ -30,7 +30,7 @@ export const RepairContextProvider = ({ children }) => {
         setRepairsError(null);
         setShowError(false);
       } catch (error) {
-        console.error(error);
+        console.log(error);
         handleError(error);
       } finally {
         setLoading(false);

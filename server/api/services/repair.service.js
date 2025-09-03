@@ -12,6 +12,7 @@ const createRepair = async (data) => {
     customer_id,
     device,
     issue,
+    cost,
     status,
     received_date,
     completed_date,
@@ -19,13 +20,14 @@ const createRepair = async (data) => {
   } = data;
 
   const [result] = await db.query(
-    `INSERT INTO repairs (order_id, customer_id, device, issue, status, received_date, completed_date, assigned_to)
+    `INSERT INTO repairs (order_id, customer_id, device, issue,cost, status, received_date, completed_date, assigned_to)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       order_id,
       customer_id,
       device,
       issue,
+      cost,
       status,
       received_date,
       completed_date,
@@ -45,6 +47,7 @@ const getAllRepairs = async () => {
         c.name AS customer_name,
         r.device,
         r.issue, 
+        r.cost,
         r.status,
         r.received_date,
         r.completed_date,
@@ -68,6 +71,7 @@ const getRepairById = async (id) => {
       c.phone AS contact_no, 
       r.device, 
       r.issue, 
+      r.cost,
       r.status, 
       r.received_date, 
       r.completed_date, 
@@ -90,6 +94,7 @@ const updateRepair = async (id, data) => {
     device,
     issue,
     status,
+    cost,
     received_date,
     completed_date,
     assigned_to,
@@ -98,7 +103,7 @@ const updateRepair = async (id, data) => {
 
   await db.query(
     `UPDATE repairs
-       SET customer_id = ?, device = ?, issue = ?, status = ?, received_date = ?, completed_date = ?, assigned_to = ?, repair_fix_note= ?
+       SET customer_id = ?, device = ?, issue = ?, cost=?, status = ?, received_date = ?, completed_date = ?, assigned_to = ?, repair_fix_note= ?
        WHERE id = ?`,
     [
       customer_id,

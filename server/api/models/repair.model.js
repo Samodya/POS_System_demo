@@ -18,16 +18,16 @@ const createRepairTable = async (db) => {
   };
   const alteRepairTable = async (db) => {
     // Remove `cost` column if it exists
-    const [columns] = await db.query(`
-      SHOW COLUMNS FROM repairs LIKE 'cost';
-    `);
+    // const [columns] = await db.query(`
+    //   SHOW COLUMNS FROM repairs LIKE 'cost';
+    // `);
   
-    if (columns.length > 0) {
-      await db.query(`
-        ALTER TABLE repairs 
-        DROP COLUMN cost;
-      `);
-    }
+    // if (columns.length > 0) {
+    //   await db.query(`
+    //     ALTER TABLE repairs 
+    //     DROP COLUMN cost;
+    //   `);
+    // }
   
     // Check if `repair_fix_note` column exists
     const [fixNoteColumn] = await db.query(`

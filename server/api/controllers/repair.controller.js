@@ -17,8 +17,8 @@ const getAll = async (_req, res) => {
     try {
       const repairs = await repairServices.getAllRepairs();
       res.json(repairs);
-    } catch {
-      res.status(500).json({ error: "Failed to get repairs details" });
+    } catch(error) {
+      res.status(500).json({ error: error.message });
     }
   };
   

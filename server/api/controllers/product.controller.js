@@ -14,8 +14,8 @@ const getAll = async (_req, res) => {
   try {
     const products = await productService.getAllProducts();
     res.json(products);
-  } catch {
-    res.status(500).json({ error: "Failed to get products" });
+  } catch(error) {
+    res.status(500).json({ error: error.message });
   }
 };
 
@@ -24,8 +24,8 @@ const getById = async (req, res) => {
     const product = await productService.getProductById(req.params.id);
     if (!product) return res.status(404).json({ error: "Not found" });
     res.json(product);
-  } catch {
-    res.status(500).json({ error: "Failed to get product" });
+  } catch(error) {
+    res.status(500).json({ error: error.message });
   }
 };
 

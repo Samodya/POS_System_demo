@@ -31,6 +31,29 @@ const alterProductTable = async (db) => {
     `);
   }
 
+  const [columns1] = await db.query(`
+    SHOW COLUMNS FROM products LIKE 'warranty';
+  `);
+
+  if (columns1.length === 0) {
+    await db.query(`
+      ALTER TABLE products 
+      ADD COLUMN warranty VARCHAR(50);
+    `);
+  }
+
+  const [columns2] = await db.query(`
+    SHOW COLUMNS FROM products LIKE 'conditions';
+  `);
+
+  if (columns2.length === 0) {
+    await db.query(`
+      ALTER TABLE products 
+      ADD COLUMN conditions VARCHAR(50);
+    `);
+  }
+
+
   // Check if constraint exists
   const [constraints] = await db.query(`
     SELECT CONSTRAINT_NAME

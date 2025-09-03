@@ -15,7 +15,9 @@ const createProduct = async (productData, file) => {
     dealers_price,
     quantity,
     description,
-    itemmodel_id
+    itemmodel_id,
+    warranty,
+    conditions
   } = productData;
 
   const image_path = file ? file.path : null;
@@ -24,8 +26,8 @@ const createProduct = async (productData, file) => {
 
   const query = `
     INSERT INTO products 
-    (name, category, buying_price, price, dealers_price, quantity, description, image_path, image_name, image_size, itemmodel_id) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    (name, category, buying_price, price, dealers_price, quantity, description, image_path, image_name, image_size, itemmodel_id,warranty, conditions) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
@@ -39,7 +41,9 @@ const createProduct = async (productData, file) => {
     image_path,
     image_name,
     image_size,
-    itemmodel_id
+    itemmodel_id,
+    warranty,
+    conditions
   ];
 
   const [result] = await db.query(query, values);
@@ -66,7 +70,7 @@ const getProductById = async (id) => {
   const [rows] = await db.query(
     ` SELECT p.*, im.modelCode
   FROM products p
-  LEFT JOIN itemmodel im ON p.itemmodel_id = im.modelCode WHERE id = ?`,
+  LEFT JOIN itemmodel im ON p.itemmodel_id = im.modelCode WHERE p.id = ?`,
     [id]
   );
   return rows[0];
@@ -81,7 +85,9 @@ const updateProduct = async (id, productData, file) => {
     dealers_price,
     quantity,
     description,
-    model_Code
+    model_Code,
+    warranty,
+    conditions
   } = productData;
 
   // Start building update query
@@ -93,8 +99,10 @@ const updateProduct = async (id, productData, file) => {
       price = ?, 
       dealers_price = ?, 
       quantity = ?, 
-      description = ?
-      model_Code = ?
+      description = ?,
+      model_Code = ?,
+      warranty = ?,
+      conditions = ?
   `;
 
   let values = [
@@ -105,7 +113,9 @@ const updateProduct = async (id, productData, file) => {
     dealers_price,
     quantity,
     description,
-    model_Code
+    model_Code,
+    warranty,
+    conditions
   ];
 
   // Add image columns if a file is uploaded

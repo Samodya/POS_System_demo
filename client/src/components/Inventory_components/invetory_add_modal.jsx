@@ -26,6 +26,8 @@ export const AddProduct = () => {
     dealerPrice: "",
     quantity: "",
     description: "",
+    warranty: "",
+    conditions: "",
   });
 
   const handleFileChange = (e) => {
@@ -40,15 +42,14 @@ export const AddProduct = () => {
   const handleModelSelect = (item) => {
     setFormData((prev) => ({
       ...prev,
-      itemmodel_id: item.id,                 // ✅ model id
-      buyingPrice: item.buying_price || "",  // ✅ autofill
-      sellingPrice: item.selling_price || "",        // ✅ autofill
+      itemmodel_id: item.id, // ✅ model id
+      buyingPrice: item.buying_price || "", // ✅ autofill
+      sellingPrice: item.selling_price || "", // ✅ autofill
       dealerPrice: item.dealers_price || "", // ✅ autofill
     }));
     setModelSearch(item.modelCode); // show selected code in input
     setShowModelList(false);
   };
-  
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -69,6 +70,8 @@ export const AddProduct = () => {
     form.append("dealers_price", formData.dealerPrice);
     form.append("quantity", formData.quantity);
     form.append("description", formData.description);
+    form.append("warranty", formData.warranty);
+    form.append("condition", formData.conditions);
     form.append("image", files);
 
     try {
@@ -96,6 +99,8 @@ export const AddProduct = () => {
       dealerPrice: "",
       quantity: "",
       description: "",
+      warranty: "",
+      conditions: "",
     });
     setPreview(null);
     setFiles(null);
@@ -123,12 +128,12 @@ export const AddProduct = () => {
 
           {/* Modal */}
           <div
-            className="fixed inset-0 flex items-center justify-center p-4"
+            className="fixed inset-0 flex items-center justify-center p-3"
             style={{ zIndex: 1001 }}
           >
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg p-6 relative">
+            <div className="bg-white rounded-xl shadow-2xl w-full max-w-lg p-4 relative">
               {/* Header */}
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold text-gray-900">Add Item</h2>
                 <button
                   onClick={() => setShowMenu(false)}
@@ -177,7 +182,9 @@ export const AddProduct = () => {
 
                 {/* Model Code Search */}
                 <div className="flex flex-col relative">
-                  <label className="mb-1 font-medium text-gray-700">Model Code</label>
+                  <label className="mb-1 font-medium text-gray-700">
+                    Model Code
+                  </label>
                   <input
                     type="text"
                     value={modelSearch}
@@ -197,7 +204,9 @@ export const AddProduct = () => {
                     >
                       {itemCategories
                         .filter((item) =>
-                          item.modelCode.toLowerCase().includes(modelSearch.toLowerCase())
+                          item.modelCode
+                            .toLowerCase()
+                            .includes(modelSearch.toLowerCase())
                         )
                         .map((item) => (
                           <li
@@ -209,7 +218,9 @@ export const AddProduct = () => {
                           </li>
                         ))}
                       {itemCategories.filter((item) =>
-                        item.modelCode.toLowerCase().includes(modelSearch.toLowerCase())
+                        item.modelCode
+                          .toLowerCase()
+                          .includes(modelSearch.toLowerCase())
                       ).length === 0 && (
                         <li className="px-3 py-2 text-gray-500">No results</li>
                       )}
@@ -227,6 +238,24 @@ export const AddProduct = () => {
                     type="text"
                     placeholder="Enter product name"
                   />
+                  <InputGroup
+                    name="category"
+                    label="Category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    type="select"
+                    options={["", "Laptop", "Accessory", "Repair Service"]}
+                  />
+
+                  <InputGroup
+                    name="category"
+                    label="Category"
+                    value={formData.category}
+                    onChange={handleChange}
+                    type="select"
+                    options={["", "Laptop", "Accessory", "Repair Service"]}
+                  />
+
                   <InputGroup
                     name="category"
                     label="Category"
@@ -281,7 +310,7 @@ export const AddProduct = () => {
                 {/* Submit */}
                 <button
                   type="submit"
-                  className="w-full py-3 bg-gradient-to-r from-[#0a0f2c] via-[#013ea0] to-black text-white rounded-xl text-lg font-semibold hover:brightness-110 transition"
+                  className="w-full py-2 bg-gradient-to-r from-[#0a0f2c] via-[#013ea0] to-black text-white rounded-xl text-lg font-semibold hover:brightness-110 transition"
                 >
                   Save Product
                 </button>
@@ -294,14 +323,22 @@ export const AddProduct = () => {
   );
 };
 
-function InputGroup({ name, label, type, value, onChange, placeholder, options = [] }) {
+function InputGroup({
+  name,
+  label,
+  type,
+  value,
+  onChange,
+  placeholder,
+  options = [],
+}) {
   return (
     <div className="flex flex-col">
       <label className="mb-1 font-medium text-gray-700">{label}</label>
       {type === "select" ? (
         <select
           name={name}
-          className="border border-gray-300 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
+          className="border border-gray-300 rounded-md text-sm p-0.5 focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
           value={value}
           onChange={onChange}
         >
@@ -318,7 +355,7 @@ function InputGroup({ name, label, type, value, onChange, placeholder, options =
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className="border border-gray-300 rounded-md p-1 focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
+          className="border border-gray-300 rounded-md p-0.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
         />
       )}
     </div>
@@ -335,7 +372,7 @@ function TextareaGroup({ name, label, placeholder, value, onChange }) {
         onChange={onChange}
         placeholder={placeholder}
         rows={4}
-        className="border border-gray-300 rounded-md p-3 resize-none focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
+        className="border border-gray-300 rounded-md p-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
       />
     </div>
   );

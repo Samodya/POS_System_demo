@@ -34,8 +34,6 @@ export const Inventory = () => {
     product.modelcode?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  console.log(products);
-
   return (
     <div className="w-full min-h-screen bg-gray-50">
       <Topbar title={"Inventory"} />
