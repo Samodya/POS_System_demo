@@ -16,12 +16,13 @@ import {
   User,
   UserStarIcon,
   FileText,
+  Trash2,
 } from "lucide-react";
 
 export const EditRepair = () => {
   const { refreshRepairs } = UseRepairContext();
   const { refreshCustomers } = UseCustomerContext();
-  const { products } = UseProductContext();
+  const { products, refreshProducts } = UseProductContext();
   const { users } = UseUserContext("");
   const token = Cookies.get("token");
   const { id } = useParams();
@@ -38,12 +39,19 @@ export const EditRepair = () => {
   const [repairNote, setRepairNote] = useState("");
   const [assignedUserId, setAssignedUserId] = useState("");
 
-  // tabs
+  // Tabs state for left column
   const [activeTab, setActiveTab] = useState("form");
 
-  // selected parts
-  const [selectedParts, setSelectedParts] = useState([]);
+  // State for parts management
+  const [existingParts, setExistingParts] = useState([]);
+  const [newParts, setNewParts] = useState([]);
+  const [accessoryProducts, setAccessoryProducts] = useState([]);
+  
+  // Tab state for right column
+  const [activePartsTab, setActivePartsTab] = useState("new");
 
+
+  // Fetch initial repair data
   const getRepair = async () => {
     try {
       const result = await apiService.getDataById("repairs", id, token);
@@ -63,15 +71,36 @@ export const EditRepair = () => {
     }
   };
 
+  // Fetch and set existing parts
+  const getRepairItems = async () => {
+    try {
+      const result = await apiService.getDataById("repair-items/repair", id, token);
+      setExistingParts(
+        result.map((item) => ({
+          id: item.product_id,
+          name: item.name,
+          quantity: item.quantity,
+          unitPrice: item.price,
+        }))
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getRepair();
+    getRepairItems();
   }, [id]);
 
-  const accessoryProducts = products.filter(
-    (product) => product.category === "Accessory"
-  );
+  // Sync products from context with local state on initial load or refresh
+  useEffect(() => {
+    if (products) {
+      setAccessoryProducts(products.filter((p) => p.category === "Accessory"));
+    }
+  }, [products]);
 
-  const handleSubmit = async () => {
+  const handleUpdateRepair = async () => {
     try {
       const repairData = {
         device,
@@ -82,7 +111,6 @@ export const EditRepair = () => {
         completed_date: completedDate,
         assigned_to: assignedUserId,
         repair_fix_note: repairNote,
-        // include selected parts
       };
       await apiService.updateData("repairs", id, repairData, token);
       alert("Repair updated successfully!");
@@ -94,63 +122,64 @@ export const EditRepair = () => {
     refreshCustomers();
   };
 
-  const handleSaveParts = async () => {
-    if (selectedParts.length === 0) {
-      alert("No parts selected");
+  const handleSaveNewParts = async () => {
+    if (newParts.length === 0) {
+      alert("No new parts to save.");
       return;
     }
-  
+
     try {
-      for (const part of selectedParts) {
+      for (const part of newParts) {
         const payload = {
-          repair_id: id,            // current repair
+          repair_id: id,
           product_id: part.id,
           quantity: part.quantity,
-          price: part.unitPrice,    // selling or dealer price
-          total_amount: part.quantity * part.unitPrice, // new field
+          price: part.unitPrice,
+          total_amount: part.quantity * part.unitPrice,
         };
-  
-        
         await apiService.createData("repair-items", payload, token);
       }
-  
-      alert("Parts saved successfully!");
-      refreshProducts();
+
+      alert("New parts saved successfully!");
+      setExistingParts((prev) => [...prev, ...newParts]);
+      setNewParts([]);
+      refreshProducts(); // Refresh stock data
     } catch (error) {
       console.error(error);
-      alert("Failed to save parts");
+      alert("Failed to save new parts");
     }
   };
-  
+
   // calculate total amount
   const calculateTotal = () => {
-    const partsTotal = selectedParts.reduce(
+    const allParts = [...existingParts, ...newParts];
+    const partsTotal = allParts.reduce(
       (sum, p) => sum + p.quantity * p.unitPrice,
       0
     );
     const serviceCharge = parseFloat(cost) || 0;
-
     return partsTotal + serviceCharge;
   };
-  // add part
+
+  // Add a new part to the newParts list or increment existing one
   const addPart = (product, priceType) => {
-    const existing = selectedParts.find((p) => p.id === product.id);
-    if (existing) {
-      if (existing.quantity + 1 > product.quantity) {
-        alert(`${product.name} is out of stock`);
-        return;
-      }
-      setSelectedParts((prev) =>
+    const existingNewPart = newParts.find((p) => p.id === product.id);
+    const updatedProduct = accessoryProducts.find((p) => p.id === product.id);
+    
+    // Check if there's stock available before adding
+    if (updatedProduct.quantity <= 0) {
+      alert(`${product.name} is out of stock`);
+      return;
+    }
+    
+    if (existingNewPart) {
+      setNewParts((prev) =>
         prev.map((p) =>
           p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p
         )
       );
     } else {
-      if (product.quantity < 1) {
-        alert(`${product.name} is out of stock`);
-        return;
-      }
-      setSelectedParts((prev) => [
+      setNewParts((prev) => [
         ...prev,
         {
           id: product.id,
@@ -158,52 +187,77 @@ export const EditRepair = () => {
           quantity: 1,
           unitPrice:
             priceType === "dealer" ? product.dealers_price : product.price,
-          stock: product.quantity,
         },
       ]);
     }
-  };
 
-  // update quantity
-  const updateQuantity = (id, change) => {
-    setSelectedParts((prev) =>
-      prev.map((p) => {
-        if (p.id === id) {
-          const newQty = p.quantity + change;
-          if (newQty > p.stock) {
-            alert(`${p.name} is out of stock`);
-            return p;
-          }
-          return { ...p, quantity: newQty > 0 ? newQty : 1 };
-        }
-        return p;
-      })
+    // Decrement local stock for real-time visual feedback
+    setAccessoryProducts((prev) =>
+      prev.map((p) =>
+        p.id === product.id ? { ...p, quantity: p.quantity - 1 } : p
+      )
     );
   };
 
-  // remove part
-  const removePart = (id) => {
-    setSelectedParts((prev) => prev.filter((p) => p.id !== id));
+  // update quantity of a new part
+  const updateNewPartQuantity = (id, change) => {
+    const partToUpdate = newParts.find((p) => p.id === id);
+    if (!partToUpdate) return;
+    const newQty = partToUpdate.quantity + change;
+
+    if (newQty < 1) return; // Prevent quantity from dropping below 1
+    
+    const correspondingProduct = accessoryProducts.find((p) => p.id === id);
+    if (change > 0 && correspondingProduct.quantity <= 0) {
+      alert("Cannot add more, out of stock.");
+      return;
+    }
+
+    setNewParts((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, quantity: newQty } : p))
+    );
+
+    // Update local stock for visual feedback
+    setAccessoryProducts((prev) =>
+      prev.map((p) =>
+        p.id === id ? { ...p, quantity: p.quantity - change } : p
+      )
+    );
   };
+
+  // remove a new part and increase the stock
+  const removeNewPart = (id) => {
+    const removedPart = newParts.find((p) => p.id === id);
+    if (!removedPart) return;
+
+    setAccessoryProducts((prev) =>
+      prev.map((p) =>
+        p.id === id ? { ...p, quantity: p.quantity + removedPart.quantity } : p
+      )
+    );
+    setNewParts((prev) => prev.filter((p) => p.id !== id));
+  };
+
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Topbar title="Edit Repair Details" />
 
-      <div className="max-w-6xl mx-auto w-full px-6 py-4 space-y-8">
+      <div className="max-w-6xl mx-auto w-full px-6 py-4 space-y-3">
         {/* Contact Details */}
         <div className="bg-white rounded-xl shadow-md p-4">
-          <h2 className="text-lg font-semibold text-gray-800 border-b pb-3 mb-4">
+          <h2 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-2">
             Contact Details
           </h2>
-          <div className="grid grid-cols-2 gap-y-4 text-sm">
+          <div className="grid grid-cols-2 gap-y-2 text-sm">
             <p className="flex items-center gap-2 text-gray-700">
               <Ticket size={16} className="text-gray-500" />
               <span className="font-medium">Ticket No:</span> {orderId}
             </p>
             <p className="flex items-center gap-2 text-gray-700">
               <UserStarIcon size={16} className="text-gray-500" />
-              <span className="font-medium">Customer Name:</span> {customerName}
+              <span className="font-medium">Customer Name:</span>{" "}
+              {customerName}
             </p>
             <p className="flex items-center gap-2 text-gray-700">
               <Phone size={16} className="text-gray-500" />
@@ -212,7 +266,12 @@ export const EditRepair = () => {
             <p className="flex items-center gap-2 text-gray-700">
               <DollarSign size={16} className="text-gray-500" />
               <span className="font-medium">Service Cost:</span>{" "}
-              {cost ? `Rs.${cost}` : "Rs.0.00"}
+              <input
+                type="number"
+                value={cost}
+                onChange={(e) => setCost(e.target.value)}
+                className="w-24 border rounded-md px-2 py-1 text-sm"
+              />
             </p>
           </div>
         </div>
@@ -222,9 +281,9 @@ export const EditRepair = () => {
           {/* Left column with tabs */}
           <div className="bg-white rounded-xl shadow-md p-6 lg:col-span-2">
             {/* Tabs */}
-            <div className="flex border-b mb-4">
+            <div className="flex border-b mb-2">
               <button
-                className={`px-4 py-2 text-sm font-medium ${
+                className={`px-4 py-1 text-sm font-medium ${
                   activeTab === "form"
                     ? "border-b-2 border-blue-600 text-blue-600"
                     : "text-gray-500"
@@ -234,7 +293,7 @@ export const EditRepair = () => {
                 Repair Form
               </button>
               <button
-                className={`px-4 py-2 text-sm font-medium ${
+                className={`px-4 py-1 text-sm font-medium ${
                   activeTab === "accessories"
                     ? "border-b-2 border-blue-600 text-blue-600"
                     : "text-gray-500"
@@ -247,13 +306,14 @@ export const EditRepair = () => {
 
             {activeTab === "form" && (
               <div>
-                <h2 className="text-lg font-semibold text-gray-800 border-b pb-3 mb-4">
+                <h2 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-2">
                   Repair Details
                 </h2>
-                <div className="space-y-5">
+                {/* Form fields with compacted spacing */}
+                <div className="space-y-2">
                   {/* Device */}
                   <div>
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-0.5">
                       <Computer size={16} /> Device
                     </label>
                     <input
@@ -266,32 +326,32 @@ export const EditRepair = () => {
 
                   {/* Issue */}
                   <div>
-                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-0.5">
                       <FileText size={16} /> Issue
                     </label>
                     <input
                       type="text"
                       value={issue}
                       onChange={(e) => setIssue(e.target.value)}
-                      className="w-full border rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-200 focus:border-blue-500"
+                      className="w-full border rounded-lg px-3 py-1 text-sm focus:ring focus:ring-blue-200 focus:border-blue-500"
                     />
                   </div>
 
                   {/* Dates */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-0.5">
                         <Calendar size={16} /> Received Date
                       </label>
                       <input
                         type="date"
                         value={receivedDate}
                         onChange={(e) => setReceivedDate(e.target.value)}
-                        className="w-full border rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-200 focus:border-blue-500"
+                        className="w-full border rounded-lg px-3 py-1 text-sm focus:ring focus:ring-blue-200 focus:border-blue-500"
                       />
                     </div>
                     <div>
-                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-0.5">
                         <Calendar size={16} /> Completed Date
                       </label>
                       <input
@@ -301,6 +361,22 @@ export const EditRepair = () => {
                         className="w-full border rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-200 focus:border-blue-500"
                       />
                     </div>
+                  </div>
+                  {/* Status */}
+                  <div>
+                    <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1">
+                      <FileText size={16} /> Status
+                    </label>
+                    <select
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value)}
+                      className="w-full border rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-200 focus:border-blue-500"
+                    >
+                      <option value="Pending">Pending</option>
+                      <option value="In Progress">In Progress</option>
+                      <option value="Completed">Completed</option>
+                      <option value="Cancelled">Cancelled</option>
+                    </select>
                   </div>
 
                   {/* Repair Note */}
@@ -339,7 +415,7 @@ export const EditRepair = () => {
                 {/* Save button */}
                 <div className="pt-6">
                   <button
-                    onClick={handleSubmit}
+                    onClick={handleUpdateRepair}
                     className="w-full py-2 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg shadow hover:from-blue-700 hover:to-indigo-700 transition duration-200"
                   >
                     Save Changes
@@ -350,10 +426,10 @@ export const EditRepair = () => {
 
             {activeTab === "accessories" && (
               <div>
-                <h2 className="text-lg font-semibold text-gray-800 border-b pb-3 mb-4">
+                <h2 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-3">
                   Accessories
                 </h2>
-                <div className="space-y-4">
+                <div className="space-y-4 max-h-96 overflow-y-auto">
                   {accessoryProducts.map((p) => (
                     <div
                       key={p.id}
@@ -370,7 +446,8 @@ export const EditRepair = () => {
                           )}
                         </p>
                         <p className="text-sm text-gray-500">
-                          Selling: Rs.{p.price} | Dealer: Rs.{p.dealers_price}
+                          Selling: Rs.{p.price} | Dealer: Rs.
+                          {p.dealers_price}
                         </p>
                       </div>
                       <div className="flex gap-2">
@@ -396,74 +473,134 @@ export const EditRepair = () => {
 
           {/* Right column: selected parts */}
           <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-lg font-semibold text-gray-800 border-b pb-3 mb-4">
-              Required Parts or Accessories
+            <h2 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-3">
+              Required Parts
             </h2>
-            {selectedParts.length === 0 ? (
-              <p className="text-sm text-gray-500">No parts selected yet.</p>
-            ) : (
-              <div className="space-y-4">
-                {selectedParts.map((p) => (
-                  <div
-                    key={p.id}
-                    className="flex items-center justify-between border-b pb-2"
-                  >
-                    <div>
-                      <p className="font-medium text-gray-800">{p.name}</p>
-                      <p className="text-sm text-gray-500">
-                        Qty: {p.quantity} / Stock: {p.stock}
-                      </p>
-                      <p className="text-sm text-gray-500">
-                        Unit Price: Rs.{p.unitPrice}
-                      </p>
-                    </div>
-                    <div className="flex gap-2 items-center">
-                      <button
-                        onClick={() => updateQuantity(p.id, -1)}
-                        className="px-2 py-1 bg-gray-200 rounded"
-                      >
-                        -
-                      </button>
-                      <span>{p.quantity}</span>
-                      <button
-                        onClick={() => updateQuantity(p.id, 1)}
-                        className="px-2 py-1 bg-gray-200 rounded"
-                      >
-                        +
-                      </button>
-                      <button
-                        onClick={() => removePart(p.id)}
-                        className="px-2 py-1 bg-red-500 text-white rounded"
-                      >
-                        x
-                      </button>
-                    </div>
-                  </div>
-                ))}
-                <button
-                  onClick={handleSaveParts}
-                  className="w-full py-2 px-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-lg shadow hover:from-blue-700 hover:to-indigo-700 transition duration-200"
-                >
-                  Save Components
-                </button>
+            {/* Tab navigation for parts */}
+            <div className="flex border-b mb-3">
+              <button
+                className={`px-4 py-2 text-sm font-medium ${
+                  activePartsTab === "existing"
+                    ? "border-b-2 border-blue-600 text-blue-600"
+                    : "text-gray-500"
+                }`}
+                onClick={() => setActivePartsTab("existing")}
+              >
+                Existing
+              </button>
+              <button
+                className={`px-4 py-2 text-sm font-medium ${
+                  activePartsTab === "new"
+                    ? "border-b-2 border-blue-600 text-blue-600"
+                    : "text-gray-500"
+                }`}
+                onClick={() => setActivePartsTab("new")}
+              >
+                New
+              </button>
+            </div>
 
-                <div className="pt-4 border-t mt-4">
-                  <p className="text-sm font-medium text-gray-700">
-                    Parts Total: Rs.
-                    {selectedParts.reduce(
-                      (sum, p) => sum + p.quantity * p.unitPrice,
-                      0
-                    )}
+            {activePartsTab === "existing" && (
+              <div>
+                {existingParts.length === 0 ? (
+                  <p className="text-sm text-gray-500 py-2">
+                    No parts on this repair yet.
                   </p>
-                  <p className="text-sm font-medium text-gray-700">
-                    Service Charge: Rs.{cost || 0}
+                ) : (
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {existingParts.map((p) => (
+                      <div
+                        key={p.id}
+                        className="flex items-center justify-between border-b pb-1"
+                      >
+                        <div>
+                          <p className="font-medium text-gray-800">{p.name}</p>
+                          <p className="text-sm text-gray-500">
+                            Qty: {p.quantity} | Price: Rs.{p.unitPrice}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {activePartsTab === "new" && (
+              <div>
+                {newParts.length === 0 ? (
+                  <p className="text-sm text-gray-500 py-2">
+                    No new parts added.
                   </p>
-                  <p className="text-lg font-semibold text-gray-800 mt-2">
-                    Total Amount: Rs.{calculateTotal()}
-                  </p>
+                ) : (
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {newParts.map((p) => (
+                      <div
+                        key={p.id}
+                        className="flex items-center justify-between border-b pb-1"
+                      >
+                        <div>
+                          <p className="font-medium text-gray-800">{p.name}</p>
+                          <p className="text-sm text-gray-500">
+                            Qty: {p.quantity} | Price: Rs.{p.unitPrice}
+                          </p>
+                        </div>
+                        <div className="flex gap-2 items-center">
+                          <button
+                            onClick={() => updateNewPartQuantity(p.id, -1)}
+                            className="px-2 py-1 bg-gray-200 rounded text-sm hover:bg-gray-300"
+                          >
+                            -
+                          </button>
+                          <span>{p.quantity}</span>
+                          <button
+                            onClick={() => updateNewPartQuantity(p.id, 1)}
+                            className="px-2 py-1 bg-gray-200 rounded text-sm hover:bg-gray-300"
+                          >
+                            +
+                          </button>
+                          <button
+                            onClick={() => removeNewPart(p.id)}
+                            className="px-2 py-1 bg-red-500 text-white rounded text-sm hover:bg-red-600"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="mt-8">
+                  <button
+                    onClick={handleSaveNewParts}
+                    disabled={newParts.length === 0}
+                    className={`w-full py-2 px-4 font-semibold rounded-lg shadow transition duration-200 ${
+                      newParts.length > 0
+                        ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700"
+                        : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                    }`}
+                  >
+                    Save New Components
+                  </button>
                 </div>
               </div>
             )}
+
+            <div className="pt-4 border-t mt-4">
+              <p className="text-sm font-medium text-gray-700">
+                Parts Total: Rs.
+                {[...existingParts, ...newParts].reduce(
+                  (sum, p) => sum + p.quantity * p.unitPrice,
+                  0
+                )}
+              </p>
+              <p className="text-sm font-medium text-gray-700">
+                Service Charge: Rs.{cost || 0}
+              </p>
+              <p className="text-lg font-semibold text-gray-800 mt-2">
+                Total Amount: Rs.{calculateTotal()}
+              </p>
+            </div>
           </div>
         </div>
       </div>

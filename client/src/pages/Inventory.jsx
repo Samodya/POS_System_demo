@@ -58,11 +58,11 @@ export const Inventory = () => {
       </div>
 
       {/* Search + Add Product */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between px-6 md:px-20 py-4 gap-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between px-6 md:px-20 py-2 gap-4">
         <input
           type="text"
           placeholder="Search products by name..."
-          className="w-full md:w-64 px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="w-full md:w-64 px-4 py-1 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -76,11 +76,11 @@ export const Inventory = () => {
       </div>
 
       {/* Product List */}
-      <div className="px-4 pb-10 max-w-7xl mx-auto">
+      <div className="px-4 pb-5 max-w-7xl mx-auto">
         {filteredProducts.length === 0 ? (
           <p className="text-center text-gray-500 text-lg mt-20">No products found</p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-15">
+          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-10">
             {filteredProducts.map((product) => (
               <InventoryListItem
                 key={product.id}

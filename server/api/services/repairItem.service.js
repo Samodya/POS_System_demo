@@ -23,7 +23,9 @@ const createRepairsItem = async (data) => {
 
 const getAllRepairsItem = async () => {
   const [rows] = await db.query(
-    "SELECT * FROM repair_items rt LEFT JOIN products p ON p.id = rt.product_id ORDER BY created_at DESC"
+    `SELECT rt.repair_id, p.name, rt.quantity, rt.price, rt.total_amount 
+    FROM repair_items rt 
+    LEFT JOIN products p ON p.id = rt.product_id ORDER BY created_at DESC`
   );
   return rows;
 };
@@ -36,11 +38,14 @@ const getRepairItemById = async (id) => {
 };
 
 const getRepairItemByRepairId = async (repair_id) => {
-    const [rows] = await db.query("SELECT * FROM repair_items WHERE repair_id = ?", [
-      repair_id,
-    ]);
-    return rows;
-  };
+  const [rows] = await db.query(
+    `SELECT rt.repair_id, p.name, rt.quantity, rt.price, rt.total_amount 
+    FROM repair_items rt 
+    LEFT JOIN products p ON p.id = rt.product_id WHERE rt.repair_id = ?`,
+    [repair_id]
+  );
+  return rows;
+};
 
 const updateRepairsItem = async (id, data) => {
   const { repair_id, product_id, quantity, price, total_amount } = data;

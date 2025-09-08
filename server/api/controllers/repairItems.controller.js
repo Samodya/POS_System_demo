@@ -22,6 +22,16 @@ const getAll = async (_req, res) => {
       res.status(500).json({ error: "Failed to get repairs details" });
     }
   };
+
+  const getByRepairId =async (req, res) => {
+    
+    try {
+      const repairItem = await repairItemService.getRepairItemByRepairId(req.params.id);
+      res.json(repairItem);
+    } catch(error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
   
   const getById = async (req, res) => {
     try {
@@ -56,5 +66,5 @@ const getAll = async (_req, res) => {
   };
 
   module.exports = {
-    create, getAll, getById, update, remove
+    create, getAll, getById, getByRepairId, update, remove
   }

@@ -4,6 +4,7 @@ import {
   Clock,
   Wrench,
   Search,
+  Edit,
 } from "lucide-react";
 import StatCard from "../components/statcard";
 import Topbar from "../components/topbar";
@@ -32,6 +33,8 @@ export const Repairs = () => {
       year: "numeric",
     });
   }
+
+  console.log(repairs);
 
   return (
     <div>
@@ -126,7 +129,7 @@ export const Repairs = () => {
                   </td>
                   <td className="px-4 py-3 text-gray-600 flex items-center justify-center gap-2">
                     <Link className="py-1 px-2 sm:px-3 bg-blue-600 hover:bg-blue-700 flex gap-1 items-center justify-center rounded text-white text-xs transition"
-                    to={`../edit-repairs/${row.id}`}>View more</Link>
+                    to={`../edit-repairs/${row.id}`}><Edit size={16}/> Edit</Link>
                     <DeleteRepair id={row.id}/>
                   </td>
                 </tr>
