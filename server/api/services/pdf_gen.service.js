@@ -87,7 +87,7 @@ const generateSalesPDF = async (saleId) => {
     items: itemRows
       .map(
         (i) =>
-          `<tr class="even:bg-gray-50"><td colspan="2" class="py-2 px-4 border-b text-sm">${i.product_name}</td>
+          `<tr class="even:bg-gray-50"><td colspan="2" class="py-2 px-4 border-b text-sm">${i.itemmodel_id + " " +i.product_name}</td>
             <td class="py-2 px-4 border-b text-center text-xs">${i.warranty}</td>
             <td  class="py-2 px-4 border-b text-center text-xs">${i.quantity}</td>
             <td class="py-2 px-4 border-b text-xs">Rs.${i.price}</td>
