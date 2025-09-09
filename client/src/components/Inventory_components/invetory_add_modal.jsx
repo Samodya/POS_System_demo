@@ -3,8 +3,6 @@ import { useState } from "react";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { UseProductContext } from "../../context/productContext";
-import { UseCustomerContext } from "../../context/customerContext";
-import { UseitemCategoriesContext } from "../../context/itemCategory_context";
 
 export const AddProduct = () => {
   const [showMenu, setShowMenu] = useState(false);
@@ -12,7 +10,6 @@ export const AddProduct = () => {
   const [files, setFiles] = useState(null);
   const token = Cookies.get("token");
   const { refreshProducts } = UseProductContext();
-  const { itemCategories } = UseitemCategoriesContext();
 
   const [modelSearch, setModelSearch] = useState("");
   const [showModelList, setShowModelList] = useState(false);
@@ -37,18 +34,6 @@ export const AddProduct = () => {
       setPreview(objectUrl);
       setFiles(file);
     }
-  };
-
-  const handleModelSelect = (item) => {
-    setFormData((prev) => ({
-      ...prev,
-      itemmodel_id: item.id, // ✅ model id
-      buyingPrice: item.buying_price || "", // ✅ autofill
-      sellingPrice: item.selling_price || "", // ✅ autofill
-      dealerPrice: item.dealers_price || "", // ✅ autofill
-    }));
-    setModelSearch(item.modelCode); // show selected code in input
-    setShowModelList(false);
   };
 
   const handleChange = (e) => {
@@ -186,46 +171,13 @@ export const AddProduct = () => {
                     Model Code
                   </label>
                   <input
+                     name="itemmodel_id"
                     type="text"
-                    value={modelSearch}
-                    onChange={(e) => {
-                      setModelSearch(e.target.value);
-                      setShowModelList(true);
-                    }}
-                    onClick={() => setShowModelList(true)}
-                    placeholder="Search model..."
+                    value={formData.itemmodel_id}
+                    onChange={handleChange}
+                    placeholder="enter model..."
                     className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
                   />
-
-                  {showModelList && (
-                    <ul
-                      className="absolute left-0 right-0 top-[55px] bg-white border border-gray-300 rounded-md mt-1 max-h-40 overflow-y-auto shadow-lg"
-                      style={{ zIndex: 2000 }}
-                    >
-                      {itemCategories
-                        .filter((item) =>
-                          item.modelCode
-                            .toLowerCase()
-                            .includes(modelSearch.toLowerCase())
-                        )
-                        .map((item) => (
-                          <li
-                            key={item.id}
-                            onClick={() => handleModelSelect(item)}
-                            className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                          >
-                            {item.modelCode}
-                          </li>
-                        ))}
-                      {itemCategories.filter((item) =>
-                        item.modelCode
-                          .toLowerCase()
-                          .includes(modelSearch.toLowerCase())
-                      ).length === 0 && (
-                        <li className="px-3 py-2 text-gray-500">No results</li>
-                      )}
-                    </ul>
-                  )}
                 </div>
 
                 {/* Inputs */}
@@ -262,7 +214,7 @@ export const AddProduct = () => {
                     value={formData.conditions}
                     onChange={handleChange}
                     type="select"
-                    options={["","Brand-new","Second-hand"]}
+                    options={["", "Brand-new", "Second-hand"]}
                   />
 
                   <InputGroup

@@ -1,6 +1,6 @@
 // services/product.service.js
 const connectMySQLDB = require("../../config");
-const { createStockLog } = require( './stock_log.service');
+const { createInProductsStockLog } = require("./stock_log.service");
 
 let db;
 (async () => {
@@ -18,7 +18,7 @@ const createProduct = async (productData, file) => {
     description,
     itemmodel_id,
     warranty,
-    conditions
+    conditions,
   } = productData;
 
   const image_path = file ? file.path : null;
@@ -44,23 +44,22 @@ const createProduct = async (productData, file) => {
     image_size,
     itemmodel_id,
     warranty,
-    conditions
+    conditions,
   ];
 
   const [result] = await db.query(query, values);
 
- const total_amount = quantity * buying_price;  
+  const total_amount = quantity * buying_price;
 
   const stockData = {
-  product_id: result.insertId,
-  model_id: itemmodel_id,   // ✅ match correct key name
-  quantity:quantity,
-  unit_buying_price: buying_price,
-  total_amount: total_amount
-};
+    product_id: result.insertId,
+    model_id: itemmodel_id, // ✅ match correct key name
+    quantity: quantity,
+    unit_buying_price: buying_price,
+    total_amount: total_amount,
+  };
 
-
-  await createStockLog(stockData);
+  await createInProductsStockLog(stockData);
 
   return {
     id: result.insertId,
@@ -73,19 +72,18 @@ const createProduct = async (productData, file) => {
 
 const getAllProducts = async () => {
   const [rows] = await db.query(`
-    SELECT p.*, im.modelCode as modelcode
-    FROM products p
-    LEFT JOIN itemmodel im ON p.itemmodel_id = im.id
-    ORDER BY p.created_at DESC
+    SELECT *
+    FROM products 
+    ORDER BY created_at DESC
   `);
   return rows;
 };
 
 const getProductById = async (id) => {
   const [rows] = await db.query(
-    ` SELECT p.*, im.modelCode
-  FROM products p
-  LEFT JOIN itemmodel im ON p.itemmodel_id = im.modelCode WHERE p.id = ?`,
+    ` SELECT *
+    FROM products 
+    ORDER BY created_at DESC WHERE id = ?`,
     [id]
   );
   return rows[0];
@@ -98,11 +96,10 @@ const updateProduct = async (id, productData, file) => {
     buying_price,
     price,
     dealers_price,
-    quantity,
     description,
     itemmodel_id,
     warranty,
-    conditions
+    conditions,
   } = productData;
 
   // Base query
@@ -113,7 +110,6 @@ const updateProduct = async (id, productData, file) => {
       buying_price = ?, 
       price = ?, 
       dealers_price = ?, 
-      quantity = ?, 
       description = ?,
       itemmodel_id = ?,
       warranty = ?,
@@ -127,24 +123,20 @@ const updateProduct = async (id, productData, file) => {
     buying_price,
     price,
     dealers_price,
-    quantity,
     description,
     itemmodel_id,
     warranty,
-    conditions
+    conditions,
   ];
 
-  // Add image columns if a file is uploaded
   if (file) {
     query += `, image_path = ?, image_name = ?, image_size = ?`;
     values.push(file.path, file.filename, file.size);
   }
 
-  // Add WHERE clause at the end
-  query += ` WHERE products.id = ?`; // 👈 disambiguate `id`
+  query += ` WHERE products.id = ?`; 
   values.push(id);
 
-  // Execute query
   await db.query(query, values);
 
   return {
@@ -157,7 +149,6 @@ const updateProduct = async (id, productData, file) => {
     }),
   };
 };
-
 
 const getTotalBuyingPrice = async () => {
   const [rows] = await db.query(`
@@ -176,7 +167,7 @@ const reduceProductQuantity = async (productId, qty) => {
     UPDATE products 
     SET quantity = quantity - ? 
     WHERE id = ? AND quantity >= ?`;
-  
+
   await db.query(query, [qty, productId, qty]);
 };
 
@@ -185,7 +176,7 @@ const increaseProductQuantity = async (productId, qty) => {
     UPDATE products 
     SET quantity = quantity + ? 
     WHERE id = ?`;
-  
+
   await db.query(query, [qty, productId]);
 };
 
@@ -197,5 +188,5 @@ module.exports = {
   getTotalBuyingPrice,
   deleteProduct,
   reduceProductQuantity,
-  increaseProductQuantity
+  increaseProductQuantity,
 };

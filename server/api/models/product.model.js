@@ -53,23 +53,6 @@ const alterProductTable = async (db) => {
     `);
   }
 
-
-  // Check if constraint exists
-  const [constraints] = await db.query(`
-    SELECT CONSTRAINT_NAME
-    FROM information_schema.KEY_COLUMN_USAGE
-    WHERE TABLE_NAME = 'products' 
-      AND CONSTRAINT_SCHEMA = DATABASE()
-      AND COLUMN_NAME = 'itemmodel_id';
-  `);
-
-  if (constraints.length === 0) {
-    await db.query(`
-      ALTER TABLE products 
-      ADD CONSTRAINT fk_products_itemmodel 
-      FOREIGN KEY (itemmodel_id) REFERENCES itemmodel(id);
-    `);
-  }
 };
 
 module.exports = { createProductTable, alterProductTable };

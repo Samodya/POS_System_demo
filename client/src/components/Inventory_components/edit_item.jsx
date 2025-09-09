@@ -3,7 +3,6 @@ import { BoxIcon, Boxes, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { UseProductContext } from "../../context/productContext";
 import apiService from "../../utilities/httpservices";
-import { UseitemCategoriesContext } from "../../context/itemCategory_context";
 
 export const EditItem = ({ id }) => {
   const [showMenu, setShowMenu] = useState(false);
@@ -14,7 +13,6 @@ export const EditItem = ({ id }) => {
   const { refreshProducts } = UseProductContext();
   const [modelSearch, setModelSearch] = useState("");
   const [showModelList, setShowModelList] = useState(false);
-  const { itemCategories } = UseitemCategoriesContext();
 
   const [formData, setFormData] = useState({
     productName: "",
@@ -100,18 +98,7 @@ export const EditItem = ({ id }) => {
     }
   };
 
-  const handleModelSelect = (item) => {
-    setFormData((prev) => ({
-      ...prev,
-      itemmodel_id: item.id, // ✅ model id
-      buyingPrice: item.buying_price || "", // ✅ autofill
-      sellingPrice: item.selling_price || "", // ✅ autofill
-      dealerPrice: item.dealers_price || "", // ✅ autofill
-    }));
-    setModelSearch(item.modelCode); // show selected code in input
-    setShowModelList(false);
-  };
-
+  
   return (
     <div className="flex items-center justify-center gap-1">
       <button
@@ -201,45 +188,14 @@ export const EditItem = ({ id }) => {
                   </label>
                   <input
                     type="text"
-                    value={modelSearch}
-                    onChange={(e) => {
-                      setModelSearch(e.target.value);
-                      setShowModelList(true);
-                    }}
+                    value={formData.itemmodel_id}
+                    onChange={handleChange}
                     onClick={() => setShowModelList(true)}
                     placeholder="Search model..."
                     className="border border-gray-300 rounded-md p-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
                   />
 
-                  {showModelList && (
-                    <ul
-                      className="absolute left-0 right-0 top-[55px] bg-white border border-gray-300 rounded-md mt-1 max-h-40 overflow-y-auto shadow-lg"
-                      style={{ zIndex: 2000 }}
-                    >
-                      {itemCategories
-                        .filter((item) =>
-                          item.modelCode
-                            .toLowerCase()
-                            .includes(modelSearch.toLowerCase())
-                        )
-                        .map((item) => (
-                          <li
-                            key={item.id}
-                            onClick={() => handleModelSelect(item)}
-                            className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                          >
-                            {item.modelCode}
-                          </li>
-                        ))}
-                      {itemCategories.filter((item) =>
-                        item.modelCode
-                          .toLowerCase()
-                          .includes(modelSearch.toLowerCase())
-                      ).length === 0 && (
-                        <li className="px-3 py-2 text-gray-500">No results</li>
-                      )}
-                    </ul>
-                  )}
+                 
                 </div>
                 <div className="grid grid-cols-2 gap-6 ">
                   <InputGroup

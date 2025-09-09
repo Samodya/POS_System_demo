@@ -56,7 +56,7 @@ const generateSalesPDF = async (saleId) => {
 
   const [itemRows] = await db.query(
     `
-    SELECT st.*, p.name as product_name, p.warranty, p.conditions
+    SELECT st.*, p.name as product_name, p.warranty, p.conditions, p.itemmodel_id
     FROM sale_items st
     LEFT JOIN products p ON p.id = st.product_id
     WHERE sale_id = ?

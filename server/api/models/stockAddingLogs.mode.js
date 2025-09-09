@@ -9,10 +9,28 @@ const createInventoryLog = async (db) => {
       unit_buying_price DECIMAL(10,2),
       total_amount DECIMAL(10,2),
       order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (product_id) REFERENCES products(id),
-      FOREIGN KEY (model_id) REFERENCES ItemModel(id)
+      FOREIGN KEY (product_id) REFERENCES products(id)
       )
     `);
   };
+
+  const alterInventoryLog = async (db) => {
+    try {
+      
+      await db.query(`
+        ALTER TABLE stock_order_log
+        DROP INDEX invoiceid;
+      `);
   
-  module.exports = { createInventoryLog };
+      await db.query(`
+        ALTER TABLE stock_order_log
+        DROP COLUMN invoiceid;
+      `);
+  
+      console.log("Invoice ID column and its unique constraint dropped successfully.");
+    } catch (error) {
+      console.error("Error altering the table:", error);
+    }
+  };
+  
+  module.exports = { createInventoryLog, alterInventoryLog };

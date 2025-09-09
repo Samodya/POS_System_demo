@@ -11,7 +11,6 @@ import { Invoice } from "../components/sales/invoiceModal";
 import { Users } from "./users";
 import { AddRepair } from "../components/repair/addRepair";
 import { EditRepair } from "../components/repair/editRepair";
-import { ManageProductCategory } from "../components/Inventory_components/manage_productcategory";
 import { ViewSale } from "../components/sales/viewsale";
 
 export const LandingPage = () => {
@@ -33,7 +32,6 @@ export const LandingPage = () => {
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/customer" element={<Customer />} />
           <Route path="/users" element={<Users/>} />
-          <Route path="/p_category" element={<ManageProductCategory/>} />
           {/* <Route
                     path="/users"
                     element={<UsersPage/>}
