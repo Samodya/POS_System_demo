@@ -2,19 +2,19 @@ import { Trash2, X } from "lucide-react";
 import { useState } from "react";
 import apiService from "../../utilities/httpservices";
 import Cookies from "js-cookie";
-import { UseUserContext } from "../../context/usersContext";
+import { UseCustomerContext } from "../../context/customerContext";
 
 export const DeleteCustomer = ({ id, fullname }) => {
   const [showmenu, setShowmenu] = useState(false);
   const token = Cookies.get('token');
-  const { refreshCustomers } = UseUserContext();
+  const { refreshCustomers } = UseCustomerContext();
 
   const handleDelete = async () => {
     try {
         const result = await apiService.deleteData('customers',id, token)
-        refreshUsers();
         setShowmenu(false)
-        refreshUsers();
+        refreshCustomers();
+        console.log("customer Deleted");
     } catch (error) {
         console.log(error);
     }
@@ -48,7 +48,7 @@ export const DeleteCustomer = ({ id, fullname }) => {
               <div className="flex justify-between items-center border-b pb-3 mb-4">
                 <div className="text-lg font-semibold flex gap-2 items-center">
                   <Trash2 size={20} />
-                  Delete User
+                  Delete Customer
                 </div>
                 <button
                   className="bg-red-500 hover:bg-red-600 text-white rounded-full p-1"

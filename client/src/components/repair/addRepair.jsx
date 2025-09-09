@@ -36,66 +36,10 @@ const SearchIcon = () => (
       />
     </svg>
   );
+
   
-  const PhoneIcon = () => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="h-5 w-5 text-gray-400"
-      viewBox="0 0 20 20"
-      fill="currentColor"
-    >
-      <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.774a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
-    </svg>
-  );
   
-  const MailIcon = () => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="h-5 w-5 text-gray-400"
-      viewBox="0 0 20 20"
-      fill="currentColor"
-    >
-      <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
-      <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
-    </svg>
-  );
   
-  const DeviceIcon = () => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="h-5 w-5 text-gray-400"
-      viewBox="0 0 20 20"
-      fill="currentColor"
-    >
-      <path d="M15 8a3 3 0 10-2.977-2.977l-1.255 1.255a4 4 0 11-1.414 1.414l-1.255-1.255a3 3 0 10-2.977 2.977H12a2 2 0 110 4h-1.586a1 1 0 01-.707-.293l-1.586-1.586a1 1 0 00-1.414 0L5.293 12.293a1 1 0 00-.707.707L4 14.586V16a2 2 0 11-2-2h2a2 2 0 114 0h.586l.293-.293A1 1 0 008 13.586l1.586 1.586a1 1 0 00.707.293H12a4 4 0 10-.001-6.928l-1.255 1.255z" />
-    </svg>
-  );
-  
-  const IssueIcon = () => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="h-5 w-5 text-gray-400"
-      viewBox="0 0 20 20"
-      fill="currentColor"
-    >
-      <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-    </svg>
-  );
-  
-  const CalendarIcon = () => (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      className="h-5 w-5 text-gray-400"
-      viewBox="0 0 20 20"
-      fill="currentColor"
-    >
-      <path
-        fillRule="evenodd"
-        d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-        clipRule="evenodd"
-      />
-    </svg>
-  );
 
 const inputClasses = "w-full border border-gray-300 rounded-lg pl-9 pr-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-blue-300 transition-colors";
 
@@ -157,6 +101,7 @@ export const AddRepair = () => {
             const data = { name: customerName, phone, email, address };
             const results = await apiService.createData("customers", data, token);
             setCustomerid(results.id);
+            console.log("Customer Added");
             refreshCustomers();
         } catch (error) {
             console.log(error);

@@ -6,13 +6,14 @@ import { UseCustomerContext } from "../../context/customerContext";
 import { UseSaleContext } from "../../context/salesContext";
 import apiService from "../../utilities/httpservices";
 import Cookies from "js-cookie";
+import { Trash2 } from "lucide-react"; // Import the trash icon
+import Loader from "../loader";
 
 export const Invoice = () => {
-  const { products,refreshProducts } = UseProductContext();
+  const { products, refreshProducts } = UseProductContext();
   const { customers } = UseCustomerContext();
   const { sales, refreshSales } = UseSaleContext();
   const token = Cookies.get("token");
-
 
   const [itemArray, setItemArray] = useState([]);
   const [customerName, setCustomerName] = useState("");
@@ -21,33 +22,35 @@ export const Invoice = () => {
   const [email, setEmail] = useState("");
   const [invoiceid, setInvoiceid] = useState("");
   const [customerid, setCustomerid] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // Track dealer toggles
   const [dealerPriceStates, setDealerPriceStates] = useState({});
   const toggleDealerPrice = (id, value) => {
     setDealerPriceStates((prev) => ({ ...prev, [id]: value }));
   };
 
-  // Add product
   const handleAdd = (product) => {
     const useDealerPrice = dealerPriceStates[product.id] || false;
-    const unitPrice = useDealerPrice ? product.dealers_price : product.price;
+
+    const unitPrice = useDealerPrice
+      ? Number(product.dealers_price)
+      : Number(product.price);
 
     setItemArray((prev) => {
       const existingItem = prev.find((item) => item.id === product.id);
-      if (existingItem) {
-        if (product.quantity === 0 || existingItem.count >= product.quantity)
-          return prev;
 
-        return prev.map((item) =>
+      if (existingItem) {
+        if (existingItem.count >= product.quantity) return prev;
+        const updatedItems = prev.map((item) =>
           item.id === product.id
             ? {
                 ...item,
                 count: item.count + 1,
-                totalPrice: (item.count + 1) * unitPrice,
+                totalPrice: (item.count + 1) * item.unitPrice,
               }
             : item
         );
+        return updatedItems;
       } else {
         return [
           ...prev,
@@ -64,6 +67,31 @@ export const Invoice = () => {
     });
   };
 
+  const updateItemCount = (id, change) => {
+    setItemArray((prev) => {
+      const updatedArray = prev
+        .map((item) => {
+          if (item.id === id) {
+            const newCount = item.count + change;
+            const correspondingProduct = products.find((p) => p.id === id);
+
+            if (newCount > correspondingProduct.quantity) return item;
+
+            return {
+              ...item,
+              count: newCount,
+              totalPrice: newCount * item.unitPrice,
+            };
+          }
+          return item;
+        })
+        .filter((item) => item.count > 0);
+
+      return updatedArray;
+    });
+  };
+
+  // NEW: Function to remove an item entirely
   const handleRemove = (id) => {
     setItemArray((prev) => prev.filter((item) => item.id !== id));
   };
@@ -101,10 +129,9 @@ export const Invoice = () => {
     setInvoiceid(generateInvoiceId());
   }, [sales]);
 
-  // Add main sale
   const addSales = async () => {
     const data = {
-      invoiceid:invoiceid,
+      invoiceid: invoiceid,
       customer_id: customerid,
       total_amount: totalSum,
       payment_method: "On-Cash",
@@ -112,17 +139,14 @@ export const Invoice = () => {
 
     try {
       const result = await apiService.createData("sales", data, token);
-      return result.id; // return sale ID for sale items
-      
+      return result.id;
     } catch (error) {
       console.error("Error adding sale:", error);
       alert("Failed to add sale.");
       return null;
     }
-    
   };
 
-  // Add sale items
   const addSaleItems = async (saleId) => {
     if (!saleId) return;
 
@@ -149,24 +173,58 @@ export const Invoice = () => {
     }
   };
 
-  // Checkout button
+  const getBill = async (saleid) => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `http://localhost:4000/api/reports/sales/${saleid}`,
+        {
+          method: "GET",
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to fetch PDF");
+
+      // Convert response to blob
+      const blob = await response.blob();
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `sale-${saleid}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error fetching PDF:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCheckout = async () => {
     try {
-      const saleId = await addSales(); // create main sale
+      const saleId = await addSales();
+
       if (saleId) {
-        await addSaleItems(saleId); // add all items
+        await addSaleItems(saleId);
+        await getBill(saleId);
+
+        setInvoiceid(generateInvoiceId());
+
         refreshSales();
         refreshProducts();
         setItemArray([]);
       }
     } catch (error) {
-      console.error(error);
-      alert("Checkout failed!");
+      console.error("Checkout failed!", error);
+      alert("Checkout failed! Please try again.");
     }
   };
 
   return (
     <div className="bg-gray-50 min-h-screen">
+     {loading == true && <Loader/>}
       <Topbar title={"Invoice"} />
       <div className="flex flex-col lg:flex-row p-4 gap-4 max-w-7xl mx-auto">
         {/* Left Section */}
@@ -231,18 +289,60 @@ export const Invoice = () => {
           </div>
 
           {/* Product List */}
-          <div className="p-4 space-y-2">
+          <div className="p-2 space-y-1">
             {products.map((product) => {
               const useDealerPrice = dealerPriceStates[product.id] || false;
+              const currentInvoiceQty =
+                itemArray.find((i) => i.id === product.id)?.count || 0;
+              const isAddButtonDisabled =
+                product.quantity === 0 || currentInvoiceQty >= product.quantity;
+              const isLowStock = product.quantity > 0 && product.quantity <= 5;
+
               return (
                 <div
                   key={product.id}
-                  className="px-4 py-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 border rounded-lg bg-gray-50"
+                  className="px-4 py-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-1 border rounded-lg bg-gray-50"
                 >
-                  <div className="text-sm font-medium text-gray-700">
-                    {product.name}
+                  <div className="flex flex-col">
+                    <div className="text-sm font-semibold text-gray-700">
+                      {product.name}
+                    </div>
+                    <div className="text-xs text-gray-500">
+                      Model: {product.itemmodel_id}
+                    </div>
                   </div>
-                  <div className="flex items-center justify-center gap-2">
+
+                  <div className="flex flex-col">
+                    <div className="text-xs font-medium text-gray-500">
+                      Warranty
+                    </div>
+                    <div className="text-sm text-gray-700">
+                      {product.warranty}
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col">
+                    <div className="text-xs font-medium text-gray-500">
+                      Quantity
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-gray-700">
+                        {product.quantity}
+                      </span>
+                      {isLowStock && (
+                        <span className="text-xs font-bold px-2 py-1 rounded-full bg-yellow-400 text-yellow-900">
+                          Low Stock
+                        </span>
+                      )}
+                      {product.quantity === 0 && (
+                        <span className="text-xs font-bold px-2 py-1 rounded-full bg-red-400 text-red-900">
+                          Out of Stock
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 justify-end md:justify-center">
                     <div
                       onClick={() => toggleDealerPrice(product.id, false)}
                       className={`px-2 py-1 rounded-lg text-xs font-semibold cursor-pointer border ${
@@ -263,30 +363,16 @@ export const Invoice = () => {
                     >
                       Dealer: Rs. {product.dealers_price}
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2 justify-center">
                     <button
                       className={`text-xs px-3 py-1 rounded-lg text-white ${
-                        product.quantity === 0 ||
-                        (itemArray.find((i) => i.id === product.id)?.count ||
-                          0) >= product.quantity
+                        isAddButtonDisabled
                           ? "bg-gray-400 cursor-not-allowed"
                           : "bg-blue-500 hover:bg-blue-600"
                       }`}
                       onClick={() => handleAdd(product)}
-                      disabled={
-                        product.quantity === 0 ||
-                        (itemArray.find((i) => i.id === product.id)?.count ||
-                          0) >= product.quantity
-                      }
+                      disabled={isAddButtonDisabled}
                     >
                       Add
-                    </button>
-                    <button
-                      className="text-xs px-3 py-1 rounded-lg bg-red-500 text-white hover:bg-red-600"
-                      onClick={() => handleRemove(product.id)}
-                    >
-                      Remove
                     </button>
                   </div>
                 </div>
@@ -338,18 +424,35 @@ export const Invoice = () => {
                     <div className="flex flex-col">
                       <span className="text-xs font-semibold">{item.name}</span>
                       <span className="text-xs text-gray-500">
-                        {item.count} × Rs. {item.unitPrice}
+                        Rs. {Number(item.unitPrice).toFixed(2)}
                       </span>
                     </div>
                     <div className="flex items-center gap-3">
-                      <span className="text-sm font-semibold">
-                        Rs. {item.totalPrice}
+                      <div className="flex items-center gap-1 bg-gray-200 rounded-lg px-2 py-1">
+                        <button
+                          onClick={() => updateItemCount(item.id, -1)}
+                          className="text-xs text-gray-600 hover:text-gray-800"
+                        >
+                          -
+                        </button>
+                        <span className="text-xs font-semibold text-gray-800 w-4 text-center">
+                          {item.count}
+                        </span>
+                        <button
+                          onClick={() => updateItemCount(item.id, 1)}
+                          className="text-xs text-gray-600 hover:text-gray-800"
+                        >
+                          +
+                        </button>
+                      </div>
+                      <span className="text-sm font-semibold w-16 text-right">
+                        Rs. {Number(item.totalPrice).toFixed(2)}
                       </span>
                       <button
                         onClick={() => handleRemove(item.id)}
-                        className="text-red-500 hover:text-red-700 text-xs"
+                        className="text-red-500 hover:text-red-700"
                       >
-                        ✕
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   </div>
@@ -361,7 +464,7 @@ export const Invoice = () => {
           <div className="mt-4 border-t pt-3">
             <div className="flex justify-between text-sm font-medium">
               <span>Total:</span>
-              <span>Rs. {totalSum}.00</span>
+              <span>Rs. {totalSum.toFixed(2)}</span>
             </div>
             <button
               onClick={handleCheckout}
