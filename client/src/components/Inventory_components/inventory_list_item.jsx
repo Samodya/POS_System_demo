@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { EditItem } from "./edit_item"; // adjust path
 import { DeleteItem } from "./delete_items";
+import { AddNewStocks } from "./addnewStocks";
 
 export const InventoryListItem = ({
   id,
@@ -78,6 +79,12 @@ export const InventoryListItem = ({
       <div className="flex flex-col items-center justify-center gap-2 p-3 border-l border-gray-200">
         <EditItem id={id} />
         <DeleteItem id={id} />
+        <AddNewStocks id={id}
+          modelCode={itemModel}
+          buyingprice={buyingPrice}
+          sellingprice={price}
+          dealersprice={dealers_price}
+        />
       </div>
     </div>
   );

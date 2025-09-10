@@ -6,8 +6,9 @@ import { UseCustomerContext } from "../../context/customerContext";
 import { UseSaleContext } from "../../context/salesContext";
 import apiService from "../../utilities/httpservices";
 import Cookies from "js-cookie";
-import { Trash2 } from "lucide-react"; // Import the trash icon
+import { Trash2, UserPlus } from "lucide-react"; // Import the trash icon
 import Loader from "../loader";
+import NewCustomerForm from "./newcustomer";
 
 export const Invoice = () => {
   const { products, refreshProducts } = UseProductContext();
@@ -23,6 +24,9 @@ export const Invoice = () => {
   const [invoiceid, setInvoiceid] = useState("");
   const [customerid, setCustomerid] = useState("");
   const [loading, setLoading] = useState(false);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [showCustomerList, setShowCustomerList] = useState(false);
+  const [showNewCustomerForm, setShowNewCustomerForm] = useState(false);
 
   const [dealerPriceStates, setDealerPriceStates] = useState({});
   const toggleDealerPrice = (id, value) => {
@@ -100,9 +104,6 @@ export const Invoice = () => {
     (acc, item) => acc + Number(item.totalPrice),
     0
   );
-
-  const [selectedCustomer, setSelectedCustomer] = useState(null);
-  const [showCustomerList, setShowCustomerList] = useState(false);
 
   const generateInvoiceId = () => {
     const today = new Date();
@@ -222,11 +223,20 @@ export const Invoice = () => {
     }
   };
 
+  const handleCustomerAdded = (newCustomer) => {
+    setCustomerName(newCustomer.name);
+    setPhone(newCustomer.phone);
+    setAddress(newCustomer.address);
+    setEmail(newCustomer.email);
+    setSelectedCustomer(newCustomer);
+    setCustomerid(newCustomer.id);
+  };
+
   return (
-    <div className="bg-gray-50 min-h-screen">
-     {loading == true && <Loader/>}
+    <div className="bg-gray-50 max-h-screen">
+      {loading == true && <Loader />}
       <Topbar title={"Invoice"} />
-      <div className="flex flex-col lg:flex-row p-4 gap-4 max-w-7xl mx-auto">
+      <div className="flex flex-col lg:flex-row p-2 gap-4 max-w-10xl mx-auto">
         {/* Left Section */}
         <div className="flex-2 bg-white rounded-2xl shadow-lg overflow-auto">
           {/* Customer details */}
@@ -234,6 +244,12 @@ export const Invoice = () => {
             <h2 className="text-sm font-semibold mb-3 text-gray-700">
               Customer
             </h2>
+            <button
+              onClick={() => setShowNewCustomerForm(true)}
+              className="text-blue-500 hover:text-blue-700 text-sm font-normal flex items-center gap-1"
+            >
+              <UserPlus size={16} /> New Customer
+            </button>
             <div className="relative">
               <input
                 type="text"
@@ -286,6 +302,12 @@ export const Invoice = () => {
                 </div>
               )}
             </div>
+            {showNewCustomerForm && (
+              <NewCustomerForm
+                onCustomerAdded={handleCustomerAdded}
+                onClose={() => setShowNewCustomerForm(false)}
+              />
+            )}
           </div>
 
           {/* Product List */}
@@ -301,8 +323,9 @@ export const Invoice = () => {
               return (
                 <div
                   key={product.id}
-                  className="px-4 py-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-1 border rounded-lg bg-gray-50"
+                  className="px-4 py-3 flex flex-col sm:grid sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 border rounded-lg bg-gray-50"
                 >
+                  {/* Product Name & Model */}
                   <div className="flex flex-col">
                     <div className="text-sm font-semibold text-gray-700">
                       {product.name}
@@ -312,6 +335,7 @@ export const Invoice = () => {
                     </div>
                   </div>
 
+                  {/* Warranty */}
                   <div className="flex flex-col">
                     <div className="text-xs font-medium text-gray-500">
                       Warranty
@@ -321,6 +345,7 @@ export const Invoice = () => {
                     </div>
                   </div>
 
+                  {/* Quantity */}
                   <div className="flex flex-col">
                     <div className="text-xs font-medium text-gray-500">
                       Quantity
@@ -342,27 +367,33 @@ export const Invoice = () => {
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 justify-end md:justify-center">
-                    <div
-                      onClick={() => toggleDealerPrice(product.id, false)}
-                      className={`px-2 py-1 rounded-lg text-xs font-semibold cursor-pointer border ${
-                        !useDealerPrice
-                          ? "bg-blue-500 text-white border-blue-500"
-                          : "bg-white text-gray-600 border-gray-300"
-                      }`}
-                    >
-                      Rs. {product.price}
+                  {/* Price buttons and Add button are now in separate containers */}
+                  <div className="flex flex-col sm:flex-row gap-2 mt-2 sm:mt-0 items-start sm:items-center">
+                    {/* Price Buttons */}
+                    <div className="flex flex-wrap gap-2">
+                      <div
+                        onClick={() => toggleDealerPrice(product.id, false)}
+                        className={`px-2 py-1 rounded-lg text-xs font-semibold cursor-pointer border ${
+                          !useDealerPrice
+                            ? "bg-blue-500 text-white border-blue-500"
+                            : "bg-white text-gray-600 border-gray-300"
+                        }`}
+                      >
+                        Price Rs. {product.price}
+                      </div>
+                      <div
+                        onClick={() => toggleDealerPrice(product.id, true)}
+                        className={`px-2 py-1 rounded-lg text-xs font-semibold cursor-pointer border ${
+                          useDealerPrice
+                            ? "bg-green-500 text-white border-green-500"
+                            : "bg-white text-gray-600 border-gray-300"
+                        }`}
+                      >
+                        Dealer: Rs. {product.dealers_price}
+                      </div>
                     </div>
-                    <div
-                      onClick={() => toggleDealerPrice(product.id, true)}
-                      className={`px-2 py-1 rounded-lg text-xs font-semibold cursor-pointer border ${
-                        useDealerPrice
-                          ? "bg-green-500 text-white border-green-500"
-                          : "bg-white text-gray-600 border-gray-300"
-                      }`}
-                    >
-                      Dealer: Rs. {product.dealers_price}
-                    </div>
+
+                    {/* Add Button */}
                     <button
                       className={`text-xs px-3 py-1 rounded-lg text-white ${
                         isAddButtonDisabled

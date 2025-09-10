@@ -1,33 +1,47 @@
-import { UserPlus, X } from "lucide-react";
-import { useState } from "react";
+import { Monitor, X, PackagePlus } from "lucide-react";
+import { useEffect, useState } from "react";
 import apiService from "../../utilities/httpservices";
 import Cookies from "js-cookie";
 import { UseProductContext } from "../../context/productContext";
 
 export const AddNewStocks = ({
-    id,
-    modelCode,
-    buyingprice,
-    sellingprice,
-    dealersprice
+  id,
+  modelCode,
+  buyingprice,
+  sellingprice,
+  dealersprice
 }) => {
-    const { refreshProducts } = UseProductContext();
-    const {quantity, setQuantity} = useState(1);
-  
+  const { refreshProducts } = UseProductContext();
+  const [quantity, setQuantity] = useState(1);
+  const [showmenu, setShowmenu] = useState(false);
+  const [totalPrice, setTotalPrice] = useState(0);
+  const token = Cookies.get("token");
+
+  useEffect(() => {
+    // Calculate total price whenever quantity or buyingprice changes
+    const newTotal = Number(quantity) * Number(buyingprice);
+    setTotalPrice(newTotal);
+  }, [quantity, buyingprice]);
+
   const handleSave = async () => {
     const data = {
-        
+      product_id: id,
+      model_id: modelCode,
+      unit_buying_price: buyingprice,
+      quantity: quantity,
+      total_amount: totalPrice
+    };
+    refreshProducts();
+    console.log(data);
+    try {
+      const result = await apiService.createData('stock-log', data, token);
+      console.log("pressed");
+      setShowmenu(false);
+    } catch (error) {
+      console.log(error);
     }
     
-    try {
-        const result = await apiService.createData('users/signup',data,token);
-        console.log(result);
-        setShowmenu(false);
-    } catch (error) {
-        console.log(error);
-    }
-    refreshProducts();
-  }
+  };
 
   return (
     <div>
@@ -36,7 +50,7 @@ export const AddNewStocks = ({
         className="py-1 rounded px-2 bg-blue-800 text-white flex gap-1 text-sm hover:bg-blue-700 transition"
         onClick={() => setShowmenu(true)}
       >
-        <UserPlus size={16} />
+        <Monitor size={16} />
         <span>Add</span>
       </button>
 
@@ -58,8 +72,8 @@ export const AddNewStocks = ({
               {/* Header */}
               <div className="flex justify-between items-center border-b pb-3 mb-4">
                 <div className="text-lg font-semibold flex gap-2 items-center">
-                  <UserPlus size={20} />
-                  Add User
+                  <PackagePlus size={20} />
+                  Add New Stocks
                 </div>
                 <button
                   className="bg-red-500 hover:bg-red-600 text-white rounded-full p-1"
@@ -72,21 +86,34 @@ export const AddNewStocks = ({
               {/* Form */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium mb-1">Amount</label>
+                  <label className="block text-sm font-medium mb-1">Quantity</label>
                   <input
-                    type="text"
-                    value={fullname}
-                    onChange={(e) => setFullname(e.target.value)}
+                    type="number" // Changed to number for better UX
+                    value={quantity}
+                    onChange={(e) => setQuantity(Number(e.target.value))}
                     className="w-full border rounded px-3 py-1.5 text-sm focus:ring focus:ring-blue-200"
+                    min="1" // Ensure quantity is at least 1
                   />
                 </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1">Buying Price</label>
+                  <div className="w-full border rounded px-3 py-1.5 text-sm bg-gray-100 flex items-center">
+                    <span className="font-semibold">Rs. {Number(buyingprice).toFixed(2)}</span>
+                  </div>
+                </div>
+                <div className="col-span-1 md:col-span-2">
+                  <label className="block text-sm font-medium mb-1">Total Price</label>
+                  <div className="w-full border rounded px-3 py-1.5 text-sm bg-blue-50">
+                    <span className="font-bold text-blue-800 text-lg">Rs. {totalPrice.toFixed(2)}</span>
+                  </div>
+                </div>
+              </div>
 
-               </div>
               {/* Actions */}
               <div className="flex justify-end mt-5">
-                <button 
-                    className="bg-blue-800 hover:bg-blue-700 text-sm py-1.5 px-4 text-white rounded transition"
-                    onClick={handleSave}
+                <button
+                  className="bg-blue-800 hover:bg-blue-700 text-sm py-1.5 px-4 text-white rounded transition"
+                  onClick={handleSave}
                 >
                   Save
                 </button>

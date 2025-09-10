@@ -171,13 +171,23 @@ const reduceProductQuantity = async (productId, qty) => {
   await db.query(query, [qty, productId, qty]);
 };
 
-const increaseProductQuantity = async (productId, qty) => {
+const increaseProductQuantity = async (product_id, qty) => {
+  console.log(`Attempting to increase quantity for product_id: ${product_id} by: ${qty}`);
+
   const query = `
     UPDATE products 
     SET quantity = quantity + ? 
     WHERE id = ?`;
 
-  await db.query(query, [qty, productId]);
+  try {
+    const [result] = await db.query(query, [qty, product_id]);
+    console.log(`Database update successful. Rows affected: ${result.affectedRows}`);
+    if (result.affectedRows === 0) {
+      console.log('Warning: No rows were updated. The product_id might be incorrect.');
+    }
+  } catch (error) {
+    console.error('Error during database update:', error);
+  }
 };
 
 module.exports = {

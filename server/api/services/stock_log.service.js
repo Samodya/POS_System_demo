@@ -1,4 +1,4 @@
-const connectMySQLDB = require("../../config"); 
+const connectMySQLDB = require("../../config");
 const { increaseProductQuantity } = require("./product.service");
 
 let db;
@@ -7,41 +7,38 @@ let db;
 })();
 
 const createStockLog = async (data) => {
-    const { product_id, model_id, quantity, unit_buying_price, total_amount } = data;
-  
-    
-  
-    const [result] = await db.query(
-      `INSERT INTO stock_order_log 
-        (product_id, model_id, quantity, unit_buying_price, total_amount)
-        VALUES(?, ?, ?, ?, ?)`,
-      [product_id, model_id, quantity, unit_buying_price, total_amount]
-    );
-  
-    await increaseProductQuantity(product_id, quantity);
-  
-    return { id: result.insertId, ...data };
-  };
 
-  const createInProductsStockLog = async (data) => {
-    const { product_id, model_id, quantity, unit_buying_price, total_amount } = data;
+  const { product_id, model_id, quantity, unit_buying_price, total_amount } =
+    data;
+
+  const [result] = await db.query(
+    `INSERT INTO stock_order_log 
+  (product_id, model_id, quantity, unit_buying_price, total_amount)
+   VALUES(?, ?, ?, ?, ?)`,
+    [product_id, model_id, quantity, unit_buying_price, total_amount]
+  ); 
   
-    
-  
-    const [result] = await db.query(
-      `INSERT INTO stock_order_log 
+  const { increaseProductQuantity } = require("./product.service");
+  await increaseProductQuantity(product_id, quantity);
+
+  return { id: result.insertId, ...data };
+};
+
+const createInProductsStockLog = async (data) => {
+  const { product_id, model_id, quantity, unit_buying_price, total_amount } =
+    data;
+
+  const [result] = await db.query(
+    `INSERT INTO stock_order_log 
         (product_id, model_id, quantity, unit_buying_price, total_amount)
         VALUES(?, ?, ?, ?, ?)`,
-      [product_id, model_id, quantity, unit_buying_price, total_amount]
-    );
-  
-  
-    return { id: result.insertId, ...data };
-  };
-  
+    [product_id, model_id, quantity, unit_buying_price, total_amount]
+  );
+
+  return { id: result.insertId, ...data };
+};
 
 module.exports = {
-    createStockLog,
-    createInProductsStockLog
-}
-
+  createStockLog,
+  createInProductsStockLog,
+};
