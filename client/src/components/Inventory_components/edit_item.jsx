@@ -29,6 +29,7 @@ export const EditItem = ({ id }) => {
 
   async function fetchItem() {
     try {
+      // Assuming apiService.getDataById works as expected
       const result = await apiService.getDataById("products", id, token);
       setFormData({
         productName: result.name || "",
@@ -43,30 +44,43 @@ export const EditItem = ({ id }) => {
         conditions: result.conditions || "",
       });
       setItemimage(result.image_path);
-      console.log(result);
-    } catch (error) {}
+    } catch (error) {
+      console.error("Failed to fetch item:", error);
+    }
   }
 
-  // Cleanup object URL when file changes
+  // Effect to fetch item data when the modal is shown
   useEffect(() => {
+    if (showMenu) {
+      fetchItem();
+    }
+    // Cleanup object URL when the component unmounts or preview changes
     return () => {
       if (preview) URL.revokeObjectURL(preview);
     };
-  }, [preview]);
+  }, [showMenu]); // Re-run when showMenu changes
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Revoke previous URL if one exists before setting new one
+      if (preview) URL.revokeObjectURL(preview);
       setPreview(URL.createObjectURL(file));
       setFiles(file);
     }
   };
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
+    // If you plan to implement search, you'd handle modelSearch here too
+    // For now, it updates formData.itemmodel_id
+    if (name === 'itemmodel_id') {
+      setModelSearch(value); // Keep modelSearch in sync with input for search-like feel
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -75,7 +89,7 @@ export const EditItem = ({ id }) => {
     const form = new FormData();
     form.append("name", formData.productName);
     form.append("category", formData.category);
-    form.append("itemmodel_id", formData.itemmodel_id)
+    form.append("itemmodel_id", formData.itemmodel_id);
     form.append("buying_price", formData.buyingPrice);
     form.append("price", formData.sellingPrice);
     form.append("dealers_price", formData.dealerPrice);
@@ -84,27 +98,28 @@ export const EditItem = ({ id }) => {
     form.append("warranty", formData.warranty);
     form.append("conditions", formData.conditions);
 
+    // Only append image if a new file was selected
     if (files) {
       form.append("image", files);
     }
 
     try {
+      // Assuming apiService.updateData works as expected
       const result = await apiService.updateData("products", id, form, token);
       refreshProducts();
-      console.log(result);
       setShowMenu(false);
     } catch (err) {
-      console.error("Upload failed", err);
+      console.error("Update failed", err);
+      // Optional: Add user feedback for failure
     }
   };
 
-  
   return (
     <div className="flex items-center justify-center gap-1">
       <button
         className="flex items-center justify-center gap-1 text-white bg-gradient-to-r from-black via-[#0a0f2c] to-[#013ea0] px-2 py-1 rounded"
         onClick={() => {
-          fetchItem();
+          // fetchItem is called inside useEffect when showMenu is true
           setShowMenu(true);
         }}
       >
@@ -161,7 +176,7 @@ export const EditItem = ({ id }) => {
                           /^\/+/,
                           ""
                         )}`}
-                        alt="Preview"
+                        alt="Current Item"
                         className="object-cover w-full h-full"
                       />
                     ) : (
@@ -188,14 +203,14 @@ export const EditItem = ({ id }) => {
                   </label>
                   <input
                     type="text"
-                    value={formData.itemmodel_id}
-                    onChange={handleChange}
+                    name="itemmodel_id" // Added name attribute
+                    value={formData.itemmodel_id} // Used formData directly
+                    onChange={handleChange} // Used standard handleChange
                     onClick={() => setShowModelList(true)}
                     placeholder="Search model..."
                     className="border border-gray-300 rounded-md p-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
                   />
-
-                 
+                  {/* Model list/search functionality would go here, utilizing showModelList state */}
                 </div>
                 <div className="grid grid-cols-2 gap-6 ">
                   <InputGroup
@@ -229,7 +244,7 @@ export const EditItem = ({ id }) => {
                     value={formData.conditions}
                     onChange={handleChange}
                     type="select"
-                    options={["","Brand-new","Second-hand"]}
+                    options={["", "Brand-new", "Second-hand"]}
                   />
                   <InputGroup
                     name="buyingPrice"
@@ -260,6 +275,7 @@ export const EditItem = ({ id }) => {
                     label="Quantity"
                     value={formData.quantity}
                     onChange={handleChange}
+                    disabled={true}
                     type="number"
                     placeholder="Enter quantity"
                   />
@@ -289,6 +305,7 @@ export const EditItem = ({ id }) => {
   );
 };
 
+// FIX: Correctly apply the disabled boolean attribute
 function InputGroup({
   name,
   label,
@@ -296,8 +313,11 @@ function InputGroup({
   value,
   onChange,
   placeholder,
+  disabled, // This will be a boolean if passed, or undefined
   options = [],
 }) {
+  const isDisabled = disabled === true || disabled === 'true'; // Check for boolean true or string 'true'
+
   return (
     <div className="flex flex-col">
       <label className="mb-1 font-medium text-gray-700">{label}</label>
@@ -307,6 +327,7 @@ function InputGroup({
           className="border border-gray-300 rounded-md p-0.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
           value={value}
           onChange={onChange}
+          disabled={isDisabled} // Apply boolean attribute
         >
           {options.map((opt, i) => (
             <option key={i} value={opt}>
@@ -321,6 +342,7 @@ function InputGroup({
           value={value}
           onChange={onChange}
           placeholder={placeholder}
+          disabled={isDisabled} // Apply boolean attribute
           className="border border-gray-300 rounded-md p-0.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
         />
       )}

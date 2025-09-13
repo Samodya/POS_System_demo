@@ -39,6 +39,7 @@ const getAll = async (_req, res) => {
         
         ...req.body,
       };
+      console.log(data);
       const updated = await repairServices.updateRepair(req.params.id, data);
       res.json(updated);
     } catch (error){

@@ -51,7 +51,7 @@ export const AddNewStocks = ({
         onClick={() => setShowmenu(true)}
       >
         <Monitor size={16} />
-        <span>Add</span>
+        <span>Add new Stock</span>
       </button>
 
       {showmenu && (

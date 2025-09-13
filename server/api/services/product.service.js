@@ -83,7 +83,7 @@ const getProductById = async (id) => {
   const [rows] = await db.query(
     ` SELECT *
     FROM products 
-    ORDER BY created_at DESC WHERE id = ?`,
+     WHERE id = ?`,
     [id]
   );
   return rows[0];

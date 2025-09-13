@@ -28,11 +28,12 @@ export const EditRepair = () => {
   const { id } = useParams();
 
   const [orderId, setOrderId] = useState("");
+  const [customer_id, setCustomer_id] = useState("");
   const [customerName, setCustomerName] = useState("");
   const [phone, setPhone] = useState("");
   const [device, setDevice] = useState("");
   const [issue, setIssue] = useState("");
-  const [status, setStatus] = useState("Pending");
+  const [status, setStatus] = useState("pending");
   const [cost, setCost] = useState("");
   const [receivedDate, setReceivedDate] = useState("");
   const [completedDate, setCompletedDate] = useState("");
@@ -46,17 +47,19 @@ export const EditRepair = () => {
   const [existingParts, setExistingParts] = useState([]);
   const [newParts, setNewParts] = useState([]);
   const [accessoryProducts, setAccessoryProducts] = useState([]);
-  
+
   // Tab state for right column
   const [activePartsTab, setActivePartsTab] = useState("new");
-
 
   // Fetch initial repair data
   const getRepair = async () => {
     try {
       const result = await apiService.getDataById("repairs", id, token);
+      console.log(result);
+
       setOrderId(result.order_id);
       setCustomerName(result.customer_name);
+      setCustomer_id(result.customer_id);
       setPhone(result.contact_no);
       setDevice(result.device);
       setIssue(result.issue);
@@ -71,10 +74,21 @@ export const EditRepair = () => {
     }
   };
 
+  const statusOptions = [
+    { value: "pending", label: "Pending" },
+    { value: "in_progress", label: "In Progress" },
+    { value: "completed", label: "Completed" },
+    { value: "awaiting_parts", label: "Awaiting Parts" },
+  ];
+
   // Fetch and set existing parts
   const getRepairItems = async () => {
     try {
-      const result = await apiService.getDataById("repair-items/repair", id, token);
+      const result = await apiService.getDataById(
+        "repair-items/repair",
+        id,
+        token
+      );
       setExistingParts(
         result.map((item) => ({
           id: item.product_id,
@@ -112,8 +126,14 @@ export const EditRepair = () => {
         assigned_to: assignedUserId,
         repair_fix_note: repairNote,
       };
-      await apiService.updateData("repairs", id, repairData, token);
+      const result = await apiService.updateData(
+        "repairs",
+        id,
+        repairData,
+        token
+      );
       alert("Repair updated successfully!");
+      console.log(result);
       refreshRepairs();
     } catch (error) {
       console.error(error);
@@ -165,13 +185,13 @@ export const EditRepair = () => {
   const addPart = (product, priceType) => {
     const existingNewPart = newParts.find((p) => p.id === product.id);
     const updatedProduct = accessoryProducts.find((p) => p.id === product.id);
-    
+
     // Check if there's stock available before adding
     if (updatedProduct.quantity <= 0) {
       alert(`${product.name} is out of stock`);
       return;
     }
-    
+
     if (existingNewPart) {
       setNewParts((prev) =>
         prev.map((p) =>
@@ -206,7 +226,7 @@ export const EditRepair = () => {
     const newQty = partToUpdate.quantity + change;
 
     if (newQty < 1) return; // Prevent quantity from dropping below 1
-    
+
     const correspondingProduct = accessoryProducts.find((p) => p.id === id);
     if (change > 0 && correspondingProduct.quantity <= 0) {
       alert("Cannot add more, out of stock.");
@@ -238,7 +258,6 @@ export const EditRepair = () => {
     setNewParts((prev) => prev.filter((p) => p.id !== id));
   };
 
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Topbar title="Edit Repair Details" />
@@ -256,8 +275,7 @@ export const EditRepair = () => {
             </p>
             <p className="flex items-center gap-2 text-gray-700">
               <UserStarIcon size={16} className="text-gray-500" />
-              <span className="font-medium">Customer Name:</span>{" "}
-              {customerName}
+              <span className="font-medium">Customer Name:</span> {customerName}
             </p>
             <p className="flex items-center gap-2 text-gray-700">
               <Phone size={16} className="text-gray-500" />
@@ -323,7 +341,6 @@ export const EditRepair = () => {
                       className="w-full border rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-200 focus:border-blue-500"
                     />
                   </div>
-
                   {/* Issue */}
                   <div>
                     <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-0.5">
@@ -372,10 +389,11 @@ export const EditRepair = () => {
                       onChange={(e) => setStatus(e.target.value)}
                       className="w-full border rounded-lg px-3 py-2 text-sm focus:ring focus:ring-blue-200 focus:border-blue-500"
                     >
-                      <option value="Pending">Pending</option>
-                      <option value="In Progress">In Progress</option>
-                      <option value="Completed">Completed</option>
-                      <option value="Cancelled">Cancelled</option>
+                      {statusOptions.map((opt) => (
+                        <option key={opt.value} value={opt.value}>
+                          {opt.label}
+                        </option>
+                      ))}
                     </select>
                   </div>
 

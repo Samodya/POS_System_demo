@@ -17,7 +17,7 @@ export const DeleteRepair = ({ id, fullname }) => {
       refreshRepairs();
       setShowmenu(false);
     } catch (error) {
-      console.log("Delete error:", error);
+      alert(error.response.data.error.message);
     }
   };
 

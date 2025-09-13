@@ -76,7 +76,7 @@ const getRepairById = async (id) => {
       r.received_date, 
       r.completed_date, 
       r.repair_fix_note, 
-      u.fullname AS assigned_to, 
+      r.assigned_to, 
       r.created_at
     FROM repairs r
     LEFT JOIN customers c ON r.customer_id = c.id
@@ -92,7 +92,6 @@ const getRepairById = async (id) => {
 
 const updateRepair = async (id, data) => {
   const {
-    customer_id,
     device,
     issue,
     status,
@@ -102,17 +101,18 @@ const updateRepair = async (id, data) => {
     assigned_to,
     repair_fix_note,
   } = data;
+  console.log(data);
 
   await db.query(
     `UPDATE repairs
-       SET customer_id = ?, device = ?, issue = ?, cost=?, status = ?, received_date = ?, completed_date = ?, assigned_to = ?, repair_fix_note= ?
+       SET  device = ?, issue = ?, cost=?, status = ?, received_date = ?, completed_date = ?, assigned_to = ?, repair_fix_note= ?
        WHERE id = ?`,
     [
-      customer_id,
+      
       device,
       issue,
-      status,
-      cost,
+      cost,           // now matches cost=?
+      status, 
       received_date,
       completed_date,
       assigned_to,
