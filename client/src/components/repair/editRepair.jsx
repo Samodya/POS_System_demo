@@ -17,16 +17,21 @@ import {
   UserStarIcon,
   FileText,
   Trash2,
+  Download,
+  ShoppingCart,
 } from "lucide-react";
+import { UseRepairSaleContext } from "../../context/repair_sale_context";
+import Loader from "../loader";
 
 export const EditRepair = () => {
   const { refreshRepairs } = UseRepairContext();
   const { refreshCustomers } = UseCustomerContext();
+  const { repairsales, refreshRepairSales } = UseRepairSaleContext();
   const { products, refreshProducts } = UseProductContext();
   const { users } = UseUserContext("");
   const token = Cookies.get("token");
   const { id } = useParams();
-
+  const [loading, setLoading] = useState(false);
   const [orderId, setOrderId] = useState("");
   const [customer_id, setCustomer_id] = useState("");
   const [customerName, setCustomerName] = useState("");
@@ -39,6 +44,7 @@ export const EditRepair = () => {
   const [completedDate, setCompletedDate] = useState("");
   const [repairNote, setRepairNote] = useState("");
   const [assignedUserId, setAssignedUserId] = useState("");
+  const [totalCost, setTotalCost] = useState(0);
 
   // Tabs state for left column
   const [activeTab, setActiveTab] = useState("form");
@@ -105,7 +111,114 @@ export const EditRepair = () => {
   useEffect(() => {
     getRepair();
     getRepairItems();
+    refreshRepairSales();
   }, [id]);
+
+  const generateOrderId = async () => {
+    await refreshRepairSales(); // ensure repairsales is fresh
+
+    const today = new Date();
+    const year = String(today.getFullYear()).slice(-2);
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
+    const datePart = `${year}${month}${day}`;
+    const prefix = "ORD";
+
+    const todayRepairs = repairsales.filter((r) =>
+      r.invoiceid?.startsWith(prefix + datePart)
+    );
+
+    let maxSeq = 0;
+    todayRepairs.forEach((r) => {
+      const seq = parseInt(
+        r.invoiceid.slice(prefix.length + datePart.length),
+        10
+      );
+      if (!isNaN(seq) && seq > maxSeq) maxSeq = seq;
+    });
+
+    return prefix + datePart + (maxSeq + 1);
+  };
+
+  const getBill = async (id) => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `http://localhost:4000/api/reports/repairs/${id}`,
+        {
+          method: "GET",
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to fetch PDF");
+
+      // Convert response to blob
+      const blob = await response.blob();
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `sale-${saleid}.pdf`;
+      a.click();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Error fetching PDF:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCheckout = async () => {
+    try {
+      let existingSales = null;
+      try {
+        existingSales = await apiService.getDataById(
+          "repair-sales/repair",
+          id,
+          token
+        );
+      } catch (err) {
+        if (err.response?.status !== 404) {
+          throw err; // only swallow 404, rethrow other errors
+        }
+      }
+  
+      const invoiceid = await generateOrderId();
+      const data = {
+        invoiceid,
+        repair_id: id,
+        customer_id,
+        total_amount: totalCost,
+        payment_method: "Cash",
+      };
+  
+      if (existingSales) {
+        // ✅ Update if found
+        try {
+          await apiService.updateData("repair-sales", existingSales.id, data, token);
+          refreshRepairSales();
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        // ✅ Create if not found
+        try {
+          const result = await apiService.createData("repair-sales", data, token);
+          if (result) {
+            alert("Checkout completed!");
+            // getBill(id); // pass invoiceid to keep file name unique
+          }
+          refreshRepairSales();
+        } catch (error) {
+          console.log(error.response?.data?.error?.message || error.message);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
 
   // Sync products from context with local state on initial load or refresh
   useEffect(() => {
@@ -168,17 +281,6 @@ export const EditRepair = () => {
       console.error(error);
       alert("Failed to save new parts");
     }
-  };
-
-  // calculate total amount
-  const calculateTotal = () => {
-    const allParts = [...existingParts, ...newParts];
-    const partsTotal = allParts.reduce(
-      (sum, p) => sum + p.quantity * p.unitPrice,
-      0
-    );
-    const serviceCharge = parseFloat(cost) || 0;
-    return partsTotal + serviceCharge;
   };
 
   // Add a new part to the newParts list or increment existing one
@@ -258,16 +360,45 @@ export const EditRepair = () => {
     setNewParts((prev) => prev.filter((p) => p.id !== id));
   };
 
+  // calculate total amount
+  const calculateTotal = () => {
+    const allParts = [...existingParts, ...newParts];
+    const partsTotal = allParts.reduce(
+      (sum, p) => sum + p.quantity * p.unitPrice,
+      0
+    );
+    const serviceCharge = parseFloat(cost) || 0;
+    const totalamount = partsTotal + serviceCharge;
+
+    return totalamount;
+  };
+
+  useEffect(() => {
+    setTotalCost(calculateTotal());
+  }, [existingParts, newParts, cost]);
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      {loading && <Loader />}
       <Topbar title="Edit Repair Details" />
 
       <div className="max-w-6xl mx-auto w-full px-6 py-4 space-y-3">
         {/* Contact Details */}
         <div className="bg-white rounded-xl shadow-md p-4">
-          <h2 className="text-lg font-semibold text-gray-800 border-b pb-2 mb-2">
-            Contact Details
-          </h2>
+          <div className="border-b pb-2 flex justify-between mb-2">
+            <h2 className="text-lg font-semibold text-gray-800  pb-2 mb-2">
+              Contact Details
+            </h2>
+            <div>
+              <button
+                className="text-sm rounded font-bold bg-blue-900 text-white flex items-center justify-center gap-2 p-2"
+                onClick={handleCheckout}
+              >
+                <ShoppingCart size={16} />
+                Checkout
+              </button>
+            </div>
+          </div>
           <div className="grid grid-cols-2 gap-y-2 text-sm">
             <p className="flex items-center gap-2 text-gray-700">
               <Ticket size={16} className="text-gray-500" />
@@ -616,7 +747,7 @@ export const EditRepair = () => {
                 Service Charge: Rs.{cost || 0}
               </p>
               <p className="text-lg font-semibold text-gray-800 mt-2">
-                Total Amount: Rs.{calculateTotal()}
+                Total Amount: Rs.{totalCost}
               </p>
             </div>
           </div>

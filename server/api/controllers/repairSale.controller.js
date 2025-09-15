@@ -25,13 +25,30 @@ const getAll = async (_req, res) => {
   
   const getById = async (req, res) => {
     try {
-      const repairSale = await repairSaleService.getSaleRepairedById(req.params.id);
-      if (!repairSale) return res.status(404).json({ error: "Not found" });
+      const repairSale = await repairSaleService.getSaleById(req.params.id);
+      if (!repairSale) {
+        return res.status(404).json({ error: "Repair Sale not found" });
+      }
       res.json(repairSale);
-    } catch {
-      res.status(500).json({ error: "Failed to get Repair" });
+    } catch (error) {
+      console.error("getById error:", error);
+      res.status(500).json({ error: error.message });
     }
   };
+  
+  const getByRepairId = async (req, res) => {
+    try {
+      const repairSale = await repairSaleService.getSaleRepairById(req.params.id);
+      if (!repairSale) {
+        return res.status(404).json({ error: "Repair Sale not found for given repair_id" });
+      }
+      res.json(repairSale);
+    } catch (error) {
+      console.error("getByRepairId error:", error);
+      res.status(500).json({ error: error.message });
+    }
+  };
+  
 
   const update = async (req, res) => {
     try {
@@ -56,5 +73,5 @@ const getAll = async (_req, res) => {
   };
 
   module.exports = {
-    create, getAll, getById, update, remove
+    create, getAll, getById,getByRepairId, update, remove
   }

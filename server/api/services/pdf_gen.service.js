@@ -121,91 +121,87 @@ const generateSalesPDF = async (saleId) => {
 };
 
 // Generate Repair PDF
+ 
+
 const generateRepairPDF = async (repairId) => {
-  const formatDateTime = (d) => {
-    if (!d) return { date: "", time: "" };
-    const dt = new Date(d);
-  
-    const day = String(dt.getDate()).padStart(2, "0");
-    const month = String(dt.getMonth() + 1).padStart(2, "0");
-    const year = dt.getFullYear();
-  
-    const hours = String(dt.getHours()).padStart(2, "0");
-    const minutes = String(dt.getMinutes()).padStart(2, "0");
-    const seconds = String(dt.getSeconds()).padStart(2, "0");
-  
-    return {
-      date: `${day}-${month}-${year}`,
-      time: `${hours}:${minutes}:${seconds}`,
+  try {
+    const formatDateTime = (d) => {
+      if (!d) return { date: "", time: "" };
+      const dt = new Date(d);
+      const pad = (n) => String(n).padStart(2, "0");
+      return {
+        date: `${pad(dt.getDate())}-${pad(dt.getMonth() + 1)}-${dt.getFullYear()}`,
+        time: `${pad(dt.getHours())}:${pad(dt.getMinutes())}:${pad(dt.getSeconds())}`,
+      };
     };
-  };
 
-  // Absolute path for logo
-  const logoPath = path.join(
-    process.cwd(),
-    "templates",
-    "MasterTechLogo/PNG/MasterTechLogoBT.png"
-  );
-  const logoBase64 = fs.readFileSync(logoPath, { encoding: "base64" });
-  const logoUrl = `data:image/png;base64,${logoBase64}`;
-  const [repairRows] = await db.query(`SELECT * FROM repairs WHERE id = ?`, [
-    repairId,
-  ]);
-  if (!repairRows.length) return null;
+    const logoPath = path.join(process.cwd(), "templates", "MasterTechLogo/PNG/MasterTechLogoBT.png");
+    if (!fs.existsSync(logoPath)) throw new Error("Logo not found at " + logoPath);
+    const logoBase64 = fs.readFileSync(logoPath, { encoding: "base64" });
+    const logoUrl = `data:image/png;base64,${logoBase64}`;
 
-  const repair = repairRows[0];
+    // Fetch repair
+    const [repairRows] = await db.query(`SELECT * FROM repairs WHERE id = ?`, [repairId]);
+    if (!repairRows.length) throw new Error("Repair not found");
+    const repair = repairRows[0];
 
-  const [repairSaleRows] = await db.query(
-    "SELECT * FROM repair_sales WHERE repair_id = ?",
-    [repairId]
-  );
-  const repairSale = repairSaleRows[0] || {};
+    // Fetch repair sale
+    const [repairSaleRows] = await db.query(
+      "SELECT invoiceid, total_amount, created_at FROM repair_sales WHERE repair_id = ?",
+      [repairId]
+    );
+    const repairSale = repairSaleRows[0] || {};
 
-  const [itemRows] = await db.query(
-    "SELECT * FROM repair_items WHERE repair_id = ?",
-    [repairId]
-  );
+    // Fetch repair items
+    const [itemRows] = await db.query(
+      `SELECT rt.*, p.name AS part_name 
+       FROM repair_items rt 
+       LEFT JOIN products p ON rt.product_id = p.id 
+       WHERE rt.repair_id = ?`,
+      [repairId]
+    );
 
-  const templatePath = path.join(
-    process.cwd(),
-    "templates",
-    "invoice-repair.html"
-  );
+    const { date, time } = formatDateTime(repairSale.created_at || repair.received_date);
 
-  const { date, time } = formatDateTime(
-    repairSale.created_at || repair.received_date
-  );
-
-  // Debug logs
-  console.log("Repair Date:", date, "Time:", time);
-
-  const html = renderTemplate(templatePath, {
-    invoice_id: repairSale.id || repair.order_id,
-    date,
-    time,
-    customer: repair.customer_name || repair.customer_id || "Guest",
-    device: repair.device,
-    issue: repair.issue,
-    status: repair.status,
-    total: repairSale.total_amount || repair.cost || 0,
-    items: itemRows.length
-      ? itemRows
-          .map(
+    // Render HTML
+    const templatePath = path.join(process.cwd(), "templates", "invoice-repair.html");
+    if (!fs.existsSync(templatePath)) throw new Error("Template file not found");
+    const html = renderTemplate(templatePath, {
+      logoUrl,
+      invoice_id: repairSale.invoiceid || "N/A",
+      repairId: repair.order_id,
+      date,
+      time,
+      customer: repair.customer_name || repair.customer_id || "Guest",
+      device: repair.device,
+      issue: repair.issue,
+      status: repair.status,
+      total: repairSale.total_amount || repair.cost || 0,
+      items: itemRows.length
+        ? itemRows.map(
             (i) =>
-              `<tr class="even:bg-gray-50"><td class="py-2 px-4 border-b">${i.part_name}</td><td class="py-2 px-4 border-b">${i.quantity}</td><td class="py-2 px-4 border-b">${i.price}</td></tr>`
-          )
-          .join("")
-      : `<tr><td colspan="3" class="py-2 px-4 border-b">No spare parts used</td></tr>`,
-  });
+              `<tr class="even:bg-gray-50">
+                <td class="py-2 px-4 border-b">${i.part_name || "Unknown Part"}</td>
+                <td class="py-2 px-4 border-b">${i.quantity}</td>
+                <td class="py-2 px-4 border-b">${i.price}</td>
+              </tr>`
+          ).join("")
+        : `<tr><td colspan="3" class="py-2 px-4 border-b">No spare parts used</td></tr>`,
+    });
 
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
-  await page.setContent(html, { waitUntil: "networkidle0" });
-  const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
-  await browser.close();
+    // Generate PDF
+    const browser = await puppeteer.launch({ headless: true, args: ["--no-sandbox"] });
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: "networkidle0" });
+    const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
+    await browser.close();
 
-  return pdfBuffer;
+    return pdfBuffer;
+  } catch (error) {
+    throw error; // re-throw for caller to handle
+  }
 };
+
 
 module.exports = {
   generateSalesPDF,

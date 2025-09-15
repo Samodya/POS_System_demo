@@ -9,6 +9,8 @@ let db;
 const createRepairSale = async (data) => {
   const { invoiceid, repair_id, customer_id, total_amount, payment_method } = data;
 
+  
+
   const [result] = await db.query(
     `INSERT INTO repair_sales (invoiceid, repair_id,customer_id, total_amount, payment_method)
          VALUES (?, ?, ?, ?, ?)`,
@@ -25,8 +27,13 @@ const getAllRapairSales = async () => {
   return rows;
 };
 
-const getSaleRepairedById = async (id) => {
+const getSaleById = async (id) => {
   const [rows] = await db.query("SELECT * FROM repair_sales WHERE id = ?", [id]);
+  return rows[0];
+};
+
+const getSaleRepairById = async (id) => {
+  const [rows] = await db.query("SELECT * FROM repair_sales WHERE repair_id=?", [id]);
   return rows[0];
 };
 
@@ -37,7 +44,7 @@ const updateRepairedSale = async (id, data) => {
     `UPDATE repair_sales
        SET invoiceid=?, repair_id=?, customer_id = ?, total_amount = ?, payment_method = ?
        WHERE id = ?`,
-    [invoiceid, repair_id, customer_id, total_amount, payment_method]
+    [invoiceid, repair_id, customer_id, total_amount, payment_method, id]
   );
 
   return { id, ...data };
@@ -50,7 +57,8 @@ const deleteRepairedSale = async (id) => {
 module.exports = {
   createRepairSale,
   getAllRapairSales,
-  getSaleRepairedById,
+  getSaleById,
+  getSaleRepairById,
   updateRepairedSale,
   deleteRepairedSale,
 };

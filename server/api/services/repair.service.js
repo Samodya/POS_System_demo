@@ -66,7 +66,8 @@ const getRepairById = async (id) => {
     `
     SELECT 
       r.id, 
-      r.order_id, 
+      r.order_id,
+      r.customer_id,
       c.name AS customer_name, 
       c.phone AS contact_no, 
       r.device, 
@@ -87,6 +88,8 @@ const getRepairById = async (id) => {
   );
   return rows[0];
 };
+
+
 
 
 

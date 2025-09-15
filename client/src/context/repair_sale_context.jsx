@@ -6,7 +6,7 @@ const RepairSaleContext = createContext();
 
 export const UseRepairSaleContext = () => useContext(RepairSaleContext);
 
-export const CustomerContextProvider = ({ children }) => {
+export const RepairSaleContextProvider = ({ children }) => {
   const [repairsales, setRepairSales] = useState([]);
   const [repairsalesError, setRepairsalesError] = useState(null);
   const [showError, setShowError] = useState(false);

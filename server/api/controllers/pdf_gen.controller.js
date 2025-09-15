@@ -29,6 +29,6 @@ exports.getRepairPDF = async (req, res) => {
     res.send(pdfBuffer);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Error generating repair PDF" });
+    res.status(500).json(err);
   }
 };

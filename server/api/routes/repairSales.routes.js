@@ -6,6 +6,7 @@ const roleCheck = require("../middleware/roleCheck");
 
 router.post("/", repairSalesController.create);
 router.put("/:id", repairSalesController.update);
+router.get("/repair/:id", repairSalesController.getByRepairId)
 router.get("/",repairSalesController.getAll);
 router.get("/:id", repairSalesController.getById);
 router.delete("/:id", repairSalesController.remove);
