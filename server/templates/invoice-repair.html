@@ -2,17 +2,24 @@
 <html>
 <head>
   <meta charset="UTF-8">
+  <script src="https://cdn.tailwindcss.com"></script>
   <title>Repair Bill</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 20px; }
-    h1 { text-align: center; }
+    h1 { text-align: center; margin: 0; }
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
     th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
     th { background: #f4f4f4; }
-    .total { text-align: right; font-weight: bold; }
+    .total { text-align: right; font-weight: bold; margin-top: 20px; }
+    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+    .company-info { max-width: 60%; }
+    .invoice-info { text-align: right; }
+    .no-overflow { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    img.logo { border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
   </style>
 </head>
 <body>
+ <div class=" shadow-lg a4-container">
   <div class="header">
     <div class="flex items-center space-x-4">
       <img
@@ -53,6 +60,7 @@
       </p>
     </div>
   </div>
+
   <table>
     <thead>
       <tr>
@@ -65,7 +73,8 @@
       {{items}}
     </tbody>
   </table>
-
+<p>Service Charge : {{ cost }} </p>
   <p class="total">Total: {{total}}</p>
+ </div>
 </body>
 </html>

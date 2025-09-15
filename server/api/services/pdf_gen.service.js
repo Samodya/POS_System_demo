@@ -147,7 +147,7 @@ const generateRepairPDF = async (repairId) => {
 
     // Fetch repair sale
     const [repairSaleRows] = await db.query(
-      "SELECT invoiceid, total_amount, created_at FROM repair_sales WHERE repair_id = ?",
+      "SELECT invoiceid, total_amount, sale_date FROM repair_sales WHERE repair_id = ?",
       [repairId]
     );
     const repairSale = repairSaleRows[0] || {};
@@ -167,32 +167,32 @@ const generateRepairPDF = async (repairId) => {
     const templatePath = path.join(process.cwd(), "templates", "invoice-repair.html");
     if (!fs.existsSync(templatePath)) throw new Error("Template file not found");
     const html = renderTemplate(templatePath, {
-      logoUrl,
+      logo_url: logoUrl, // match HTML template key
       invoice_id: repairSale.invoiceid || "N/A",
       repairId: repair.order_id,
       date,
       time,
       customer: repair.customer_name || repair.customer_id || "Guest",
       device: repair.device,
+      cost:repair.cost,
       issue: repair.issue,
       status: repair.status,
-      total: repairSale.total_amount || repair.cost || 0,
+      total: Number(repairSale.total_amount || repair.cost || 0).toFixed(2),
       items: itemRows.length
         ? itemRows.map(
             (i) =>
-              `<tr class="even:bg-gray-50">
-                <td class="py-2 px-4 border-b">${i.part_name || "Unknown Part"}</td>
-                <td class="py-2 px-4 border-b">${i.quantity}</td>
-                <td class="py-2 px-4 border-b">${i.price}</td>
+              `<tr>
+                <td>${i.part_name || "Unknown Part"}</td>
+                <td>${i.quantity}</td>
+                <td>${Number(i.price).toFixed(2)}</td>
               </tr>`
           ).join("")
-        : `<tr><td colspan="3" class="py-2 px-4 border-b">No spare parts used</td></tr>`,
+        : `<tr><td colspan="3">No spare parts used</td></tr>`,
     });
-
     // Generate PDF
     const browser = await puppeteer.launch({ headless: true, args: ["--no-sandbox"] });
     const page = await browser.newPage();
-    await page.setContent(html, { waitUntil: "networkidle0" });
+    await page.setContent(html, { waitUntil: "domcontentloaded" });
     const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
     await browser.close();
 
