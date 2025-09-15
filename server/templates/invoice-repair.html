@@ -1,80 +1,176 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <meta charset="UTF-8">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <title>Repair Bill</title>
-  <style>
-    body { font-family: Arial, sans-serif; padding: 20px; }
-    h1 { text-align: center; margin: 0; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    th { background: #f4f4f4; }
-    .total { text-align: right; font-weight: bold; margin-top: 20px; }
-    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
-    .company-info { max-width: 60%; }
-    .invoice-info { text-align: right; }
-    .no-overflow { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    img.logo { border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-  </style>
-</head>
-<body>
- <div class=" shadow-lg a4-container">
-  <div class="header">
-    <div class="flex items-center space-x-4">
-      <img
-        src="{{ logo_url }}"
-        width="96"
-        height="96"
-        class="rounded-lg shadow-sm"
-      />
-      <div class="space-y-1">
-        <h2 class="text-xl font-bold text-gray-800">
-          Mastertech Computer Solutions
-        </h2>
-        <p class="text-gray-600 text-sm no-overflow">
-          101/A, Kurunegala Road, Katugasthota.
-        </p>
-        <p class="text-gray-600 text-sm no-overflow">
-          Phone: 0773155137 / 0741300558
-        </p>
-        <p class="text-gray-600 text-sm no-overflow">
-          Email: mastertechcomputers15@gmail.com
-        </p>
+  <head>
+    <meta charset="UTF-8" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      /* Define a fixed container for A4 size and prevent overflow */
+      .a4-container {
+        width: 210mm;
+        height: 297mm;
+        padding: 20mm;
+        box-sizing: border-box;
+        font-family: sans-serif;
+        margin: auto;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Ensure all internal elements are non-responsive and use fixed spacing */
+      .header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding-bottom: 30px;
+        border-bottom: 1px solid #e5e7eb;
+      }
+
+      .section {
+        margin-top: 30px;
+      }
+
+      .footer-spacer {
+        flex-grow: 1;
+      }
+
+      .signature-line {
+        border-top: 1px solid #9ca3af;
+        width: 192px;
+        margin: 0 auto;
+      }
+
+      .no-overflow {
+        overflow: hidden;
+        white-space: nowrap;
+      }
+    </style>
+    <title>Repair Bill</title>
+  </head>
+  <body class="p-6 font-sans bg-white">
+    <div class="bg-white a4-container">
+      <!-- Header -->
+      <div class="flex justify-between items-start mb-6">
+        <!-- Company Info -->
+        <div class="flex items-center space-x-4">
+          <img
+            src="{{ logo_url }}"
+            alt="Company Logo"
+            class="w-24 h-24 rounded-lg"
+          />
+          <div class="space-y-1">
+            <h2 class="text-xl font-bold text-gray-800">
+              Mastertech Computer Solutions
+            </h2>
+            <p class="text-gray-600 text-sm">
+              101/A, Kurunegala Road, Katugasthota.
+            </p>
+            <p class="text-gray-600 text-sm">Phone: 0773155137 / 0741300558</p>
+            <p class="text-gray-600 text-sm">
+              Email: mastertechcomputers15@gmail.com
+            </p>
+          </div>
+        </div>
+
+        <!-- Invoice Info -->
+        <div class="text-right space-y-1">
+          <h1 class="text-2xl font-extrabold text-gray-800">INVOICE</h1>
+          <p class="text-gray-700 text-sm"><strong>ID:</strong> {{ invoice_id }}</p>
+          <p class="text-gray-700 text-sm"><strong>Date:</strong> {{ date }}</p>
+          <p class="text-gray-700 text-sm"><strong>Time:</strong> {{ time }}</p>
+          <p class="text-gray-700 text-sm"><strong>Customer:</strong> {{ customer }}</p>
+        </div>
+      </div>
+
+      <!-- Items Table -->
+      <table class="w-full border border-gray-300">
+        <thead class="bg-gray-100 border-b border-gray-300">
+          <tr>
+            <th class="text-left py-2 px-4 text-gray-700 font-semibold text-xs">Issue</th>
+            <td colspan="5" class="font-light text-xs">{{ r_issue }}</td>
+          </tr>
+          <tr>
+            <th class="text-left py-2 px-4 text-gray-700 font-semibold text-xs">
+              Description of fix
+            </th>
+            <td colspan="5"  class="font-light text-xs">{{ fix }}</td>
+          </tr>
+          <tr>
+            <th colspan="6" class="text-left py-2 px-4 text-gray-700 font-semibold text-sm">
+              Parts Used:
+            </th>
+          </tr>
+          <tr>
+            <th colspan="2" class="text-left py-2 px-4 text-gray-700 font-semibold text-sm">
+              Part name
+            </th>
+            <th class="text-left py-2 px-4 text-gray-700 font-semibold text-xs">Warranty</th>
+            <th class="text-left py-2 px-4 text-gray-700 font-semibold text-xs">Qty</th>
+            <th class="text-left py-2 px-4 text-gray-700 font-semibold text-xs">Unit Price</th>
+            <th class="text-left py-2 px-4 text-gray-700 font-semibold text-xs">Price</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200 text-xs">
+          {{ items }}
+        </tbody>
+      </table>
+
+      <!-- Totals -->
+      <div class="mt-6 space-y-1 text-right">
+        <p class="font-medium text-gray-800">Service Charge: {{ cost }}</p>
+        <p class="font-bold text-gray-900">Total: {{ total }}</p>
+      </div>
+
+      <div class="flex justify-end mt-2">
+        <div class="bg-gray-50 rounded-lg p-1.5 w-64 text-right">
+          <p class="text-xl font-bold text-gray-800">Total: Rs.{{ total }}</p>
+        </div>
+      </div>
+
+      <div class="section pt-5 border-t border-gray-200">
+        <h3 class="text-lg font-bold text-gray-800">
+          Terms & Conditions of Warranty
+        </h3>
+        <ul class="list-disc list-inside text-gray-700 text-xs space-y-1 mt-2.5">
+          <li>Goods once sold are not refundable.</li>
+          <li>
+            Warranty Conditions:
+            <ul class="list-disc list-inside pl-6 space-y-1 mt-1">
+              <li>
+                All brand-new items come with a 6-month limited warranty unless
+                otherwise specified.
+              </li>
+              <li>Used items carry a 3-month warranty.</li>
+              <li>
+                No warranty is provided for physical damage, liquid spills, or
+                burn marks.
+              </li>
+              <li>
+                To make a warranty claim, the customer must present the original
+                invoice.
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+
+      <div class="footer-spacer"></div>
+
+      <div class="pt-8">
+        <div class="flex justify-between items-end">
+          <div class="text-center w-48">
+            <div class="signature-line"></div>
+            <p class="text-sm text-gray-600 pt-2">AUTHORISED SIGNATURE</p>
+          </div>
+          <div class="text-center w-48">
+            <div class="signature-line"></div>
+            <p class="text-sm text-gray-600 pt-2">RECEIVER'S SIGNATURE</p>
+          </div>
+        </div>
+
+        <div class="text-center text-gray-500 text-xs mt-4.5">
+          Thank you for your purchase! Visit us again.
+        </div>
       </div>
     </div>
-
-    <div class="text-right space-y-1">
-      <h1 class="text-2xl font-extrabold text-gray-800">INVOICE</h1>
-      <p class="text-gray-700 text-sm no-overflow">
-        <strong>ID:</strong> {{ invoice_id }}
-      </p>
-      <p class="text-gray-700 text-sm no-overflow">
-        <strong>Date:</strong> {{ date }}
-      </p>
-      <p class="text-gray-700 text-sm no-overflow">
-        <strong>Time:</strong> {{ time }}
-      </p>
-      <p class="text-gray-700 text-sm no-overflow">
-        <strong>Customer:</strong> {{ customer }}
-      </p>
-    </div>
-  </div>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Part</th>
-        <th>Qty</th>
-        <th>Price</th>
-      </tr>
-    </thead>
-    <tbody>
-      {{items}}
-    </tbody>
-  </table>
-<p>Service Charge : {{ cost }} </p>
-  <p class="total">Total: {{total}}</p>
- </div>
-</body>
+  </body>
 </html>

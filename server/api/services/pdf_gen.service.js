@@ -59,7 +59,7 @@ const generateSalesPDF = async (saleId) => {
     SELECT st.*, p.name as product_name, p.warranty, p.conditions, p.itemmodel_id
     FROM sale_items st
     LEFT JOIN products p ON p.id = st.product_id
-    WHERE sale_id = ?
+    WHERE st.sale_id = ?
   `,
     [saleId]
   );
@@ -121,7 +121,6 @@ const generateSalesPDF = async (saleId) => {
 };
 
 // Generate Repair PDF
- 
 
 const generateRepairPDF = async (repairId) => {
   try {
@@ -130,18 +129,32 @@ const generateRepairPDF = async (repairId) => {
       const dt = new Date(d);
       const pad = (n) => String(n).padStart(2, "0");
       return {
-        date: `${pad(dt.getDate())}-${pad(dt.getMonth() + 1)}-${dt.getFullYear()}`,
-        time: `${pad(dt.getHours())}:${pad(dt.getMinutes())}:${pad(dt.getSeconds())}`,
+        date: `${pad(dt.getDate())}-${pad(
+          dt.getMonth() + 1
+        )}-${dt.getFullYear()}`,
+        time: `${pad(dt.getHours())}:${pad(dt.getMinutes())}:${pad(
+          dt.getSeconds()
+        )}`,
       };
     };
 
-    const logoPath = path.join(process.cwd(), "templates", "MasterTechLogo/PNG/MasterTechLogoBT.png");
-    if (!fs.existsSync(logoPath)) throw new Error("Logo not found at " + logoPath);
+    const logoPath = path.join(
+      process.cwd(),
+      "templates",
+      "MasterTechLogo/PNG/MasterTechLogoBT.png"
+    );
+    if (!fs.existsSync(logoPath))
+      throw new Error("Logo not found at " + logoPath);
     const logoBase64 = fs.readFileSync(logoPath, { encoding: "base64" });
     const logoUrl = `data:image/png;base64,${logoBase64}`;
 
     // Fetch repair
-    const [repairRows] = await db.query(`SELECT * FROM repairs WHERE id = ?`, [repairId]);
+    const [repairRows] = await db.query(
+      `SELECT r.*, c.name AS customer_name, c.phone FROM repairs r
+    LEFT JOIN customers c ON c.id = r.customer_id
+    WHERE r.id = ?`,
+      [repairId]
+    );
     if (!repairRows.length) throw new Error("Repair not found");
     const repair = repairRows[0];
 
@@ -154,43 +167,63 @@ const generateRepairPDF = async (repairId) => {
 
     // Fetch repair items
     const [itemRows] = await db.query(
-      `SELECT rt.*, p.name AS part_name 
+      `SELECT rt.*,p.name as part_name, p.warranty, p.conditions, p.itemmodel_id
        FROM repair_items rt 
        LEFT JOIN products p ON rt.product_id = p.id 
        WHERE rt.repair_id = ?`,
       [repairId]
     );
 
-    const { date, time } = formatDateTime(repairSale.created_at || repair.received_date);
+    const { date, time } = formatDateTime(
+      repairSale.created_at || repair.received_date
+    );
 
     // Render HTML
-    const templatePath = path.join(process.cwd(), "templates", "invoice-repair.html");
-    if (!fs.existsSync(templatePath)) throw new Error("Template file not found");
+    const templatePath = path.join(
+      process.cwd(),
+      "templates",
+      "invoice-repair.html"
+    );
+    if (!fs.existsSync(templatePath))
+      throw new Error("Template file not found");
     const html = renderTemplate(templatePath, {
       logo_url: logoUrl, // match HTML template key
       invoice_id: repairSale.invoiceid || "N/A",
       repairId: repair.order_id,
       date,
       time,
+      r_issue:repair.issue,
+      fix:repair.repair_fix_note,
       customer: repair.customer_name || repair.customer_id || "Guest",
       device: repair.device,
-      cost:repair.cost,
+      cost: repair.cost,
       issue: repair.issue,
       status: repair.status,
       total: Number(repairSale.total_amount || repair.cost || 0).toFixed(2),
       items: itemRows.length
-        ? itemRows.map(
-            (i) =>
-              `<tr>
-                <td>${i.part_name || "Unknown Part"}</td>
+        ? itemRows
+            .map(
+              (i) =>
+                `<tr>
+                <td>${i.itemmodel_id + " " + i.part_name || "Unknown Part"}</td>
+                <td>${i.warranty || "Unknown Part"}</td>
+                <td>${i.conditions || "Unknown Part"}</td>
                 <td>${i.quantity}</td>
                 <td>${Number(i.price).toFixed(2)}</td>
               </tr>`
-          ).join("")
-        : `<tr><td colspan="3">No spare parts used</td></tr>`,
+            )
+            .join("")
+        :`<tr>
+        <td colspan="6" class="text-center py-4 bg-gray-100 text-gray-500 font-medium">
+          No spare parts used
+        </td>
+      </tr>`,
     });
     // Generate PDF
-    const browser = await puppeteer.launch({ headless: true, args: ["--no-sandbox"] });
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ["--no-sandbox"],
+    });
     const page = await browser.newPage();
     await page.setContent(html, { waitUntil: "domcontentloaded" });
     const pdfBuffer = await page.pdf({ format: "A4", printBackground: true });
@@ -201,7 +234,6 @@ const generateRepairPDF = async (repairId) => {
     throw error; // re-throw for caller to handle
   }
 };
-
 
 module.exports = {
   generateSalesPDF,

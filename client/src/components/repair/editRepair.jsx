@@ -159,7 +159,7 @@ export const EditRepair = () => {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `sale-${saleid}.pdf`;
+      a.download = `sale-${id}.pdf`;
       a.click();
       window.URL.revokeObjectURL(url);
     } catch (error) {
@@ -198,6 +198,8 @@ export const EditRepair = () => {
         try {
           await apiService.updateData("repair-sales", existingSales.id, data, token);
           refreshRepairSales();
+          alert("data updated");
+          getBill(id)
         } catch (error) {
           console.log(error);
         }
@@ -391,7 +393,10 @@ export const EditRepair = () => {
             </h2>
             <div>
               <button
-                className="text-sm rounded font-bold bg-blue-900 text-white flex items-center justify-center gap-2 p-2"
+                className="text-sm rounded font-bold
+                 bg-blue-900 text-white flex items-center justify-center gap-2 p-2
+                  cursor-pointer
+                 "
                 onClick={handleCheckout}
               >
                 <ShoppingCart size={16} />
