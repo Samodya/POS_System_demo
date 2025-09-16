@@ -38,7 +38,7 @@ export const RepairItemContextProvider = ({ children }) => {
     };
 
     fetchCustomers();
-  }, [refresh, token]);
+  }, [refresh]);
 
   const refreshCustomers = () => setRefresh((prev) => !prev);
 

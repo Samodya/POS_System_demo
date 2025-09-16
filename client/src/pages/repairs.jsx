@@ -17,6 +17,7 @@ import { DeleteRepair } from "../components/repair/deleteRepair";
 export const Repairs = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { repairs } = UseRepairContext();
+  const [ showinfor, setShowInfo] = useState()
 
   function formatDate(received_date) {
     if (!received_date) return "—";

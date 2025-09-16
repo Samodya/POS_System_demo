@@ -38,7 +38,7 @@ export const UserContextProvider = ({ children }) => {
     };
 
     fetchUsers();
-  }, [refresh, token]);
+  }, [refresh]);
 
   const refreshUsers = () => setRefresh((prev) => !prev);
 

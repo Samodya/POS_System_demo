@@ -11,6 +11,7 @@ import { RepairContextProvider } from "./context/repairContext";
 import { SaleItemsContextProvider } from "./context/saleItemsContext";
 import { SaleContextProvider } from "./context/salesContext";
 import { RepairSaleContextProvider } from "./context/repair_sale_context";
+import { ExpensesContextProvider } from "./context/expensesContext";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -19,15 +20,17 @@ createRoot(document.getElementById("root")).render(
         <CustomerContextProvider>
           <UserContextProvider>
             <ProductContextProvider>
-              <RepairContextProvider>
-                <RepairSaleContextProvider>
-                  <SaleContextProvider>
-                    <SaleItemsContextProvider>
-                      <AllRoutes />
-                    </SaleItemsContextProvider>
-                  </SaleContextProvider>
-                </RepairSaleContextProvider>
-              </RepairContextProvider>
+              <ExpensesContextProvider>
+                <RepairContextProvider>
+                  <RepairSaleContextProvider>
+                    <SaleContextProvider>
+                      <SaleItemsContextProvider>
+                        <AllRoutes />
+                      </SaleItemsContextProvider>
+                    </SaleContextProvider>
+                  </RepairSaleContextProvider>
+                </RepairContextProvider>
+              </ExpensesContextProvider>
             </ProductContextProvider>
           </UserContextProvider>
         </CustomerContextProvider>

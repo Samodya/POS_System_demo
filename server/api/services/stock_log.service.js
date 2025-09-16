@@ -38,7 +38,14 @@ const createInProductsStockLog = async (data) => {
   return { id: result.insertId, ...data };
 };
 
+const getAllStockLog = async () => {
+  const [rows] = await db.query(`
+    SELECT * FROM stock_order_log`);
+  return rows;
+}
+
 module.exports = {
   createStockLog,
   createInProductsStockLog,
+  getAllStockLog
 };

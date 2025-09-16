@@ -38,7 +38,16 @@ export const RepairSaleContextProvider = ({ children }) => {
     };
 
     fetchRepairSales();
-  }, [refresh, token]);
+  }, [refresh]);
+
+  const calculateOverallRepairs = () => {
+    const count = repairsales.length;
+    const totalAmount = repairsales.reduce((sum, sale) => {
+        const amount = parseFloat(sale.total_amount);
+        return sum + (isNaN(amount) ? 0 : amount);
+    }, 0);
+    return { count, totalAmount };
+};
 
   const refreshRepairSales = () => setRefresh((prev) => !prev);
 
@@ -49,6 +58,7 @@ export const RepairSaleContextProvider = ({ children }) => {
         loading,
         repairsalesError,
         showError,
+        calculateOverallRepairs,
         setShowError,
         refreshRepairSales,
       }}

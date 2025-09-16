@@ -14,6 +14,17 @@ const create = async (req, res) => {
     }
 }
 
+const getAll = async (req, res) => {
+
+    try {
+        const stock_log = await stockLogServices.getAllStockLog();
+        res.status(200).json(stock_log)
+    } catch (error) {
+        res.status(500).json(error)
+    }
+}
+
 module.exports = {
-    create
+    create,
+    getAll
 }

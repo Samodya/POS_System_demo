@@ -53,7 +53,7 @@ export const ProductContextProvider = ({ children }) => {
 
     fetchProducts();
     getTotalBuyingPrice();
-  }, [refresh, token]);
+  }, [refresh]);
 
   // You might want to provide a way to refresh data from children components:
   const refreshProducts = () => setRefresh((prev) => !prev);

@@ -38,7 +38,7 @@ export const SaleItemsContextProvider = ({ children }) => {
     };
 
     fetchSaleItems();
-  }, [refresh, token]);
+  }, [refresh]);
 
   const refreshSaleItems = () => setRefresh((prev) => !prev);
 

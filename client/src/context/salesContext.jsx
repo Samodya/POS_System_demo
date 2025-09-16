@@ -38,7 +38,16 @@ export const SaleContextProvider = ({ children }) => {
     };
 
     fetchSales();
-  }, [refresh, token]);
+  }, [refresh]);
+
+  const calculateOverall = () => {
+    const count = sales.length;
+    const totalAmount = sales.reduce((sum, sale) => {
+        const amount = parseFloat(sale.total_amount);
+        return sum + (isNaN(amount) ? 0 : amount);
+    }, 0);
+    return { count, totalAmount };
+};
 
   const refreshSales = () => setRefresh((prev) => !prev);
 
@@ -49,6 +58,7 @@ export const SaleContextProvider = ({ children }) => {
         loading,
         salesError,
         showError,
+        calculateOverall,
         setShowError,
         refreshSales,
       }}

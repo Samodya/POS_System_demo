@@ -13,6 +13,9 @@ import Topbar from "../components/topbar";
 import { UseProductContext } from "../context/productContext";
 import { Link } from "react-router-dom";
 import { NewCustomer } from "../components/Customer/newCustome";
+import { UseSaleContext } from "../context/salesContext";
+import { UseExpensesContext } from "../context/expensesContext";
+import { UseRepairSaleContext } from "../context/repair_sale_context";
 
 
 const urgentRepairs = [
@@ -42,9 +45,15 @@ const salesData = [
 
 export const Dashboard = () => {
 
-  const { products,productExpense } = UseProductContext();
+  const { products } = UseProductContext();
+  const { calculateOverall  } = UseSaleContext()
+  const { calculateOverallExpenses } = UseExpensesContext();
+  const { calculateOverallRepairs } = UseRepairSaleContext();
 
-  console.log(productExpense);
+  const overallSales = calculateOverall();
+  const overrallExpenses  = calculateOverallExpenses();
+  const overallrepairSales = calculateOverallRepairs();
+
 
   return (
     <div className="w-full ">
@@ -53,20 +62,20 @@ export const Dashboard = () => {
 
     <div className="p-6">
           {/* Summary cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2h md:grid-cols-4  gap-6">
         <div className="bg-white shadow-md rounded-2xl p-6">
           <h2 className="text-lg font-medium text-gray-600 mb-2">
-            Today’s Sales
+            Overall Sales
           </h2>
-          <p className="text-3xl font-bold text-indigo-600">Rs. 28,500</p>
-          <span className="text-sm text-gray-400">+15% from yesterday</span>
+          <p className="text-3xl font-bold text-indigo-600">Rs.{overallSales.totalAmount.toFixed(2)}</p>
+          <span className="text-sm text-gray-400">{"From "+overallSales.count+" Sales"}</span>
         </div>
 
         <div className="bg-white shadow-md rounded-2xl p-6">
           <h2 className="text-lg font-medium text-gray-600 mb-2">
             Total Expenses
           </h2>
-          <p className="text-3xl font-bold text-orange-500">Rs. {productExpense}</p>
+          <p className="text-3xl font-bold text-orange-500">Rs.{overrallExpenses.totalAmount.toFixed(2)}</p>
           <span className="text-sm text-gray-400">3 urgent, 5 not urgent</span>
         </div>
 
@@ -76,6 +85,14 @@ export const Dashboard = () => {
           </h2>
           <p className="text-3xl font-bold text-green-600">{products.length < 10 ? "0"+ products.length: products.length}</p>
           <span className="text-sm text-gray-400">{products.length} new this week</span>
+        </div>
+
+        <div className="bg-white shadow-md rounded-2xl p-6">
+          <h2 className="text-lg font-medium text-gray-600 mb-2">
+            Repair Income
+          </h2>
+          <p className="text-3xl font-bold text-green-600">Rs.{overallrepairSales.totalAmount.toFixed(2)}</p>
+          <span className="text-sm text-gray-400">From {overallrepairSales.count} Sales</span>
         </div>
       </div>
 

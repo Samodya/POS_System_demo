@@ -38,7 +38,7 @@ export const CustomerContextProvider = ({ children }) => {
     };
 
     fetchCustomers();
-  }, [refresh, token]);
+  }, [refresh]);
 
   const refreshCustomers = () => setRefresh((prev) => !prev);
 
