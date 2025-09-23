@@ -192,7 +192,7 @@ export const AddProduct = () => {
                       type="text"
                       value={formData.serial_no}
                       onChange={handleChange}
-                      placeholder="enter model..."
+                      placeholder="enter serial number..."
                       className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
                     />
                   </div>
@@ -214,7 +214,7 @@ export const AddProduct = () => {
                     value={formData.category}
                     onChange={handleChange}
                     type="select"
-                    options={["", "Laptop", "Accessory", "Repair Service"]}
+                    options={["", "Laptop", "PC Accessory", "Laptop Accessory", "Repair Service"]}
                   />
 
                   <InputGroup

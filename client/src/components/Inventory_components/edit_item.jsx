@@ -25,6 +25,7 @@ export const EditItem = ({ id }) => {
     description: "",
     warranty: "",
     conditions: "",
+    serial_no:""
   });
 
   async function fetchItem() {
@@ -42,6 +43,7 @@ export const EditItem = ({ id }) => {
         description: result.description || "",
         warranty: result.warranty || "",
         conditions: result.conditions || "",
+        serial_no: result.serial_no || "",
       });
       setItemimage(result.image_path);
     } catch (error) {
@@ -49,12 +51,11 @@ export const EditItem = ({ id }) => {
     }
   }
 
-  // Effect to fetch item data when the modal is shown
   useEffect(() => {
     if (showMenu) {
       fetchItem();
     }
-    // Cleanup object URL when the component unmounts or preview changes
+
     return () => {
       if (preview) URL.revokeObjectURL(preview);
     };
@@ -97,6 +98,7 @@ export const EditItem = ({ id }) => {
     form.append("description", formData.description);
     form.append("warranty", formData.warranty);
     form.append("conditions", formData.conditions);
+    form.append("serial_no",formData.serial_no)
 
     // Only append image if a new file was selected
     if (files) {
@@ -197,20 +199,33 @@ export const EditItem = ({ id }) => {
                 </div>
 
                 {/* Form inputs grid */}
-                <div className="flex flex-col relative">
-                  <label className="mb-0.5 font-medium text-gray-700">
-                    Model Code
-                  </label>
-                  <input
-                    type="text"
-                    name="itemmodel_id" // Added name attribute
-                    value={formData.itemmodel_id} // Used formData directly
-                    onChange={handleChange} // Used standard handleChange
-                    onClick={() => setShowModelList(true)}
-                    placeholder="Search model..."
-                    className="border border-gray-300 rounded-md p-1 text-sm focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
-                  />
-                  {/* Model list/search functionality would go here, utilizing showModelList state */}
+                <div className="grid grid-cols-2 gap-6 ">
+                  <div className="flex flex-col relative">
+                    <label className="mb-1 font-medium text-gray-700">
+                      Model Code
+                    </label>
+                    <input
+                      name="itemmodel_id"
+                      type="text"
+                      value={formData.itemmodel_id}
+                      onChange={handleChange}
+                      placeholder="enter model..."
+                      className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
+                    />
+                  </div>
+                  <div className="flex flex-col relative">
+                    <label className="mb-1 font-medium text-gray-700">
+                      Serial Number
+                    </label>
+                    <input
+                      name="serial_no"
+                      type="text"
+                      value={formData.serial_no}
+                      onChange={handleChange}
+                      placeholder="enter serial number..."
+                      className="border border-gray-300 rounded-md p-2 focus:outline-none focus:ring-2 focus:ring-[#013ea0]"
+                    />
+                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-6 ">
                   <InputGroup
