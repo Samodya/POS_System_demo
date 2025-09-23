@@ -116,7 +116,7 @@ const updateProduct = async (id, productData, file) => {
       description = ?,
       itemmodel_id = ?,
       warranty = ?,
-      conditions = ?
+      conditions = ?,
       serial_no = ?
   `;
 

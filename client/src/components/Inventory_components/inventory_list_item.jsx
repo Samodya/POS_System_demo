@@ -17,6 +17,7 @@ export const InventoryListItem = ({
   description,
   onDelete,
   itemModel,
+  serial_no
 }) => {
   const [imageSrc, setImageSrc] = useState("");
 
@@ -48,6 +49,7 @@ export const InventoryListItem = ({
       <div className="flex-1 p-4 grid grid-cols-2 gap-y-1 gap-x-6 text-sm">
         <div className="col-span-2">
           <h2 className="text-base font-semibold text-gray-800">{name}</h2>
+          <p><span className="text-base font-semibold">Serial No:</span> {serial_no}</p>
           <p className="text-gray-500">{category} • {itemModel} • {warranty} • {conditions}</p>
         </div>
 

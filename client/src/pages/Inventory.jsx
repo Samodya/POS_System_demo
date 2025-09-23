@@ -127,6 +127,7 @@ export const Inventory = () => {
                 quantity={product.quantity}
                 category={product.category}
                 itemModel={product.itemmodel_id}
+                serial_no={product.serial_no}
               />
             ))}
           </div>
