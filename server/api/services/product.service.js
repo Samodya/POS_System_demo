@@ -19,6 +19,7 @@ const createProduct = async (productData, file) => {
     itemmodel_id,
     warranty,
     conditions,
+    serial_no
   } = productData;
 
   const image_path = file ? file.path : null;
@@ -27,8 +28,8 @@ const createProduct = async (productData, file) => {
 
   const query = `
     INSERT INTO products 
-    (name, category, buying_price, price, dealers_price, quantity, description, image_path, image_name, image_size, itemmodel_id,warranty, conditions) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    (name, category, buying_price, price, dealers_price, quantity, description, image_path, image_name, image_size, itemmodel_id,warranty, conditions,serial_no) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
   `;
 
   const values = [
@@ -45,6 +46,7 @@ const createProduct = async (productData, file) => {
     itemmodel_id,
     warranty,
     conditions,
+    serial_no
   ];
 
   const [result] = await db.query(query, values);
@@ -100,6 +102,7 @@ const updateProduct = async (id, productData, file) => {
     itemmodel_id,
     warranty,
     conditions,
+    serial_no
   } = productData;
 
   // Base query
@@ -114,6 +117,7 @@ const updateProduct = async (id, productData, file) => {
       itemmodel_id = ?,
       warranty = ?,
       conditions = ?
+      serial_no = ?
   `;
 
   // Base values
@@ -127,6 +131,7 @@ const updateProduct = async (id, productData, file) => {
     itemmodel_id,
     warranty,
     conditions,
+    serial_no
   ];
 
   if (file) {

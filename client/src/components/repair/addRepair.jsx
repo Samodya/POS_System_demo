@@ -65,27 +65,34 @@ export const AddRepair = () => {
   const [assignedUserId, setAssignedUserId] = useState("");
   const [assignedSearch, setAssignedSearch] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-
-  const generateOrderId = () => {
-    const today = new Date();
-    const year = String(today.getFullYear()).slice(-2);
-    const month = String(today.getMonth() + 1).padStart(2, "0");
-    const day = String(today.getDate()).padStart(2, "0");
-    const datePart = `${year}${month}${day}`;
-    const prefix = "ORD";
-    const todayRepairs = repairs.filter((r) =>
-      r.order_id?.startsWith(prefix + datePart)
-    );
-    let maxSeq = 0;
-    todayRepairs.forEach((r) => {
-      const seq = parseInt(
-        r.order_id.slice(prefix.length + datePart.length),
-        10
-      );
-      if (!isNaN(seq) && seq > maxSeq) maxSeq = seq;
-    });
-    return prefix + datePart + (maxSeq + 1);
+  
+  const generateOrderId = async () => {
+    const prefix = "SN";
+    const startSeq = 100;
+    
+    const latestRepair = repairs;
+    
+    let newSeq = startSeq;
+    if (latestRepair && latestRepair.order_id) {
+      const seq = parseInt(latestRepair.order_id.slice(prefix.length), 10);
+      if (!isNaN(seq)) {
+        newSeq = seq + 1;
+      }
+    }
+    if (newSeq < startSeq) {
+      newSeq = startSeq;
+    }
+    let formattedSeq;
+    if (newSeq < 1000) {
+      formattedSeq = String(newSeq).padStart(4, '0');
+    } else {
+      formattedSeq = String(newSeq);
+    }
+    
+    return prefix + formattedSeq;
   };
+  
+   
 
   useEffect(() => {
     setOrderId(generateOrderId());

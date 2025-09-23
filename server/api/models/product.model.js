@@ -21,35 +21,13 @@ const createProductTable = async (db) => {
 const alterProductTable = async (db) => {
   // Check if column exists
   const [columns] = await db.query(`
-    SHOW COLUMNS FROM products LIKE 'itemmodel_id';
+    SHOW COLUMNS FROM products LIKE 'serial_no';
   `);
 
   if (columns.length === 0) {
     await db.query(`
       ALTER TABLE products 
-      ADD COLUMN itemmodel_id INT;
-    `);
-  }
-
-  const [columns1] = await db.query(`
-    SHOW COLUMNS FROM products LIKE 'warranty';
-  `);
-
-  if (columns1.length === 0) {
-    await db.query(`
-      ALTER TABLE products 
-      ADD COLUMN warranty VARCHAR(50);
-    `);
-  }
-
-  const [columns2] = await db.query(`
-    SHOW COLUMNS FROM products LIKE 'conditions';
-  `);
-
-  if (columns2.length === 0) {
-    await db.query(`
-      ALTER TABLE products 
-      ADD COLUMN conditions VARCHAR(50);
+      ADD COLUMN serial_no varchar(50) unique;
     `);
   }
 

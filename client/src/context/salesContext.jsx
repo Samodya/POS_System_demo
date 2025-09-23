@@ -43,11 +43,11 @@ export const SaleContextProvider = ({ children }) => {
   const calculateOverall = () => {
     const count = sales.length;
     const totalAmount = sales.reduce((sum, sale) => {
-        const amount = parseFloat(sale.total_amount);
-        return sum + (isNaN(amount) ? 0 : amount);
+      const amount = parseFloat(sale.total_amount);
+      return sum + (isNaN(amount) ? 0 : amount);
     }, 0);
     return { count, totalAmount };
-};
+  };
 
   const refreshSales = () => setRefresh((prev) => !prev);
 
