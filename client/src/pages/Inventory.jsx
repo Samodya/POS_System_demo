@@ -4,7 +4,7 @@ import StatCard from "../components/statcard";
 import { AddProduct } from "../components/Inventory_components/invetory_add_modal";
 import { InventoryListItem } from "../components/Inventory_components/inventory_list_item";
 import { UseProductContext } from "../context/productContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 export const Inventory = () => {
@@ -52,10 +52,13 @@ export const Inventory = () => {
     return products; // default to all
   };
 
+  
+
   const filteredProducts = getFilteredByTab().filter(
     (product) =>
       product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.modelcode?.toLowerCase().includes(searchTerm.toLowerCase())
+      product.itemmodel_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.serial_no?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const indexOfLastProduct = currentPage * itemsPerPage;

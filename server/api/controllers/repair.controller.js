@@ -6,10 +6,12 @@ const create = async (req,res) => {
             ...req.body,
           };
 
+          // console.log(data);
         const repair = await repairServices.createRepair(data);
         res.status(200).json(repair)
     } catch (err) {
         res.status(500).json({error:err.message})
+        // console.log(err);
     }
 }
 

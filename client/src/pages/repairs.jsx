@@ -9,7 +9,6 @@ import {
 import StatCard from "../components/statcard";
 import Topbar from "../components/topbar";
 import { useState } from "react";
-import { AddRepair } from "../components/repair/addRepair";
 import { UseRepairContext } from "../context/repairContext";
 import { Link } from "react-router-dom";
 import { DeleteRepair } from "../components/repair/deleteRepair";
@@ -17,12 +16,10 @@ import { DeleteRepair } from "../components/repair/deleteRepair";
 export const Repairs = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const { repairs } = UseRepairContext();
-  const [ showinfor, setShowInfo] = useState()
 
   function formatDate(received_date) {
     if (!received_date) return "—";
 
-    // Fix cases like "2025-08-16 18:30:00" (no "T")
     const safeDate = received_date.replace(" ", "T");
     const dateObj = new Date(safeDate);
 
@@ -35,7 +32,17 @@ export const Repairs = () => {
     });
   }
 
-  console.log(repairs);
+  // --- Filtering Logic ---
+  const filteredRepairs = repairs.filter((repair) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      repair.order_id.toLowerCase().includes(term) ||
+      repair.customer_name.toLowerCase().includes(term) ||
+      repair.device.toLowerCase().includes(term) ||
+      repair.issue.toLowerCase().includes(term)
+    );
+  });
+  // -----------------------
 
   return (
     <div>
@@ -104,7 +111,7 @@ export const Repairs = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {repairs.map((row, i) => (
+              {filteredRepairs.map((row, i) => (
                 <tr key={i} className="hover:bg-gray-50 transition">
                   <td className="px-4 py-3 font-medium text-gray-700">
                     {row.order_id}
@@ -137,8 +144,7 @@ export const Repairs = () => {
               ))}
             </tbody>
           </table>
-
-          {repairs.length === 0 && (
+          {filteredRepairs.length === 0 && (
             <div className="text-center py-10 text-gray-500 text-sm">
               No repair jobs found.
             </div>

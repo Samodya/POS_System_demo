@@ -65,6 +65,23 @@ const alterProductTable = async (db) => {
       ALTER TABLE products 
       ADD COLUMN serial_no VARCHAR(50) UNIQUE;
     `);
+  } else {
+    // Check if the unique constraint exists and drop it
+    try {
+      await db.query(`
+        ALTER TABLE products 
+        DROP INDEX serial_no;
+      `);
+      console.log("UNIQUE constraint on serial_no dropped successfully.");
+    } catch (error) {
+      if (error.code === 'ER_CANT_DROP_FIELD_OR_KEY') {
+        // The unique key doesn't exist, so we can ignore this error
+        console.log("UNIQUE constraint on serial_no does not exist, no action needed.");
+      } else {
+        
+        console.error("Error dropping UNIQUE constraint:", error);
+      }
+    }
   }
 
 };

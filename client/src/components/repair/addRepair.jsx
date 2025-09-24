@@ -65,13 +65,24 @@ export const AddRepair = () => {
   const [assignedUserId, setAssignedUserId] = useState("");
   const [assignedSearch, setAssignedSearch] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
-  
-  const generateOrderId = async () => {
+
+  // New function to generate order ID based on the full repairs array
+  const generateOrderId = (allRepairs) => {
     const prefix = "SN";
     const startSeq = 100;
-    
-    const latestRepair = repairs;
-    
+
+    // Check if repairs array exists and is not empty
+    if (!allRepairs || allRepairs.length === 0) {
+      return prefix + String(startSeq).padStart(4, "0");
+    }
+
+    // Find the latest repair by sorting by ID to get the highest order number
+    const latestRepair = allRepairs.sort((a, b) => {
+      const aSeq = parseInt(a.order_id.slice(prefix.length), 10);
+      const bSeq = parseInt(b.order_id.slice(prefix.length), 10);
+      return bSeq - aSeq;
+    })[0];
+
     let newSeq = startSeq;
     if (latestRepair && latestRepair.order_id) {
       const seq = parseInt(latestRepair.order_id.slice(prefix.length), 10);
@@ -79,26 +90,19 @@ export const AddRepair = () => {
         newSeq = seq + 1;
       }
     }
-    if (newSeq < startSeq) {
-      newSeq = startSeq;
-    }
-    let formattedSeq;
-    if (newSeq < 1000) {
-      formattedSeq = String(newSeq).padStart(4, '0');
-    } else {
-      formattedSeq = String(newSeq);
-    }
-    
+
+    const formattedSeq = String(newSeq).padStart(4, '0');
     return prefix + formattedSeq;
   };
-  
-   
+
+  // This useEffect will run when the component mounts and whenever the `repairs` array updates
+  useEffect(() => {
+    const newOrderId = generateOrderId(repairs);
+    setOrderId(newOrderId);
+  }, [repairs]); // This dependency array ensures the effect runs when `repairs` changes
 
   useEffect(() => {
-    setOrderId(generateOrderId());
-  }, [repairs]);
-
-  useEffect(() => {
+    // Set initial dates on component mount
     setReceivedDate(new Date().toISOString().split("T")[0]);
     setCompletedDate(new Date().toISOString().split("T")[0]);
   }, []);
@@ -377,7 +381,7 @@ export const AddRepair = () => {
                     }}
                   />
                 </div>
-                <div className="space-y-1">
+                {/* <div className="space-y-1">
                   <label className="block text-xs font-medium text-gray-600">
                     Completed Date
                   </label>
@@ -393,7 +397,7 @@ export const AddRepair = () => {
                       backgroundSize: "1.25rem",
                     }}
                   />
-                </div>
+                </div> */}
               </div>
               <div className="space-y-1">
                 <label className="block text-xs font-medium text-gray-600">

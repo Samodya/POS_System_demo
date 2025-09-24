@@ -214,7 +214,7 @@ export const AddProduct = () => {
                     value={formData.category}
                     onChange={handleChange}
                     type="select"
-                    options={["", "Laptop", "PC Accessory", "Laptop Accessory", "Repair Service"]}
+                    options={["", "Accessory", "Desktop Accessory", "Laptop Accessory", "Network Items"]}
                   />
 
                   <InputGroup
@@ -223,7 +223,7 @@ export const AddProduct = () => {
                     value={formData.warranty}
                     onChange={handleChange}
                     type="select"
-                    options={["", "3-months", "6-months", "1-year", "2-years"]}
+                    options={["","1 Month", "3 Months", "6 Months", "1 Year", "2 Years", "3 Years"]}
                   />
 
                   <InputGroup
