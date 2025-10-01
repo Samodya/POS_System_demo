@@ -11,9 +11,6 @@ const createProduct = async (productData, file) => {
   const {
     name,
     category,
-    buying_price,
-    price,
-    dealers_price,
     quantity,
     description,
     itemmodel_id,

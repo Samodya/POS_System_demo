@@ -54,13 +54,18 @@ export const Inventory = () => {
 
   
 
-  const filteredProducts = getFilteredByTab().filter(
-    (product) =>
-      product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.itemmodel_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.serial_no?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
+  const filteredProducts = products.filter((product) => {
+    const term = searchTerm.toLowerCase();
+  
+    // Check for string matches first
+    const nameMatch = product.name?.toLowerCase().includes(term);
+    // const serialNoMatch = product.serial_no?.toLowerCase().includes(term);
+    // Check for integer matches by converting the number to a string
+    // const quantityMatch = String(product.quantity).includes(term);
+    // const serialNoMatch = String(product.serial_no).includes(term);
+  
+    return nameMatch || quantityMatch || serialNoMatch;
+  });
   const indexOfLastProduct = currentPage * itemsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
 
@@ -101,6 +106,7 @@ export const Inventory = () => {
           onChange={(e) => {
             setSearchTerm(e.target.value);
             setCurrentPage(1);
+            
           }}
         />
         <div className="flex flex-row-reverse gap-2">
