@@ -13,6 +13,7 @@ const saleItemsRoutes = require("./api/routes/saleItems.routes");
 const repairItemsRoutes = require("./api/routes/repairItems.routes");
 const repairSaleRoutes = require("./api/routes/repairSales.routes");
 const stockLocgRoutes = require("./api/routes/stoc_log.routes");
+const productItemsRoutes = require('./api/routes/product_item.routes');
 const pdfRoutes = require("./api/routes/pdf_gen.routes");
 
 const app = express();
@@ -41,6 +42,7 @@ app.use(express.json());
     app.use("/api/repair-sales", repairSaleRoutes);
     app.use("/api/reports", pdfRoutes);
     app.use("/api/stock-log", stockLocgRoutes);
+    app.use("/api/product_items",productItemsRoutes)
 
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

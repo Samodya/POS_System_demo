@@ -12,6 +12,7 @@ import { Users } from "./users";
 import { AddRepair } from "../components/repair/addRepair";
 import { EditRepair } from "../components/repair/editRepair";
 import { ViewSale } from "../components/sales/viewsale";
+import { AddProduct } from "../components/New_invetoryLayouts/add_product";
 
 export const LandingPage = () => {
   return (
@@ -27,6 +28,7 @@ export const LandingPage = () => {
           <Route path="/products" element={<Products />} />
           <Route path="/repairs" element={<Repairs />} />
           <Route path="/new-repairs" element={<AddRepair />} />
+          <Route path="/add_products" element={<AddProduct/>} />
           <Route path="/edit-repairs/:id" element={<EditRepair />} />
           <Route path="/reports" element={<Reports />} />
           <Route path="/inventory" element={<Inventory />} />

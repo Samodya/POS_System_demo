@@ -8,16 +8,18 @@ let db;
 })();
 
 const createProduct = async (productData, file) => {
-  const {
-    name,
-    category,
-    quantity,
-    description,
-    itemmodel_id,
-    warranty,
-    conditions,
-    serial_no
-  } = productData;
+  const { name, category, description, itemmodel_id } = productData;
+
+  // Validation: prevent null or empty values
+  if (!name || name.trim() === "") {
+    throw new Error("Product name is required");
+  }
+  if (!category || category.trim() === "") {
+    throw new Error("Category is required");
+  }
+  if (!itemmodel_id || itemmodel_id === null) {
+    throw new Error("Item model ID is required");
+  }
 
   const image_path = file ? file.path : null;
   const image_name = file ? file.filename : null;
@@ -25,40 +27,21 @@ const createProduct = async (productData, file) => {
 
   const query = `
     INSERT INTO products 
-    (name, category, buying_price, price, dealers_price, quantity, description, image_path, image_name, image_size, itemmodel_id,warranty, conditions,serial_no) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
+    (name, category, itemmodel_id, description, image_path, image_name, image_size) 
+    VALUES (?, ?, ?, ?, ?, ?, ?)
   `;
 
   const values = [
     name,
     category,
-    buying_price,
-    price,
-    dealers_price,
-    quantity,
+    itemmodel_id,
     description,
     image_path,
     image_name,
     image_size,
-    itemmodel_id,
-    warranty,
-    conditions,
-    serial_no
   ];
 
   const [result] = await db.query(query, values);
-
-  const total_amount = quantity * buying_price;
-
-  const stockData = {
-    product_id: result.insertId,
-    model_id: itemmodel_id, // ✅ match correct key name
-    quantity: quantity,
-    unit_buying_price: buying_price,
-    total_amount: total_amount,
-  };
-
-  await createInProductsStockLog(stockData);
 
   return {
     id: result.insertId,
@@ -68,6 +51,7 @@ const createProduct = async (productData, file) => {
     image_size,
   };
 };
+
 
 const getAllProducts = async () => {
   const [rows] = await db.query(`
@@ -89,54 +73,43 @@ const getProductById = async (id) => {
 };
 
 const updateProduct = async (id, productData, file) => {
-  const {
-    name,
-    category,
-    buying_price,
-    price,
-    dealers_price,
-    description,
-    itemmodel_id,
-    warranty,
-    conditions,
-    serial_no
-  } = productData;
+  const { name, category, description, itemmodel_id } = productData;
+
+  // Validation: prevent null or empty values
+  if (!name || name.trim() === "") {
+    throw new Error("Product name is required");
+  }
+  if (!category || category.trim() === "") {
+    throw new Error("Category is required");
+  }
+  if (!itemmodel_id || itemmodel_id === null) {
+    throw new Error("Item model ID is required");
+  }
 
   // Base query
   let query = `
     UPDATE products SET 
       name = ?, 
       category = ?, 
-      buying_price = ?, 
-      price = ?, 
-      dealers_price = ?, 
       description = ?,
-      itemmodel_id = ?,
-      warranty = ?,
-      conditions = ?,
-      serial_no = ?
+      itemmodel_id = ?
   `;
 
   // Base values
   let values = [
     name,
     category,
-    buying_price,
-    price,
-    dealers_price,
     description,
     itemmodel_id,
-    warranty,
-    conditions,
-    serial_no
   ];
 
+  // Add file data if present
   if (file) {
     query += `, image_path = ?, image_name = ?, image_size = ?`;
     values.push(file.path, file.filename, file.size);
   }
 
-  query += ` WHERE products.id = ?`; 
+  query += ` WHERE products.id = ?`;
   values.push(id);
 
   await db.query(query, values);
@@ -151,6 +124,7 @@ const updateProduct = async (id, productData, file) => {
     }),
   };
 };
+
 
 const getTotalBuyingPrice = async () => {
   const [rows] = await db.query(`

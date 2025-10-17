@@ -52,18 +52,16 @@ export const Inventory = () => {
     return products; // default to all
   };
 
-  
-
   const filteredProducts = products.filter((product) => {
     const term = searchTerm.toLowerCase();
-  
+
     // Check for string matches first
     const nameMatch = product.name?.toLowerCase().includes(term);
     // const serialNoMatch = product.serial_no?.toLowerCase().includes(term);
     // Check for integer matches by converting the number to a string
     // const quantityMatch = String(product.quantity).includes(term);
     // const serialNoMatch = String(product.serial_no).includes(term);
-  
+
     return nameMatch || quantityMatch || serialNoMatch;
   });
   const indexOfLastProduct = currentPage * itemsPerPage;
@@ -106,41 +104,59 @@ export const Inventory = () => {
           onChange={(e) => {
             setSearchTerm(e.target.value);
             setCurrentPage(1);
-            
           }}
         />
         <div className="flex flex-row-reverse gap-2">
-          <AddProduct />
+          <Link
+            to={'../add_products'}
+            className="bg-gradient-to-r from-black via-[#0a0f2c] to-[#013ea0] text-white flex p-2 
+        rounded cursor-pointer items-center justify-center gap-2 hover:brightness-110 transition"
+          ></Link>
         </div>
       </div>
 
       {/* Product List */}
-      <div className="px-4 pb-5 max-w-7xl mx-auto">
-        {filteredProducts.length === 0 ? (
-          <p className="text-center text-gray-500 text-lg mt-20">
-            No products found
-          </p>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 gap-10">
-            {currentProducts.map((product) => (
-              <InventoryListItem
-                key={product.id}
-                id={product.id}
-                name={product.name}
-                dealers_price={product.dealers_price}
-                filePath={product.image_path}
-                buyingPrice={product.buying_price}
-                price={product.price}
-                warranty={product.warranty}
-                conditions={product.conditions}
-                quantity={product.quantity}
-                category={product.category}
-                itemModel={product.itemmodel_id}
-                serial_no={product.serial_no}
-              />
+      <div className="overflow-x-auto">
+        <table className="w-full max-w-6xl mx-auto bg-white rounded-lg shadow-md overflow-hidden text-sm">
+          <thead className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white">
+            <tr>
+              <th className="text-left px-4 py-3 font-medium">Product</th>
+              <th className="text-left px-4 py-3 font-medium">Category</th>
+              <th className="text-left px-4 py-3 font-medium">Description</th>
+              <th className="text-left px-4 py-3 font-medium">Added Date</th>
+              <th className="text-left px-4 py-3 font-medium">Action</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {filteredProducts.map((row, i) => (
+              <tr key={i} className="hover:bg-gray-50 transition">
+                <td className="px-4 py-3 font-medium text-gray-700">
+                  {row.itemmodel_id + " " + row.name}
+                </td>
+                <td className="px-4 py-3 text-gray-600">{row.category}</td>
+                <td className="px-4 py-3 text-gray-600">{row.description}</td>
+
+                <td className="px-4 py-3 text-gray-600">
+                  {formatDate(row.received_date)}
+                </td>
+                <td className="px-4 py-3 text-gray-600 flex items-center justify-center gap-2">
+                  <Link
+                    className="py-1 px-2 sm:px-3 bg-blue-600 hover:bg-blue-700 flex gap-1 items-center justify-center rounded text-white text-xs transition"
+                    to={`../edit-repairs/${row.id}`}
+                  >
+                    <Edit size={16} /> Edit
+                  </Link>
+                  <DeleteRepair id={row.id} />
+                </td>
+              </tr>
             ))}
-          </div>
-        )}
+          </tbody>
+        </table>
+        {/* {filteredRepairs.length === 0 && (
+            <div className="text-center py-10 text-gray-500 text-sm">
+              No repair jobs found.
+            </div>
+          )} */}
       </div>
       <div className="flex justify-center items-center space-x-2 mt-8">
         <button

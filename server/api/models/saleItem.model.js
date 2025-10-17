@@ -8,7 +8,7 @@ const createSaleItemTable = async (db) => {
       price DECIMAL(10,2),
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (sale_id) REFERENCES sales(id),
-      FOREIGN KEY (product_id) REFERENCES products(id)
+      FOREIGN KEY (product_id) REFERENCES product_item(id)
     )
   `);
 
