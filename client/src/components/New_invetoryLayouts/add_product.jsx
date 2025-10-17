@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { Image, Upload, XCircle, Save, Package } from "lucide-react";
 
-export const AddProduct = ({ token, setShowMenu, refreshProducts }) => {
+export const AddProduct = ({ token, refreshProducts }) => {
   const [formData, setFormData] = useState({
     productName: "",
     category: "",
@@ -13,6 +13,13 @@ export const AddProduct = ({ token, setShowMenu, refreshProducts }) => {
   const [preview, setPreview] = useState(null);
   const [files, setFiles] = useState(null);
   const [modelSearch, setModelSearch] = useState("");
+  const [product_id, setProduct_id] = useState("");
+  const [serial_no, setSerial_No] = useState("");
+  const [buying_price, setBuyingPrice] = useState("");
+  const [retail_price, setretailPrice] = useState("");
+  const [dealers_price, setDealersPrice] = useState("");
+  const [warranty_period, setWarranty_period] = useState("");
+  const [conditions, setConditions] = useState("");
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -41,14 +48,14 @@ export const AddProduct = ({ token, setShowMenu, refreshProducts }) => {
     form.append("image", files);
 
     try {
-      await axios.post(`http://localhost:4000/api/products`, form, {
+      const results = await axios.post(`http://localhost:4000/api/products`, form, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "multipart/form-data",
         },
       });
+      setProduct_id(results.data.id);
       clearData();
-      setShowMenu(false);
       refreshProducts();
     } catch (err) {
       console.error("Upload failed", err);
@@ -69,7 +76,7 @@ export const AddProduct = ({ token, setShowMenu, refreshProducts }) => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
+    <div className="min-h-screen items-center justify-center bg-gray-100 p-6">
       <div className="bg-white shadow-lg rounded-2xl w-full max-w-3xl p-6">
         {/* Header */}
         <div className="flex items-center gap-3 border-b pb-3 mb-6">
@@ -125,38 +132,7 @@ export const AddProduct = ({ token, setShowMenu, refreshProducts }) => {
                 required
               />
             </div>
-          </div>
-
-          {/* Quantity & Serial No */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                Quantity
-              </label>
-              <input
-                type="number"
-                name="quantity"
-                value={formData.quantity}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
-                placeholder="Enter quantity"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                Serial Number
-              </label>
-              <input
-                type="text"
-                name="serial_no"
-                value={formData.serial_no}
-                onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-400 outline-none"
-                placeholder="Enter serial number"
-              />
-            </div>
-          </div>
+          </div>         
 
           {/* Description */}
           <div>
@@ -230,6 +206,20 @@ export const AddProduct = ({ token, setShowMenu, refreshProducts }) => {
           </div>
         </form>
       </div>
+      {product_id ? <div>
+        <div>Add Items</div>
+        <div>
+          <form>
+            <div>
+              <label>Serial No:</label>
+              <input
+                type="text"
+
+              />
+            </div>
+          </form>
+        </div>
+      </div>:""}
     </div>
   );
 };

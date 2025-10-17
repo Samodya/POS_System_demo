@@ -37,32 +37,15 @@ export const ProductContextProvider = ({ children }) => {
       }
     };
 
-    const getTotalBuyingPrice = async () => {
-      setLoading(true);
-
-      try {
-        const result = await apiService.getData('products/product-expenses',token);
-        setProductExpense(result.total_buying_price);
-      } catch (error) {
-        console.error(error);
-        handleError(error);
-      }finally {
-        setLoading(false);
-      }
-    }
+  
 
     fetchProducts();
-    getTotalBuyingPrice();
   }, [refresh]);
 
   // You might want to provide a way to refresh data from children components:
   const refreshProducts = () => setRefresh((prev) => !prev);
 
-  const getLowStockProducts = () => {
-    return products.filter((product) => product.quantity < 3);
-  };
-
-  // Get products created this week
+    // Get products created this week
   const getThisWeekProducts = () => {
     const now = new Date();
     const startOfWeek = new Date(now);
@@ -84,10 +67,8 @@ export const ProductContextProvider = ({ children }) => {
         loading,
         productError,
         showError,
-        productExpense,
         refreshProducts,
         setShowError,
-        getLowStockProducts,
         getThisWeekProducts
       }}
     >

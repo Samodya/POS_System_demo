@@ -47,8 +47,8 @@ export const Dashboard = () => {
 
   const { products } = UseProductContext();
   const { calculateOverall  } = UseSaleContext()
-  const { calculateOverallExpenses } = UseExpensesContext();
-  const { calculateOverallRepairs } = UseRepairSaleContext();
+  // const { calculateOverallExpenses } = UseExpensesContext();
+  // const { calculateOverallRepairs } = UseRepairSaleContext();
 
   const overallSales = calculateOverall();
   const overrallExpenses  = calculateOverallExpenses();
@@ -67,7 +67,7 @@ export const Dashboard = () => {
           <h2 className="text-lg font-medium text-gray-600 mb-2">
             Overall Sales
           </h2>
-          <p className="text-3xl font-bold text-indigo-600">Rs.{overallSales.totalAmount.toFixed(2)}</p>
+          <p className="text-3xl font-bold text-indigo-600">Rs.{0.00}</p>
           <span className="text-sm text-gray-400">{"From "+overallSales.count+" Sales"}</span>
         </div>
 
@@ -75,7 +75,7 @@ export const Dashboard = () => {
           <h2 className="text-lg font-medium text-gray-600 mb-2">
             Total Expenses
           </h2>
-          <p className="text-3xl font-bold text-orange-500">Rs.{overrallExpenses.totalAmount.toFixed(2)}</p>
+          <p className="text-3xl font-bold text-orange-500">Rs.{0.00}</p>
           <span className="text-sm text-gray-400">3 urgent, 5 not urgent</span>
         </div>
 

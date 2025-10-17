@@ -1,4 +1,4 @@
-import { BoxIcon, Clock5, Package, PackagePlus } from "lucide-react";
+import { BoxIcon, Clock5, Edit, Package, PackagePlus } from "lucide-react";
 import Topbar from "../components/topbar";
 import StatCard from "../components/statcard";
 import { AddProduct } from "../components/Inventory_components/invetory_add_modal";
@@ -8,14 +8,14 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 export const Inventory = () => {
-  const { products, getLowStockProducts, getThisWeekProducts } =
+  const { products, getThisWeekProducts } =
     UseProductContext();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("all");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6; //
 
-  const lowstock = getLowStockProducts();
+  const lowstock = 0;
   const newArrivals = getThisWeekProducts();
 
   const statItems = [
@@ -111,7 +111,7 @@ export const Inventory = () => {
             to={'../add_products'}
             className="bg-gradient-to-r from-black via-[#0a0f2c] to-[#013ea0] text-white flex p-2 
         rounded cursor-pointer items-center justify-center gap-2 hover:brightness-110 transition"
-          ></Link>
+          >Add Product</Link>
         </div>
       </div>
 
@@ -137,7 +137,7 @@ export const Inventory = () => {
                 <td className="px-4 py-3 text-gray-600">{row.description}</td>
 
                 <td className="px-4 py-3 text-gray-600">
-                  {formatDate(row.received_date)}
+                  {row.received_date}
                 </td>
                 <td className="px-4 py-3 text-gray-600 flex items-center justify-center gap-2">
                   <Link
@@ -146,7 +146,7 @@ export const Inventory = () => {
                   >
                     <Edit size={16} /> Edit
                   </Link>
-                  <DeleteRepair id={row.id} />
+                  
                 </td>
               </tr>
             ))}

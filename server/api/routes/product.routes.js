@@ -7,8 +7,6 @@ const roleCheck = require("../middleware/roleCheck");
 
 router.post("/", upload.single("image"), productController.create);
 router.put("/:id", upload.single("image"), productController.update);
-router.get("/product-expenses",authenticate, productController.getTotalBuyingPrice);
-
 router.get("/", productController.getAll);
 router.get("/:id", authenticate, productController.getById);
 router.delete("/:id", authenticate, productController.remove);

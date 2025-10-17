@@ -9,6 +9,7 @@ const createProductItem = async (itemData) => {
     retail_price,
     dealers_price,
     warranty_period,
+    item_status,
     conditions,
     product_id,
   } = itemData;
@@ -26,8 +27,8 @@ const createProductItem = async (itemData) => {
 
   const query = `
     INSERT INTO product_item
-    (serial_no, buying_price, retail_price, dealers_price, warranty_period, conditions, product_id)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    (serial_no, buying_price, retail_price, dealers_price, warranty_period, item_status, conditions, product_id)
+    VALUES (?, ?, ?, ?, ?, ?, ?,?)
   `;
 
   const values = [
@@ -36,6 +37,7 @@ const createProductItem = async (itemData) => {
     retail_price,
     dealers_price,
     warranty_period || null,
+    item_status,
     conditions || null,
     product_id,
   ];
@@ -58,6 +60,12 @@ const getProductItemById = async (id) => {
   return rows[0];
 };
 
+const getProductItemByProductId = async (id) => {
+  const [rows] = await db.query("SELECT * FROM product_item WHERE product_id = ?", [id]);
+  if (!rows.length) throw new Error("Product item not found");
+  return rows[0];
+};
+
 // Update product item
 const updateProductItem = async (id, itemData) => {
   const {
@@ -66,6 +74,7 @@ const updateProductItem = async (id, itemData) => {
     retail_price,
     dealers_price,
     warranty_period,
+    item_status,
     conditions,
     product_id,
   } = itemData;
@@ -77,6 +86,7 @@ const updateProductItem = async (id, itemData) => {
       retail_price = ?,
       dealers_price = ?,
       warranty_period = ?,
+      item_status = ?,
       conditions = ?,
       product_id = ?
     WHERE id = ?
@@ -88,6 +98,7 @@ const updateProductItem = async (id, itemData) => {
     retail_price,
     dealers_price,
     warranty_period || null,
+    item_status,
     conditions || null,
     product_id,
     id,

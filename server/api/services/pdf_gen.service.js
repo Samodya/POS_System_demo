@@ -56,9 +56,10 @@ const generateSalesPDF = async (saleId) => {
 
   const [itemRows] = await db.query(
     `
-    SELECT st.*, p.name as product_name, p.warranty, p.conditions, p.itemmodel_id
+    SELECT st.*, p.name as product_name, pi.warranty, pi.conditions, p.itemmodel_id
     FROM sale_items st
-    LEFT JOIN products p ON p.id = st.product_id
+    LEFT JOIN product_item pi ON pi.id = st.product_id
+    LEFT JOIN products p ON p.id = pi.product_id
     WHERE st.sale_id = ?
   `,
     [saleId]
@@ -167,10 +168,12 @@ const generateRepairPDF = async (repairId) => {
 
     // Fetch repair items
     const [itemRows] = await db.query(
-      `SELECT rt.*,p.name as part_name, p.warranty, p.conditions, p.itemmodel_id
-       FROM repair_items rt 
-       LEFT JOIN products p ON rt.product_id = p.id 
-       WHERE rt.repair_id = ?`,
+      `SELECT rt.*, p.name AS part_name, pi.warranty, pi.conditions, p.itemmodel_id
+      FROM repair_items rt
+      LEFT JOIN product_item pi ON rt.product_id = pi.id
+      LEFT JOIN products p ON p.id = pi.product_id
+      WHERE rt.repair_id = ?
+      `,
       [repairId]
     );
 
@@ -192,8 +195,8 @@ const generateRepairPDF = async (repairId) => {
       repairId: repair.order_id,
       date,
       time,
-      r_issue:repair.issue,
-      fix:repair.repair_fix_note,
+      r_issue: repair.issue,
+      fix: repair.repair_fix_note,
       customer: repair.customer_name || repair.customer_id || "Guest",
       device: repair.device,
       cost: repair.cost,
@@ -213,7 +216,7 @@ const generateRepairPDF = async (repairId) => {
               </tr>`
             )
             .join("")
-        :`<tr>
+        : `<tr>
         <td colspan="6" class="text-center py-4 bg-gray-100 text-gray-500 font-medium">
           No spare parts used
         </td>

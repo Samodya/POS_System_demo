@@ -125,15 +125,6 @@ const updateProduct = async (id, productData, file) => {
   };
 };
 
-
-const getTotalBuyingPrice = async () => {
-  const [rows] = await db.query(`
-    SELECT SUM(buying_price * quantity) AS total_buying_price 
-    FROM products
-  `);
-  return rows[0].total_buying_price || 0;
-};
-
 const deleteProduct = async (id) => {
   await db.query("DELETE FROM products WHERE id = ?", [id]);
 };
@@ -171,7 +162,6 @@ module.exports = {
   getAllProducts,
   getProductById,
   updateProduct,
-  getTotalBuyingPrice,
   deleteProduct,
   reduceProductQuantity,
   increaseProductQuantity,
