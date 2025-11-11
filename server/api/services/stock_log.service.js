@@ -1,5 +1,4 @@
 const connectMySQLDB = require("../../config");
-const { increaseProductQuantity } = require("./product.service");
 
 let db;
 (async () => {
@@ -18,10 +17,7 @@ const createStockLog = async (data) => {
     [product_id, model_id, quantity, unit_buying_price, total_amount]
   ); 
   
-  const { increaseProductQuantity } = require("./product.service");
-  await increaseProductQuantity(product_id, quantity);
-
-  return { id: result.insertId, ...data };
+ 
 };
 
 const createInProductsStockLog = async (data) => {

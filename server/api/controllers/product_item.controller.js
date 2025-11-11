@@ -21,6 +21,15 @@ const getProductItems = async (req, res) => {
   }
 };
 
+const getProductItemByProductId = async (req, res) => {
+  try {
+    const item = await productItemService.getProductItemByProductId(req.params.product_id);
+    res.json(item);
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+};
+
 // Get one
 const getProductItemById = async (req, res) => {
   try {
@@ -54,6 +63,7 @@ const deleteProductItem = async (req, res) => {
 module.exports = {
   createProductItem,
   getProductItems,
+  getProductItemByProductId,
   getProductItemById,
   updateProductItem,
   deleteProductItem,

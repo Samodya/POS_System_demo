@@ -7,7 +7,6 @@ import { X } from 'lucide-react';
 
 const NewCustomerForm = ({ onCustomerAdded, onClose }) => {
   const { refreshCustomers } = UseCustomerContext();
-  const { refreshProducts } = UseProductContext(); // Assuming you have this
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');

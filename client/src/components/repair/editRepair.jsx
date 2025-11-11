@@ -53,6 +53,7 @@ export const EditRepair = () => {
   const [existingParts, setExistingParts] = useState([]);
   const [newParts, setNewParts] = useState([]);
   const [accessoryProducts, setAccessoryProducts] = useState([]);
+  const [productItems, setProductItems] = useState([]);
 
   // Tab state for right column
   const [activePartsTab, setActivePartsTab] = useState("new");
@@ -283,83 +284,6 @@ export const EditRepair = () => {
       console.error(error);
       alert("Failed to save new parts");
     }
-  };
-
-  // Add a new part to the newParts list or increment existing one
-  const addPart = (product, priceType) => {
-    const existingNewPart = newParts.find((p) => p.id === product.id);
-    const updatedProduct = accessoryProducts.find((p) => p.id === product.id);
-
-    // Check if there's stock available before adding
-    if (updatedProduct.quantity <= 0) {
-      alert(`${product.name} is out of stock`);
-      return;
-    }
-
-    if (existingNewPart) {
-      setNewParts((prev) =>
-        prev.map((p) =>
-          p.id === product.id ? { ...p, quantity: p.quantity + 1 } : p
-        )
-      );
-    } else {
-      setNewParts((prev) => [
-        ...prev,
-        {
-          id: product.id,
-          name: product.name,
-          quantity: 1,
-          unitPrice:
-            priceType === "dealer" ? product.dealers_price : product.price,
-        },
-      ]);
-    }
-
-    // Decrement local stock for real-time visual feedback
-    setAccessoryProducts((prev) =>
-      prev.map((p) =>
-        p.id === product.id ? { ...p, quantity: p.quantity - 1 } : p
-      )
-    );
-  };
-
-  // update quantity of a new part
-  const updateNewPartQuantity = (id, change) => {
-    const partToUpdate = newParts.find((p) => p.id === id);
-    if (!partToUpdate) return;
-    const newQty = partToUpdate.quantity + change;
-
-    if (newQty < 1) return; // Prevent quantity from dropping below 1
-
-    const correspondingProduct = accessoryProducts.find((p) => p.id === id);
-    if (change > 0 && correspondingProduct.quantity <= 0) {
-      alert("Cannot add more, out of stock.");
-      return;
-    }
-
-    setNewParts((prev) =>
-      prev.map((p) => (p.id === id ? { ...p, quantity: newQty } : p))
-    );
-
-    // Update local stock for visual feedback
-    setAccessoryProducts((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, quantity: p.quantity - change } : p
-      )
-    );
-  };
-
-  // remove a new part and increase the stock
-  const removeNewPart = (id) => {
-    const removedPart = newParts.find((p) => p.id === id);
-    if (!removedPart) return;
-
-    setAccessoryProducts((prev) =>
-      prev.map((p) =>
-        p.id === id ? { ...p, quantity: p.quantity + removedPart.quantity } : p
-      )
-    );
-    setNewParts((prev) => prev.filter((p) => p.id !== id));
   };
 
   // calculate total amount

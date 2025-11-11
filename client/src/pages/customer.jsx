@@ -10,13 +10,9 @@ import { EditCustomer } from "../components/Customer/EditCustomer";
 import { DeleteCustomer } from "../components/Customer/DeletCustomer";
 
 export const Customer = () => {
-  const { products, getLowStockProducts, getThisWeekProducts } = UseProductContext();
   const { customers } = UseCustomerContext();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeTab, setActiveTab] = useState("all");
-
-  const lowstock = getLowStockProducts();
-  const newArrivals = getThisWeekProducts();
 
   const statItems = [
     {

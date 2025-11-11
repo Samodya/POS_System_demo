@@ -51,8 +51,8 @@ export const Dashboard = () => {
   // const { calculateOverallRepairs } = UseRepairSaleContext();
 
   const overallSales = calculateOverall();
-  const overrallExpenses  = calculateOverallExpenses();
-  const overallrepairSales = calculateOverallRepairs();
+  // const overrallExpenses  = calculateOverallExpenses();
+  // const overallrepairSales = calculateOverallRepairs();
 
 
   return (
@@ -91,8 +91,8 @@ export const Dashboard = () => {
           <h2 className="text-lg font-medium text-gray-600 mb-2">
             Repair Income
           </h2>
-          <p className="text-3xl font-bold text-green-600">Rs.{overallrepairSales.totalAmount.toFixed(2)}</p>
-          <span className="text-sm text-gray-400">From {overallrepairSales.count} Sales</span>
+          <p className="text-3xl font-bold text-green-600">Rs.{0}</p>
+          <span className="text-sm text-gray-400">From {0} Sales</span>
         </div>
       </div>
 

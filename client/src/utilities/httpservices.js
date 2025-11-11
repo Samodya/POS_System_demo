@@ -1,4 +1,7 @@
 import axios from 'axios';
+import { store } from '../app/store'; // Assuming this is the path to your store
+import { showError } from '../features/error/errorSlice';
+
 const baseURL = 'http://localhost:4000/api';
 
 const apiService = {
@@ -20,8 +23,12 @@ const apiService = {
       });
       return response.data;
     } catch (error) {
-      console.error('Error creating data:', error);
-      throw error;
+      const message = error.response?.data?.error || error.message || 'An unknown error occurred.';
+      store.dispatch(showError({ message }));
+      console.error('Error creating data:', message);
+      // We re-throw the error so that component-level logic (like stopping a loader) can still react.
+      // However, the error is already displayed to the user.
+      throw error; 
     }
  },
 
@@ -35,8 +42,10 @@ const apiService = {
       });
       return response.data;
     } catch (error) {
-      console.error('Error fetching data:', error);
-      throw error;
+      const message = error.response?.data?.error || error.message || 'Failed to fetch data.';
+      store.dispatch(showError({ message }));
+      console.error('Error fetching data:', message);
+      throw error; 
     }
  },
 
@@ -49,8 +58,10 @@ const apiService = {
       });
       return response.data;
     } catch (error) {
-      console.error('Error fetching data:', error);
-      throw error;
+      const message = error.response?.data?.error || error.message || `Failed to fetch item with id ${id}.`;
+      store.dispatch(showError({ message }));
+      console.error('Error fetching data by ID:', message);
+      throw error; 
     }
  },
 
@@ -68,8 +79,10 @@ const apiService = {
       });
       return response.data;
     } catch (error) {
-      console.error('Error updating data:', error);
-      throw error;
+      const message = error.response?.data?.error || error.message || 'Failed to update data.';
+      store.dispatch(showError({ message }));
+      console.error('Error updating data:', message);
+      throw error; 
     }
  },
 
@@ -83,10 +96,15 @@ const apiService = {
       });
       return response.data;
     } catch (error) {
-      console.error('Error deleting data:', error);
-      throw error;
+      const message = error.response?.data?.error || error.message || 'Failed to delete data.';
+      store.dispatch(showError({ message }));
+      console.error('Error deleting data:', message);
+      throw error; 
     }
  },
 };
 
 export default apiService;
+
+// Make sure to export your store from your store file and import it here.
+// For example, in 'client/src/app/store.js': export const store = configureStore({...});
