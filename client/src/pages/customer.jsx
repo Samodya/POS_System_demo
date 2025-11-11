@@ -1,7 +1,5 @@
 import { Contact, Search, UserRoundCog, UserStar, Users } from "lucide-react";
-import GlobalError from "../components/globalError";
 import Topbar from "../components/topbar";
-import { UseProductContext } from "../context/productContext";
 import { useState } from "react";
 import StatCard from "../components/statcard";
 import { NewCustomer } from "../components/Customer/newCustome";

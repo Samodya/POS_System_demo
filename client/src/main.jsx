@@ -3,7 +3,6 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import { AuthContextProvider } from "./context/AuthContext";
 import { AllRoutes } from "./Routes/Routes";
-import { ErrorProvider } from "./context/errorProvider";
 import { ProductContextProvider } from "./context/productContext";
 import { UserContextProvider } from "./context/usersContext";
 import { CustomerContextProvider } from "./context/customerContext";
@@ -16,25 +15,23 @@ import { ExpensesContextProvider } from "./context/expensesContext";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <AuthContextProvider>
-      <ErrorProvider>
-        <CustomerContextProvider>
-          <UserContextProvider>
-            <ProductContextProvider>
-              <ExpensesContextProvider>
-                <RepairContextProvider>
-                  <RepairSaleContextProvider>
-                    <SaleContextProvider>
-                      <SaleItemsContextProvider>
-                        <AllRoutes />
-                      </SaleItemsContextProvider>
-                    </SaleContextProvider>
-                  </RepairSaleContextProvider>
-                </RepairContextProvider>
-              </ExpensesContextProvider>
-            </ProductContextProvider>
-          </UserContextProvider>
-        </CustomerContextProvider>
-      </ErrorProvider>
+      <CustomerContextProvider>
+        <UserContextProvider>
+          <ProductContextProvider>
+            <ExpensesContextProvider>
+              <RepairContextProvider>
+                <RepairSaleContextProvider>
+                  <SaleContextProvider>
+                    <SaleItemsContextProvider>
+                      <AllRoutes />
+                    </SaleItemsContextProvider>
+                  </SaleContextProvider>
+                </RepairSaleContextProvider>
+              </RepairContextProvider>
+            </ExpensesContextProvider>
+          </ProductContextProvider>
+        </UserContextProvider>
+      </CustomerContextProvider>
     </AuthContextProvider>
   </StrictMode>
 );

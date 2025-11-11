@@ -1,5 +1,6 @@
 import { Bell, ChevronDown } from "lucide-react";
 import { useState } from "react";
+import { NewCart } from "./sales/newCart";
 
 export default function Topbar({title}) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -13,6 +14,9 @@ export default function Topbar({title}) {
 
       {/* Right Section (Icons) */}
       <div className="flex items-center gap-6 relative">
+        {/* Cart */}
+        <NewCart />
+        
         {/* Notification */}
         <button className="relative p-2 rounded hover:bg-black hover:text-white transition">
           <Bell size={20} />
@@ -35,7 +39,7 @@ export default function Topbar({title}) {
 
           {/* Dropdown */}
           {showProfileMenu && (
-            <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-50">
+            <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded-lg shadow-lg z-50 text-gray-700">
               <ul className="text-sm">
                 <li className="px-4 py-2 hover:bg-black hover:text-white cursor-pointer">
                   Profile

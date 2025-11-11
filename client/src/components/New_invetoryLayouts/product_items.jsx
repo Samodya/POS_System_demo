@@ -3,7 +3,7 @@ import Topbar from "../topbar";
 import apiService from "../../utilities/httpservices";
 import Cookies from "js-cookie";
 import { useEffect, useState } from "react";
-import { PlusCircle, Save, Search, Settings, ShoppingBag, WrenchIcon } from "lucide-react"; // Added Settings icon
+import { AlertTriangle, CheckCircle, PlusCircle, Save, Search, Settings, ShoppingBag, WrenchIcon } from "lucide-react"; // Added Settings and AlertTriangle icons
 
 export const ProductItems = () => {
   const { product_id } = useParams();
@@ -29,6 +29,18 @@ export const ProductItems = () => {
   const [filter, setFilter] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
+
+  // Toast state
+  const [toast, setToast] = useState({ show: false, message: "", type: "success" });
+
+  // Price selection state
+  const [priceSelection, setPriceSelection] = useState({});
+
+  // Cart state
+  const [cart, setCart] = useState(() => {
+    const savedCart = localStorage.getItem("cart");
+    return savedCart ? JSON.parse(savedCart) : [];
+  });
 
   // --- API Calls ---
   const getProductDetails = async () => {
@@ -76,6 +88,45 @@ export const ProductItems = () => {
     }
   };
 
+  const addToCart = (itemToAdd) => {
+    // Check if the item is already in the cart
+    const isItemInCart = cart.some((cartItem) => cartItem.id === itemToAdd.id);
+
+    if (isItemInCart) {
+      // Show a warning toast if the item is already in the cart
+      setToast({ show: true, message: "Item already in cart.", type: "warning" });
+      setTimeout(() => setToast({ show: false, message: "", type: "success" }), 3000);
+      return;
+    }
+
+    const selectedPriceType = priceSelection[itemToAdd.id] || 'retail';
+    const price = selectedPriceType === 'dealer' ? itemToAdd.dealers_price : itemToAdd.retail_price;
+
+    // Create a new item object that includes product details
+    const itemWithProductInfo = {
+      ...itemToAdd,
+      name: productname, // Add product name
+      itemmodel_id: itemmodel_id, // Add model ID
+      retail_price: price, // Use the selected price
+      price_type: selectedPriceType, // Store which price was chosen
+    };
+
+    // Add the item to the cart state and local storage
+    setCart((prevCart) => {
+      const newCart = [...prevCart, itemWithProductInfo];
+      localStorage.setItem("cart", JSON.stringify(newCart));
+      return newCart;
+    });
+
+    // Show a success toast
+    setToast({ show: true, message: "Item added to cart!", type: "success" });
+    setTimeout(() => setToast({ show: false, message: "", type: "success" }), 3000);
+  };
+
+  const handlePriceSelection = (itemId, priceType) => {
+    setPriceSelection(prev => ({ ...prev, [itemId]: priceType }));
+  };
+
   useEffect(() => {
     getProductDetails();
     getProductItemsById();
@@ -106,6 +157,20 @@ export const ProductItems = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Custom Toast Notification */}
+      {toast.show && (
+        <div className={`fixed top-5 left-1/2 -translate-x-1/2 z-50 flex items-center gap-2 text-white px-6 py-3 rounded-lg shadow-lg transition-transform duration-300 ease-in-out ${
+          toast.type === 'success' ? 'bg-green-500' : 'bg-yellow-500'
+        } ${toast.show ? 'translate-y-0 opacity-100' : '-translate-y-20 opacity-0'}`}>
+          {toast.type === 'success' ? (
+            <CheckCircle size={20} />
+          ) : (
+            <AlertTriangle size={20} />
+          )}
+          <span>{toast.message}</span>
+        </div>
+      )}
+
       <Topbar title="Product Details" />
 
       {/* --- Product Overview (Improved Layout: Focused Center) --- */}
@@ -235,6 +300,7 @@ export const ProductItems = () => {
                     <th className="px-4 py-2 text-center hidden sm:table-cell">Retail Price</th>
                     <th className="px-4 py-2 text-center hidden md:table-cell">Dealer Price</th>
                     <th className="px-4 py-2 text-center">Status</th>
+                    <th className="px-4 py-2 text-center">Price Type</th>
                     <th className="px-4 py-2 text-center">Action</th>
                   </tr>
                 </thead>
@@ -250,13 +316,38 @@ export const ProductItems = () => {
                         <td className="px-4 py-2 text-center font-semibold hidden sm:table-cell ">Rs.{item.retail_price}</td>
                         <td className="px-4 py-2 text-gray-500 hidden md:table-cell text-center">Rs.{item.dealers_price}</td>
                         <td className="px-4 py-2 text-center">
-                          <span className={`px-2 py-1 rounded-full text-xs font-semibold ${item.item_status === "Available" ? "bg-green-500 text-white" : "bg-red-500 text-white"}`}>
-                            {item.item_status}
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                              cart.some((cartItem) => cartItem.id === item.id)
+                                ? "bg-blue-500 text-white"
+                                : item.item_status === "Available"
+                                ? "bg-green-500 text-white"
+                                : "bg-red-500 text-white"
+                            }`}
+                          >
+                            {cart.some((cartItem) => cartItem.id === item.id) ? "In Cart" : item.item_status}
                           </span>
                         </td>
-                        <td className="px-4 py-3 flex items-center justify-center gap-2">
-                          <div className="flex items-center justify-center px-2 py-1 bg-green-500 text-white rounded-3xl"> <button><ShoppingBag size={16} /></button></div>
-                          <div className="flex items-center justify-center px-2 py-1 bg-red-500 text-white rounded-3xl"> <button><WrenchIcon size={16} /> </button></div>
+                        <td className="px-4 py-2 text-center">
+                          <div className="flex justify-center items-center bg-gray-200 rounded-full p-0.5">
+                              <button
+                                  onClick={() => handlePriceSelection(item.id, 'retail')}
+                                  className={`px-3 py-1 text-xs rounded-full transition-all duration-200 ${(!priceSelection[item.id] || priceSelection[item.id] === 'retail') ? 'bg-blue-500 text-white shadow' : 'text-gray-600'}`}
+                              >
+                                  Retail
+                              </button>
+                              <button
+                                  onClick={() => handlePriceSelection(item.id, 'dealer')}
+                                  className={`px-3 py-1 text-xs rounded-full transition-all duration-200 ${priceSelection[item.id] === 'dealer' ? 'bg-green-500 text-white shadow' : 'text-gray-600'}`}
+                              >
+                                  Dealer
+                              </button>
+                          </div>
+                        </td>
+                        <td className="px-4 py-2 text-center">
+                          <button onClick={() => addToCart(item)} className="p-2 bg-gray-800 text-white rounded-full hover:bg-black transition-colors">
+                            <ShoppingBag size={16} />
+                          </button>
                         </td>
                       </tr>
                     ))

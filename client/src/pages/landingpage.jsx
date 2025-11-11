@@ -13,14 +13,13 @@ import { AddRepair } from "../components/repair/addRepair";
 import { EditRepair } from "../components/repair/editRepair";
 import { ViewSale } from "../components/sales/viewsale";
 import { AddProduct } from "../components/New_invetoryLayouts/add_product";
-import { ProductItems } from "../components/New_invetoryLayouts/product_items"; 
-import GlobalError from "../components/globalError";
+import { ProductItems } from "../components/New_invetoryLayouts/product_items";
 
 export const LandingPage = () => {
   return (
     <div className="flex">
       <Sidebar />
-      <GlobalError />
+     
 
       <div className="max-h-screen overflow-auto w-full bg-gray-200">
         <Routes>
