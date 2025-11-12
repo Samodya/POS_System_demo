@@ -41,7 +41,7 @@ export const Sales = () => {
           />
         </div>
 
-        <div className="flex flex-row-reverse py-2 px-6">
+        {/* <div className="flex flex-row-reverse py-2 px-6">
           <Link
             to={"../invoice"}
             className="bg-gradient-to-r from-black via-[#0a0f2c] 
@@ -49,7 +49,7 @@ export const Sales = () => {
           >
             <DollarSign size={16} /> New Sale
           </Link>
-        </div>
+        </div> */}
 
         {/* Sales Table */}
         <div className="overflow-x-auto">
