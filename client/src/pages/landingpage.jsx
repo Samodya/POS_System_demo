@@ -14,6 +14,7 @@ import { EditRepair } from "../components/repair/editRepair";
 import { ViewSale } from "../components/sales/viewsale";
 import { AddProduct } from "../components/New_invetoryLayouts/add_product";
 import { ProductItems } from "../components/New_invetoryLayouts/product_items";
+import { EditProduct } from "../components/New_invetoryLayouts/edit_product";
 
 export const LandingPage = () => {
   return (
@@ -36,6 +37,7 @@ export const LandingPage = () => {
           <Route path="/inventory" element={<Inventory />} />
           <Route path="/customer" element={<Customer />} />
           <Route path="/users" element={<Users/>} />
+          <Route path="/edit_products/:product_id" element={<EditProduct/>}/>
           <Route path="/product_items/:product_id" element={<ProductItems/>}/>
           {/* <Route
                     path="/users"

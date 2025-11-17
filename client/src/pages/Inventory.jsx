@@ -15,6 +15,7 @@ export const Inventory = () => {
   const lowstock = []; // should be array, not number
   const newArrivals = getThisWeekProducts();
 
+
   const statItems = [
     {
       id: "all",
@@ -141,7 +142,7 @@ export const Inventory = () => {
                 <td className="px-4 py-3 text-gray-600 flex items-center justify-center gap-2">
                   <Link
                     className="py-1 px-2 sm:px-3 bg-blue-600 hover:bg-blue-700 flex gap-1 items-center justify-center rounded text-white text-xs transition"
-                    to={`../edit-repairs/${row.id}`}
+                    to={`../edit_products/${row.id}`}
                   >
                     <Edit size={16} /> Edit
                   </Link>
